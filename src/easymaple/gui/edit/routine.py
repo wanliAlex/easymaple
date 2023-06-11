@@ -1,8 +1,8 @@
 import tkinter as tk
-from easymaple.gui.edit.commands import Commands
-from easymaple.gui.edit.components import Components
-from easymaple.gui.edit.controls import Controls
-from easymaple.gui.interfaces import LabelFrame, Frame
+from src.easymaple.gui.edit.commands import Commands
+from src.easymaple.gui.edit.components import Components
+from src.easymaple.gui.edit.controls import Controls
+from src.easymaple.gui.interfaces import LabelFrame, Frame
 
 
 class Routine(LabelFrame):

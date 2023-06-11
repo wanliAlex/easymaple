@@ -1,11 +1,11 @@
 """Displays the current minimap as well as various information regarding the current routine."""
 
 import tkinter as tk
-from easymaple.gui.view.details import Details
-from easymaple.gui.view.minimap import Minimap
-from easymaple.gui.view.routine import Routine
-from easymaple.gui.view.status import Status
-from easymaple.gui.interfaces import Tab
+from src.easymaple.gui.view.details import Details
+from src.easymaple.gui.view.minimap import Minimap
+from src.easymaple.gui.view.routine import Routine
+from src.easymaple.gui.view.status import Status
+from src.easymaple.gui.interfaces import Tab
 
 
 class View(Tab):

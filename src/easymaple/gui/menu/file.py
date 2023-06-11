@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
-from easymaple.common import config, utils
-from easymaple.gui.interfaces import MenuBarItem
+from src.easymaple.common import config, utils
+from src.easymaple.gui.interfaces import MenuBarItem
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import askyesno
 

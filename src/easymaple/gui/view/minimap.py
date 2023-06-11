@@ -1,9 +1,9 @@
 import cv2
 import tkinter as tk
 from PIL import ImageTk, Image
-from easymaple.gui.interfaces import LabelFrame
-from easymaple.common import config, utils
-from easymaple.routine.components import Point
+from src.easymaple.gui.interfaces import LabelFrame
+from src.easymaple.common import config, utils
+from src.easymaple.routine.components import Point
 
 
 class Minimap(LabelFrame):

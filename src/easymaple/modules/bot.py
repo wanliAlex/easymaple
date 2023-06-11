@@ -8,13 +8,13 @@ import inspect
 import importlib
 import traceback
 from os.path import splitext, basename
-from easymaple.common import config, utils
-from easymaple.detection import detection
-from easymaple.routine import components
-from easymaple.routine.routine import Routine
-from easymaple.routine.components import Point
-from easymaple.common.vkeys import press, click
-from easymaple.common.interfaces import Configurable
+from src.easymaple.common import config, utils
+from src.easymaple.detection import detection
+from src.easymaple.routine import components
+from src.easymaple.routine.routine import Routine
+from src.easymaple.routine.components import Point
+from src.easymaple.common.vkeys import press, click
+from src.easymaple.common.interfaces import Configurable
 
 
 # The rune's buff icon

@@ -1,8 +1,8 @@
 """A menu for loading routines and command books."""
 
 import tkinter as tk
-from easymaple.gui.menu.file import File
-from easymaple.gui.menu.update import Update
+from src.easymaple.gui.menu.file import File
+from src.easymaple.gui.menu.update import Update
 
 
 class Menu(tk.Menu):

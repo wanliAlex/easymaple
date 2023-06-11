@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from easymaple.common import config
-from easymaple.routine.components import Point
-from easymaple.gui.interfaces import Frame
+from src.easymaple.common import config
+from src.easymaple.routine.components import Point
+from src.easymaple.gui.interfaces import Frame
 
 
 class Commands(Frame):

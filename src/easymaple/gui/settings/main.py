@@ -1,10 +1,10 @@
 """Displays Auto Maple's current settings and allows the user to edit them."""
 
 import tkinter as tk
-from easymaple.gui.settings.keybindings import KeyBindings
-from easymaple.gui.settings.pets import Pets
-from easymaple.gui.interfaces import Tab, Frame
-from easymaple.common import config
+from src.easymaple.gui.settings.keybindings import KeyBindings
+from src.easymaple.gui.settings.pets import Pets
+from src.easymaple.gui.interfaces import Tab, Frame
+from src.easymaple.common import config
 
 
 class Settings(Tab):

@@ -1,0 +1,4 @@
+$, target=move_tolerance, value=1
+*, x=0.537, y=0.179, frequency=1, skip=False, adjust=True
+    Kishin
+*, x=0.305, y=0.179, frequency=1, skip=False, adjust=False

@@ -7,7 +7,7 @@ import ctypes
 import mss
 import mss.windows
 import numpy as np
-from easymaple.common import config, utils
+from src.easymaple.common import config, utils
 from ctypes import wintypes
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()

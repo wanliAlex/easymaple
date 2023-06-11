@@ -1,6 +1,6 @@
 """A module for detecting and notifying the user of dangerous in-game events."""
 
-from easymaple.common import config, utils
+from src.easymaple.common import config, utils
 import time
 import os
 import cv2
@@ -8,7 +8,7 @@ import pygame
 import threading
 import numpy as np
 import keyboard as kb
-from easymaple.routine.components import Point
+from src.easymaple.routine.components import Point
 
 
 # A rune's symbol on the minimap

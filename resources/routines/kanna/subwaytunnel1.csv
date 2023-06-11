@@ -1,0 +1,18 @@
+$, target=move_tolerance, value=0.05
+
+@, label=boss
+*, x=0.558, y=0.293, frequency=12, skip=False, adjust=False
+    Yaksha, direction=Left
+    Wait, duration=0.3
+
+@, label=erda
+*, x=0.837, y=0.102, frequency=24, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.2
+
+@, label=att
+*, x=0.728, y=0.293, frequency=1, skip=False, adjust=False
+    Shikigami, direction=Right, attacks=2, repetitions=1
+    Wait, duration=0.3
+    Shikigami, direction=Left, attacks=2, repetitions=1
+    Wait, duration=1

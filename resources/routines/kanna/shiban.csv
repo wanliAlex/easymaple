@@ -1,0 +1,17 @@
+$, target=move_tolerance, value=0.04
+
+@, label=kishin
+*, x=0.606, y=0.227, frequency=30, skip=False, adjust=True
+    Kishin
+
+@, label=Boss
+*, x=0.328, y=0.152, frequency=15, skip=False, adjust=False
+    Yaksha, direction=Right
+    Wait, duration=0.5
+
+@, label=attack
+*, x=0.340, y=0.227, frequency=1, skip=False, adjust=True
+    Shikigami, direction=Right, attacks=2, repetitions=1
+    Wait, duration=0.2
+    Shikigami, direction=Left, attacks=2, repetitions=1
+    Wait, duration=0.8

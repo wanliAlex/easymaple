@@ -5,7 +5,7 @@ import queue
 import cv2
 import threading
 import numpy as np
-from easymaple.common import config, settings
+from src.easymaple.common import config, settings
 from random import random
 
 

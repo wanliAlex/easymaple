@@ -4,8 +4,8 @@ import time
 import threading
 import tkinter as tk
 from tkinter import ttk
-from easymaple.common import config, settings
-from easymaple.gui import Menu, View, Edit, Settings
+from src.easymaple.common import config, settings
+from src.easymaple.gui import Menu, View, Edit, Settings
 
 
 class GUI:

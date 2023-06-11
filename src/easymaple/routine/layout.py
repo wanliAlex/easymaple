@@ -4,7 +4,7 @@ import os
 import cv2
 import math
 import pickle
-from easymaple.common import config, settings, utils
+from src.easymaple.common import config, settings, utils
 from os.path import join, isfile, splitext, basename
 from heapq import heappush, heappop
 

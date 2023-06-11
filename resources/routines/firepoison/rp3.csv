@@ -1,0 +1,20 @@
+$, target=move_tolerance, value=0.05
+
+@, label=shower
+*, x=0.552, y=0.143, frequency=15, skip=False, adjust=True
+    DoT_Punisher
+*, x=0.214, y=0.214, frequency=15, skip=False, adjust=True
+    Teleport, direction=Up, jump=False
+    ErdaFountain
+
+@, label=CreepingTotem
+*, x=0.708, y=0.214, frequency=15, skip=False, adjust=True
+    Creeping_Toxin, direction=Left
+
+@, label=Attack
+*, x=0.701, y=0.058, frequency=1, skip=False, adjust=False
+    Flame_Sweep, direction=Right, attacks=1, repetitions=2
+*, x=0.701, y=0.214, frequency=1, skip=False, adjust=True
+    Flame_Sweep, direction=Right, attacks=2, repetitions=1
+    Teleport, direction=Up, jump=False
+    Teleport, direction=Up, jump=False

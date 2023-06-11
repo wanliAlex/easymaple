@@ -1,0 +1,9 @@
+$, target=move_tolerance, value=0.05
+*, x=0.064, y=0.306, frequency=1, skip=False, adjust=True
+    Big_Bang, repetitions=2
+    Wait, duration=1
+    ErdaFountain
+    Wait, duration=1
+    Fountain_of_Vengeance, direction=Left
+    Wait, duration=1
+    Genesis

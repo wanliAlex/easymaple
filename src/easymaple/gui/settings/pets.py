@@ -1,6 +1,6 @@
 import tkinter as tk
-from easymaple.gui.interfaces import LabelFrame, Frame
-from easymaple.common.interfaces import Configurable
+from src.easymaple.gui.interfaces import LabelFrame, Frame
+from src.easymaple.common.interfaces import Configurable
 
 
 class Pets(LabelFrame):

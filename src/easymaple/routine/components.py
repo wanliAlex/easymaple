@@ -2,8 +2,8 @@
 
 import math
 import time
-from easymaple.common import config, settings, utils
-from easymaple.common.vkeys import key_down, key_up, press
+from src.easymaple.common import config, settings, utils
+from src.easymaple.common.vkeys import key_down, key_up, press
 
 
 #################################

@@ -1,0 +1,5 @@
+$, target=move_tolerance, value=0.05
+*, x=0.279, y=0.308, frequency=1, skip=False, adjust=False
+    Blade_Tornado, direction=Right
+*, x=0.579, y=0.169, frequency=1, skip=False, adjust=False
+    BOD

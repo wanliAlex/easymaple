@@ -3,7 +3,7 @@
 import cv2
 import tensorflow as tf
 import numpy as np
-from easymaple.common import utils
+from src.easymaple.common import utils
 
 
 #########################
@@ -178,7 +178,7 @@ def merge_detection(model, image):
 
 # Script for testing the detection module by itself
 if __name__ == '__main__':
-    from easymaple.common import config, utils
+    from src.easymaple.common import config, utils
     import mss
     config.enabled = True
     monitor = {'top': 0, 'left': 0, 'width': 1366, 'height': 768}

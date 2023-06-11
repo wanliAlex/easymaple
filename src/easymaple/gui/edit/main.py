@@ -1,14 +1,14 @@
 """Allows the user to edit routines while viewing each Point's location on the minimap."""
 
-from easymaple.common import config
+from src.easymaple.common import config
 import inspect
 import tkinter as tk
-from easymaple.routine.components import Point, Command
-from easymaple.gui.edit.minimap import Minimap
-from easymaple.gui.edit.record import Record
-from easymaple.gui.edit.routine import Routine
-from easymaple.gui.edit.status import Status
-from easymaple.gui.interfaces import Tab, Frame, LabelFrame
+from src.easymaple.routine.components import Point, Command
+from src.easymaple.gui.edit.minimap import Minimap
+from src.easymaple.gui.edit.record import Record
+from src.easymaple.gui.edit.routine import Routine
+from src.easymaple.gui.edit.status import Status
+from src.easymaple.gui.interfaces import Tab, Frame, LabelFrame
 
 
 class Edit(Tab):

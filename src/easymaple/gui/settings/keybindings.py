@@ -1,8 +1,8 @@
 import tkinter as tk
 import keyboard as kb
-from easymaple.gui.interfaces import LabelFrame, Frame
-from easymaple.common import utils
-from easymaple.common.interfaces import Configurable
+from src.easymaple.gui.interfaces import LabelFrame, Frame
+from src.easymaple.common import utils
+from src.easymaple.common.interfaces import Configurable
 
 
 class KeyBindings(LabelFrame):

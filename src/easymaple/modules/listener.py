@@ -4,8 +4,8 @@ import time
 import threading
 import winsound
 import keyboard as kb
-from easymaple.common.interfaces import Configurable
-from easymaple.common import config, utils
+from src.easymaple.common.interfaces import Configurable
+from src.easymaple.common import config, utils
 from datetime import datetime
 
 

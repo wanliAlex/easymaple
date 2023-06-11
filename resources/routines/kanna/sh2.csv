@@ -1,0 +1,11 @@
+$, target=move_tolerance, value=0.05
+*, x=0.827, y=0.216, frequency=12, skip=False, adjust=True
+    ErdaFountain
+*, x=0.226, y=0.264, frequency=12, skip=False, adjust=True
+    Kishin
+*, x=0.375, y=0.159, frequency=6, skip=False, adjust=True
+    Yaksha, direction=Left
+*, x=0.505, y=0.125, frequency=1, skip=False, adjust=True
+    Shikigami, direction=Right, attacks=2, repetitions=1
+    Exorcist, jump=False
+    Shikigami, direction=Left, attacks=2, repetitions=1

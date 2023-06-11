@@ -1,6 +1,6 @@
 import tkinter as tk
-from easymaple.common import config
-from easymaple.gui.interfaces import LabelFrame
+from src.easymaple.common import config
+from src.easymaple.gui.interfaces import LabelFrame
 
 
 class Status(LabelFrame):

@@ -1,6 +1,6 @@
 import tkinter as tk
-from easymaple.routine.components import Point
-from easymaple.gui.interfaces import LabelFrame
+from src.easymaple.routine.components import Point
+from src.easymaple.gui.interfaces import LabelFrame
 
 
 class Record(LabelFrame):
