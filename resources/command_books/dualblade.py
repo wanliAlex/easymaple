@@ -1,10 +1,10 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
 
-from src.common import config, settings, utils
+from src.easymaple.common import config, settings, utils
 import time
 import math
-from src.routine.components import Command
-from src.common.vkeys import press, key_down, key_up
+from src.easymaple.routine.components import Command
+from src.easymaple.common.vkeys import press, key_down, key_up
 
 
 # List of key mappings
@@ -50,7 +50,9 @@ def step(direction, target):
     Performs one movement step in the given DIRECTION towards TARGET.
     Should not press any arrow keys, as those are handled by Auto Maple.
     """
-
+    print("running_step")
+    key_up("left")
+    key_up("right")
     num_presses = 2
     if direction == 'up' or direction == 'down':
         num_presses = 1
@@ -76,6 +78,67 @@ def step(direction, target):
         short_jump()
 
 
+class Move(Command):
+    """Moves to a given position using the shortest path based on the current Layout."""
+
+    def __init__(self, x, y, max_steps=15):
+        super().__init__(locals())
+        self.target = (float(x), float(y))
+        self.max_steps = settings.validate_nonnegative_int(max_steps)
+        self.prev_direction = ''
+
+    def _new_direction(self, new):
+        key_down(new)
+        if self.prev_direction and self.prev_direction != new:
+            key_up(self.prev_direction)
+        self.prev_direction = new
+
+    def main(self):
+        counter = self.max_steps
+        path = config.layout.shortest_path(config.player_pos, self.target)
+        for i, point in enumerate(path):
+            self.prev_direction = ''
+            local_error = utils.distance(config.player_pos, point)
+            global_error = utils.distance(config.player_pos, self.target)
+            while config.enabled and counter > 0 and \
+                    local_error > settings.move_tolerance and \
+                    global_error > settings.move_tolerance:
+                d_x = point[0] - config.player_pos[0]
+                d_y = point[1] - config.player_pos[1]
+                if abs(d_x) > settings.move_tolerance:
+                    if d_x < 0:
+                        key = 'left'
+                    else:
+                        key = 'right'
+
+                    self._new_direction(key)
+
+                    if settings.record_layout:
+                        config.layout.add(*config.player_pos)
+                    counter -= 1
+                    if i < len(path) - 1:
+                        time.sleep(0.15)
+                    key_up(key)
+                else:
+                    if abs(d_y) > settings.move_tolerance:
+                        if d_y < 0:
+                            key = 'up'
+                        else:
+                            key = 'down'
+                        step(key, point)
+                        if settings.record_layout:
+                            config.layout.add(*config.player_pos)
+                        counter -= 1
+                        if i < len(path) - 1:
+                            time.sleep(0.05)
+                local_error = utils.distance(config.player_pos, point)
+                global_error = utils.distance(config.player_pos, self.target)
+            if self.prev_direction:
+                key_up(self.prev_direction)
+        key_up("left")
+        key_up("right")
+
+
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
 
@@ -86,49 +149,50 @@ class Adjust(Command):
 
     def main(self):
         counter = self.max_steps
-        toggle = True
         error = utils.distance(config.player_pos, self.target)
         while config.enabled and counter > 0 and error > settings.adjust_tolerance:
-            if toggle:
-                d_x = self.target[0] - config.player_pos[0]
-                threshold = settings.adjust_tolerance / math.sqrt(2)
-                if abs(d_x) > threshold:
-                    walk_counter = 0
-                    if d_x < 0:
-                        key_down('left')
-                        while config.enabled and d_x < -1.5 * threshold and walk_counter < 60:
-                            time.sleep(0.05)
-                            walk_counter += 1
-                            d_x = self.target[0] - config.player_pos[0]
-                        key_up('left')
-                    else:
-                        key_down('right')
-                        while config.enabled and d_x > 1.5 * threshold and walk_counter < 60:
-                            time.sleep(0.05)
-                            walk_counter += 1
-                            d_x = self.target[0] - config.player_pos[0]
-                        key_up('right')
-                    counter -= 1
+            d_x = self.target[0] - config.player_pos[0]
+            d_y = self.target[1] - config.player_pos[1]
+            threshold = settings.adjust_tolerance / math.sqrt(2)
+            if abs(d_x) > threshold:
+                walk_counter = 0
+                if d_x < 0:
+                    key_down('left')
+                    while config.enabled and d_x < -1.5 * threshold and walk_counter < 60:
+                        time.sleep(0.05)
+                        walk_counter += 1
+                        d_x = self.target[0] - config.player_pos[0]
+                    key_up('left')
+                else:
+                    key_down('right')
+                    while config.enabled and d_x > 1.5 * threshold and walk_counter < 60:
+                        time.sleep(0.05)
+                        walk_counter += 1
+                        d_x = self.target[0] - config.player_pos[0]
+                    key_up('right')
+                counter -= 1
             else:
-                d_y = self.target[1] - config.player_pos[1]
-                if abs(d_y) > settings.adjust_tolerance / math.sqrt(2):
+                key_up("left")
+                key_up("right")
+                time.sleep(0.5)
+                if abs(d_y) > threshold:
+                    print("adjust y")
                     if d_y < 0:
-                        key_up("left")
-                        key_up("right")
-                        press(Key.JUMP,1, down_time = 0.125, up_time = 0.31)
-                        key_down("up")
-                        time.sleep(0.141)
-                        press(Key.BLADE_ASCENSION, 1,down_time = 0.203, up_time = 0.31)
-                        key_up("up")
+                        if abs(d_y) < 0.1:
+                            UpJump().main()
+                            time.sleep(0.5)
+                        else:
+                            Rope().main()
+                            time.sleep(2)
                     else:
                         key_down('down')
                         time.sleep(0.05)
                         press(Key.JUMP, 3, down_time=0.1)
                         key_up('down')
-                        time.sleep(0.05)
+                        time.sleep(0.5)
                     counter -= 1
+
             error = utils.distance(config.player_pos, self.target)
-            toggle = not toggle
 
 
 class Buff(Command):
@@ -151,6 +215,13 @@ class Buff(Command):
             for key in buffs:
                 press(key, 3, up_time=0.3)
             self.buff_time = now
+
+class UpJump(Command):
+    def main(self):
+        key_down("up")
+        press(Key.JUMP, 1, down_time = 0.05, up_time = 0.05)
+        press(Key.BLADE_ASCENSION, 1, down_time = 0.1, up_time = 0.3)
+        key_up("up")
 
 
 

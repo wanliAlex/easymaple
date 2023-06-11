@@ -3,6 +3,7 @@
 import tkinter as tk
 from src.easymaple.gui.settings.keybindings import KeyBindings
 from src.easymaple.gui.settings.pets import Pets
+from src.easymaple.gui.settings.rune import Rune
 from src.easymaple.gui.interfaces import Tab, Frame
 from src.easymaple.common import config
 
@@ -18,6 +19,9 @@ class Settings(Tab):
         column1.grid(row=0, column=1, sticky=tk.N, padx=10, pady=10)
         self.controls = KeyBindings(column1, 'Auto Maple Controls', config.listener)
         self.controls.pack(side=tk.TOP, fill='x', expand=True)
+
+        self.rune = Rune(column1)
+        self.rune.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
 
         column2 = Frame(self)
         column2.grid(row=0, column=2, sticky=tk.N, padx=10, pady=10)

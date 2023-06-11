@@ -1,9 +1,9 @@
 """A collection of all commands that a Blaster can use to interact with the game."""
 
 import time
-from src.common import settings
-from src.routine.components import Command
-from src.common.vkeys import press, key_down, key_up
+from src.easymaple.common import settings
+from src.easymaple.routine.components import Command
+from src.easymaple.common.vkeys import press, key_down, key_up
 
 #
 # class Move(Command):

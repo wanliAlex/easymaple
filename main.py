@@ -1,18 +1,11 @@
 """The central program that ties all the modules together."""
 
 import time
-import argparse
 from src.easymaple.modules.bot import Bot
 from src.easymaple.modules.capture import Capture
 from src.easymaple.modules.notifier import Notifier
 from src.easymaple.modules.listener import Listener
 from src.easymaple.modules.gui import GUI
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--enable_rune", help="whether or not enable solve rune", default=False, type=bool)
-
-
-ENABLE_RUNE = parser.enable_rune
 
 bot = Bot()
 capture = Capture()

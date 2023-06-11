@@ -227,7 +227,8 @@ class Command(Component):
 
 
 class Move(Command):
-    """Moves to a given position using the shortest path based on the current Layout."""
+    """Moves to a given position using the shortest path based on the current Layout.
+    This is a general implementation and can be overriden by the Move class in your command books"""
 
     def __init__(self, x, y, max_steps=15):
         super().__init__(locals())
@@ -242,6 +243,7 @@ class Move(Command):
         self.prev_direction = new
 
     def main(self):
+        print("moving using main function")
         counter = self.max_steps
         path = config.layout.shortest_path(config.player_pos, self.target)
         for i, point in enumerate(path):

@@ -1,10 +1,10 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
 
-from src.common import config, settings, utils
+from src.easymaple.common import config, settings, utils
 import time
 import math
-from src.routine.components import Command
-from src.common.vkeys import press, key_down, key_up
+from src.easymaple.routine.components import Command
+from src.easymaple.common.vkeys import press, key_down, key_up
 
 
 # List of key mappings

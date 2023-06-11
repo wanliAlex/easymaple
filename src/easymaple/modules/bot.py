@@ -41,6 +41,7 @@ class Bot(Configurable):
         self.submodules = []
         self.module_name = None
         self.buff = components.Buff()
+        self.model = None
 
         self.command_book = {}
         for c in (components.Wait, components.Walk, components.Fall,
@@ -61,7 +62,7 @@ class Bot(Configurable):
 
         #self.update_submodules()
         print('\n[~] Started main bot loop')
-        self.thread.start()
+        self.thread.start(  )
 
     def _main(self):
         """
@@ -69,9 +70,14 @@ class Bot(Configurable):
         :return:    None
         """
 
-        print('\n[~] Initializing detection algorithm:\n')
-        model = detection.load_model()
-        print('\n[~] Initialized detection algorithm')
+        # rune_settings = config.gui.settings.rune
+        # solve_rune = rune_settings.solve_rune.get()
+        # if solve_rune is True:
+        #     print('\n[~] Initializing detection algorithm:\n')
+        #     model = detection.load_model()
+        #     print('\n[~] Initialized detection algorithm')
+        # else:
+        #     print('\n[~] Skip model detection as `solve_rune = False`')
 
         self.ready = True
         config.listener.enabled = True
@@ -94,9 +100,15 @@ class Bot(Configurable):
 
                 # Execute next Point in the routine
                 element = config.routine[config.routine.index]
-                if self.rune_active and isinstance(element, Point) \
-                        and element.location == self.rune_closest_pos:
-                    self._solve_rune(model)
+                rune_settings = config.gui.settings.rune
+                solve_rune = rune_settings.solve_rune.get()
+                if self.rune_active:
+                    if solve_rune and isinstance(element, Point) and element.location == self.rune_closest_pos:
+                        if self.model == None:
+                            model = detection.load_model()
+                        self._solve_rune(model)
+                    elif solve_rune == False:
+                        self.rune_active = False
                 element.execute()
                 config.routine.step()
             else:
