@@ -243,7 +243,6 @@ class Move(Command):
         self.prev_direction = new
 
     def main(self):
-        print("moving using main function")
         counter = self.max_steps
         path = config.layout.shortest_path(config.player_pos, self.target)
         for i, point in enumerate(path):

@@ -82,43 +82,86 @@ class Adjust(Command):
 
     def main(self):
         counter = self.max_steps
-        toggle = True
         error = utils.distance(config.player_pos, self.target)
         while config.enabled and counter > 0 and error > settings.adjust_tolerance:
-            if toggle:
-                d_x = self.target[0] - config.player_pos[0]
-                threshold = settings.adjust_tolerance / math.sqrt(2)
-                if abs(d_x) > threshold:
-                    walk_counter = 0
-                    if d_x < 0:
-                        key_down('left')
-                        while config.enabled and d_x < -1 * threshold and walk_counter < 60:
-                            time.sleep(0.05)
-                            walk_counter += 1
-                            d_x = self.target[0] - config.player_pos[0]
-                        key_up('left')
-                    else:
-                        key_down('right')
-                        while config.enabled and d_x > threshold and walk_counter < 60:
-                            time.sleep(0.05)
-                            walk_counter += 1
-                            d_x = self.target[0] - config.player_pos[0]
-                        key_up('right')
-                    counter -= 1
+            d_x = self.target[0] - config.player_pos[0]
+            d_y = self.target[1] - config.player_pos[1]
+            threshold = settings.adjust_tolerance / math.sqrt(2)
+            if abs(d_x) > threshold:
+                walk_counter = 0
+                if d_x < 0:
+                    key_down('left')
+                    while config.enabled and d_x < -1.5 * threshold and walk_counter < 60:
+                        time.sleep(0.05)
+                        walk_counter += 1
+                        d_x = self.target[0] - config.player_pos[0]
+                    key_up('left')
+                else:
+                    key_down('right')
+                    while config.enabled and d_x > 1.5 * threshold and walk_counter < 60:
+                        time.sleep(0.05)
+                        walk_counter += 1
+                        d_x = self.target[0] - config.player_pos[0]
+                    key_up('right')
+                counter -= 1
             else:
-                d_y = self.target[1] - config.player_pos[1]
-                if abs(d_y) > settings.adjust_tolerance / math.sqrt(2):
+                key_up("left")
+                key_up("right")
+                time.sleep(0.5)
+                if abs(d_y) > threshold:
+                    print("adjust y")
                     if d_y < 0:
                         Teleport('up').main()
+                        time.sleep(0.5)
                     else:
                         key_down('down')
                         time.sleep(0.05)
                         press(Key.JUMP, 3, down_time=0.1)
                         key_up('down')
-                        time.sleep(0.05)
+                        time.sleep(0.5)
                     counter -= 1
+
             error = utils.distance(config.player_pos, self.target)
-            toggle = not toggle
+
+    # def main(self):
+    #     counter = self.max_steps
+    #     toggle = True
+    #     error = utils.distance(config.player_pos, self.target)
+    #     while config.enabled and counter > 0 and error > settings.adjust_tolerance:
+    #         if toggle:
+    #             d_x = self.target[0] - config.player_pos[0]
+    #             threshold = settings.adjust_tolerance / math.sqrt(2)
+    #             if abs(d_x) > threshold:
+    #                 walk_counter = 0
+    #                 if d_x < 0:
+    #                     key_down('left')
+    #                     while config.enabled and d_x < -1 * threshold and walk_counter < 60:
+    #                         time.sleep(0.05)
+    #                         walk_counter += 1
+    #                         d_x = self.target[0] - config.player_pos[0]
+    #                     key_up('left')
+    #                 else:
+    #                     key_down('right')
+    #                     while config.enabled and d_x > threshold and walk_counter < 60:
+    #                         time.sleep(0.05)
+    #                         walk_counter += 1
+    #                         d_x = self.target[0] - config.player_pos[0]
+    #                     key_up('right')
+    #                 counter -= 1
+    #         else:
+    #             d_y = self.target[1] - config.player_pos[1]
+    #             if abs(d_y) > settings.adjust_tolerance / math.sqrt(2):
+    #                 if d_y < 0:
+    #                     Teleport('up').main()
+    #                 else:
+    #                     key_down('down')
+    #                     time.sleep(0.05)
+    #                     press(Key.JUMP, 3, down_time=0.1)
+    #                     key_up('down')
+    #                     time.sleep(0.05)
+    #                 counter -= 1
+    #         error = utils.distance(config.player_pos, self.target)
+    #         toggle = not toggle
 
 
 class Buff(Command):
