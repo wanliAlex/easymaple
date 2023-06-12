@@ -43,16 +43,16 @@ class Key:
 #########################
 #       Commands        #
 #########################
-def step(direction, target):
-    """
-    Performs one movement step in the given DIRECTION towards TARGET.
-    Should not press any arrow keys, as those are handled by Auto Maple.
-    """
-    print("using step")
-
-    num_presses = 1
-    press(Key.TELEPORT, num_presses)
-    time.sleep(0.3)
+# def step(direction, error):
+#     """
+#     Performs one movement step in the given DIRECTION towards TARGET.
+#     Should not press any arrow keys, as those are handled by Auto Maple.
+#     """
+#     print("using step")
+#
+#     num_presses = 1
+#     press(Key.TELEPORT, num_presses)
+#     time.sleep(0.3)
 
 
 class Move(Command):
@@ -91,7 +91,8 @@ class Move(Command):
                         else:
                             key = 'right'
                         self._new_direction(key)
-                        step(key, point)
+                        if abs(d_x) > settings.move_tolerance * 1.5:
+                            press(Key.TELEPORT, 1)
                         if settings.record_layout:
                             config.layout.add(*config.player_pos)
                         counter -= 1
