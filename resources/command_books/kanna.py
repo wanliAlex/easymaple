@@ -48,6 +48,7 @@ def step(direction, target):
     Performs one movement step in the given DIRECTION towards TARGET.
     Should not press any arrow keys, as those are handled by Auto Maple.
     """
+    print("using step")
 
     num_presses = 1
     press(Key.TELEPORT, num_presses)
@@ -71,6 +72,7 @@ class Move(Command):
         self.prev_direction = new
 
     def main(self):
+        print("using move")
         counter = self.max_steps
         path = config.layout.shortest_path(config.player_pos, self.target)
         for i, point in enumerate(path):
@@ -125,6 +127,7 @@ class Adjust(Command):
         self.max_steps = settings.validate_nonnegative_int(max_steps)
 
     def main(self):
+        print("using adjust")
         counter = self.max_steps
         error = utils.distance(config.player_pos, self.target)
         while config.enabled and counter > 0 and error > settings.adjust_tolerance:
