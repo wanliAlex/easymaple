@@ -108,7 +108,7 @@ class Adjust(Command):
                 key_up("left")
                 key_up("right")
                 time.sleep(0.5)
-                if abs(d_y) > settings.adjust_toleranced:
+                if abs(d_y) > settings.adjust_tolerance:
                     if d_y < 0:
                         Teleport('up').main()
                         time.sleep(0.5)
