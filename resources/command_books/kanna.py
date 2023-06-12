@@ -49,27 +49,71 @@ def step(direction, target):
     Should not press any arrow keys, as those are handled by Auto Maple.
     """
 
-    num_presses = 2
-    if direction == 'up' or direction == 'down':
-        num_presses = 1
-    if config.stage_fright and direction != 'up' and utils.bernoulli(0.75):
-        time.sleep(utils.rand_float(0.1, 0.3))
-    d_y = target[1] - config.player_pos[1]
-    d_x = target[0] - config.player_pos[0]
+    num_presses = 1
+    press(Key.TELEPORT, num_presses)
+    time.sleep(0.3)
 
-    if abs(d_y) > settings.move_tolerance * 1.5:
-        if direction == 'down':
-            press(Key.JUMP, 3)
-        elif direction == 'up':
-            press(Key.JUMP, 1)
-    # if d_y > 0.25:
-    #     print("test dy")
-    #     key_down(Key.ROPE)
-    #     key_up(key.ROPE)
-    #     time.sleep(up_time * (0.8 + 0.4 * random()))
-        press(Key.TELEPORT, num_presses)
-    if abs(d_x) > settings.move_tolerance * 1.5:
-        press(Key.TELEPORT, 1)
+
+class Move(Command):
+    """Moves to a given position using the shortest path based on the current Layout.
+    This is a general implementation and can be overriden by the Move class in your command books"""
+
+    def __init__(self, x, y, max_steps=15):
+        super().__init__(locals())
+        self.target = (float(x), float(y))
+        self.max_steps = settings.validate_nonnegative_int(max_steps)
+        self.prev_direction = ''
+
+    def _new_direction(self, new):
+        key_down(new)
+        if self.prev_direction and self.prev_direction != new:
+            key_up(self.prev_direction)
+        self.prev_direction = new
+
+    def main(self):
+        counter = self.max_steps
+        path = config.layout.shortest_path(config.player_pos, self.target)
+        for i, point in enumerate(path):
+            toggle = True
+            self.prev_direction = ''
+            local_error = utils.distance(config.player_pos, point)
+            global_error = utils.distance(config.player_pos, self.target)
+            while config.enabled and counter > 0 and \
+                    local_error > settings.move_tolerance and \
+                    global_error > settings.move_tolerance:
+                if toggle:
+                    d_x = point[0] - config.player_pos[0]
+                    if abs(d_x) > settings.move_tolerance / math.sqrt(2):
+                        if d_x < 0:
+                            key = 'left'
+                        else:
+                            key = 'right'
+                        self._new_direction(key)
+                        step(key, point)
+                        if settings.record_layout:
+                            config.layout.add(*config.player_pos)
+                        counter -= 1
+                        if i < len(path) - 1:
+                            time.sleep(0.15)
+                else:
+                    d_y = point[1] - config.player_pos[1]
+                    if abs(d_y) > settings.move_tolerance / math.sqrt(2):
+                        if d_y < 0:
+                            key = 'up'
+                        else:
+                            key = 'down'
+                        self._new_direction(key)
+                        step(key, point)
+                        if settings.record_layout:
+                            config.layout.add(*config.player_pos)
+                        counter -= 1
+                        if i < len(path) - 1:
+                            time.sleep(0.05)
+                local_error = utils.distance(config.player_pos, point)
+                global_error = utils.distance(config.player_pos, self.target)
+                toggle = not toggle
+            if self.prev_direction:
+                key_up(self.prev_direction)
 
 
 class Adjust(Command):
