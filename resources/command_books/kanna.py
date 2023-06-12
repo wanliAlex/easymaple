@@ -167,7 +167,7 @@ class Adjust(Command):
                         press(Key.JUMP, 3, down_time=0.1)
                         key_up('down')
                         time.sleep(0.5)
-                    counter -= 1
+                counter -= 1
             error = utils.distance(config.player_pos, self.target)
 
     # def main(self):
