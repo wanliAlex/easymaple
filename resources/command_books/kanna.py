@@ -197,10 +197,10 @@ class Teleport(Command):
         self.jump = settings.validate_boolean(jump)
 
     def main(self):
-        num_presses = 3
+        num_presses = 1
         time.sleep(0.05)
         if self.direction in ['up', 'down']:
-            num_presses = 2
+            num_presses = 1
         if self.direction != 'up':
             key_down(self.direction)
             time.sleep(0.05)
