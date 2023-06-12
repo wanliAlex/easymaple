@@ -110,9 +110,9 @@ class Move(Command):
                         step(key, point)
                         if settings.record_layout:
                             config.layout.add(*config.player_pos)
-                        counter -= 1
                         if i < len(path) - 1:
                             time.sleep(0.05)
+                    counter -= 1
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
                 toggle = not toggle
