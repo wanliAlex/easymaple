@@ -9,6 +9,7 @@ import mss.windows
 import numpy as np
 from src.easymaple.common import config, utils
 from ctypes import wintypes
+from src.easymaple.common.vkeys import press, key_down, key_up
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
 
@@ -72,8 +73,10 @@ class Capture:
 
     def _main(self):
         """Constantly monitors the player's position and in-game events."""
-
+        max_stop = 20
+        stop = 0
         mss.windows.CAPTUREBLT = 0
+        pre_pos = None
         while True:
             # Calibrate screen capture
             handle = user32.FindWindowW(None, 'MapleStory')
@@ -122,7 +125,22 @@ class Capture:
                     # Determine the player's position
                     player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
                     if player:
-                        config.player_pos = utils.convert_to_relative(player[0], minimap)
+                        current_pos = utils.convert_to_relative(player[0], minimap)
+                        config.player_pos = current_pos
+
+                    if config.enabled:
+                        # Check if current_pos has changed
+                        if current_pos != pre_pos:
+                            elapsed_time = 0.0
+                            pre_pos = current_pos
+                        else:
+                            elapsed_time += 0.001
+
+                        # Perform action if current_pos hasn't changed for 2 seconds
+                        if elapsed_time >= 2.0:
+                            # Do something when current_pos hasn't changed for 2 seconds
+                            print("current_pos hasn't changed for 2 seconds. Taking action...")
+                            press("space")
 
                     # Package display information to be polled by GUI
                     self.minimap = {
@@ -142,5 +160,5 @@ class Capture:
             return np.array(self.sct.grab(self.window))
         except mss.exception.ScreenShotError:
             print(f'\n[!] Error while taking screenshot, retrying in {delay} second'
-                  + ('s' if delay != 1 else ''))
+)
             time.sleep(delay)

@@ -85,21 +85,21 @@ class Move(Command):
             while config.enabled and counter > 0 and \
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
-                if toggle:
-                    d_x = point[0] - config.player_pos[0]
-                    if abs(d_x) > settings.move_tolerance / math.sqrt(2):
-                        if d_x < 0:
-                            key = 'left'
-                        else:
-                            key = 'right'
-                        self._new_direction(key)
-                        if abs(d_x) > settings.move_tolerance * 1.5:
-                            press(Key.TELEPORT, 1)
-                        if settings.record_layout:
-                            config.layout.add(*config.player_pos)
-                        counter -= 1
-                        if i < len(path) - 1:
-                            time.sleep(0.15)
+                d_x = point[0] - config.player_pos[0]
+                if abs(d_x) > settings.move_tolerance / math.sqrt(2):
+                    current_pos = config.player_pos
+                    if d_x < 0:
+                        key = 'left'
+                    else:
+                        key = 'right'
+                    self._new_direction(key)
+                    if abs(d_x) > settings.move_tolerance * 1.5:
+                        press(Key.TELEPORT, 1)
+                    if settings.record_layout:
+                        config.layout.add(*config.player_pos)
+                    counter -= 1
+                    if i < len(path) - 1:
+                        time.sleep(0.15)
                 else:
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
@@ -121,6 +121,7 @@ class Move(Command):
                 key_up(self.prev_direction)
 
 
+
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
 
@@ -130,14 +131,13 @@ class Adjust(Command):
         self.max_steps = settings.validate_nonnegative_int(max_steps)
 
     def main(self):
-        print("using adjust")
         counter = self.max_steps
         error = utils.distance(config.player_pos, self.target)
         while config.enabled and counter > 0 and error > settings.adjust_tolerance:
             d_x = self.target[0] - config.player_pos[0]
             d_y = self.target[1] - config.player_pos[1]
             threshold = settings.adjust_tolerance / math.sqrt(2)
-            if abs(d_x) > threshold:
+            if abs(d_x) > settings.adjust_tolerance:
                 walk_counter = 0
                 if d_x < 0:
                     key_down('left')
@@ -169,7 +169,6 @@ class Adjust(Command):
                         key_up('down')
                         time.sleep(0.5)
                     counter -= 1
-
             error = utils.distance(config.player_pos, self.target)
 
     # def main(self):

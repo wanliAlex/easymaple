@@ -1,4 +1,4 @@
-$, target=move_tolerance, value=0.05
+$, target=move_tolerance, value=0.045
 
 @, label=kishin
 *, x=0.230, y=0.213, frequency=16, skip=False, adjust=True
