@@ -43,7 +43,8 @@ class Key:
 #########################
 #       Commands        #
 #########################
-# def step(direction, error):
+def step(direction, error):
+    pass
 #     """
 #     Performs one movement step in the given DIRECTION towards TARGET.
 #     Should not press any arrow keys, as those are handled by Auto Maple.
@@ -53,6 +54,7 @@ class Key:
 #     num_presses = 1
 #     press(Key.TELEPORT, num_presses)
 #     time.sleep(0.3)
+
 
 
 class Move(Command):
