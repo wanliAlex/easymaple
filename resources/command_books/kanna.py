@@ -86,8 +86,8 @@ class Adjust(Command):
         while config.enabled and counter > 0 and error > settings.adjust_tolerance:
             d_x = self.target[0] - config.player_pos[0]
             d_y = self.target[1] - config.player_pos[1]
-            threshold = settings.adjust_tolerance / math.sqrt(2)
-            if abs(d_x) > threshold:
+            threshold = settings.adjust_tolerance
+            if abs(d_x) > settings.adjust_tolerance:
                 walk_counter = 0
                 if d_x < 0:
                     key_down('left')
@@ -108,8 +108,7 @@ class Adjust(Command):
                 key_up("left")
                 key_up("right")
                 time.sleep(0.5)
-                if abs(d_y) > threshold:
-                    print("adjust y")
+                if abs(d_y) > settings.adjust_toleranced:
                     if d_y < 0:
                         Teleport('up').main()
                         time.sleep(0.5)
