@@ -8,7 +8,7 @@ $, target=jump_threshold, value=0.13
     Wait, duration=0.3
 
 @, label=Start
-*, x=0.395, y=0.214, frequency=1, skip=False, adjust=True
+*, x=0.398, y=0.214, frequency=1, skip=False, adjust=True
     Wait, duration=0.1
     Theater6_Point1_JUMP
     Wait, duration=0.8

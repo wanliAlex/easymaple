@@ -50,36 +50,12 @@ def step(direction, target):
     Performs one movement step in the given DIRECTION towards TARGET.
     Should not press any arrow keys, as those are handled by Auto Maple.
     """
-    print("running_step")
-    key_up("left")
-    key_up("right")
-    num_presses = 2
-    if direction == 'up' or direction == 'down':
-        num_presses = 1
-    if config.stage_fright and direction != 'up' and utils.bernoulli(0.75):
-        time.sleep(utils.rand_float(0.1, 0.3))
-    d_y = target[1] - config.player_pos[1]
-    d_x = target[0] - config.player_pos[0]
-
-
-    if d_y < 0 and abs(d_y) > settings.move_tolerance > 3:
-        if direction == 'up':
-            press(Key.ROPE, 1)
-
-    if (abs(d_y) > settings.move_tolerance * 1.5) and (abs(d_y) < settings.move_tolerance * 3) :
-        if direction == 'down':
-            press(Key.JUMP, 3)
-        elif direction == 'up':
-            press(Key.BLADE_ASCENSION, 1)
-
-    if abs(d_x) > settings.jump_threshold * 3:
-        long_jump()
-    elif abs(d_x) > settings.jump_threshold * 1.5:
-        short_jump()
+    pass
 
 
 class Move(Command):
-    """Moves to a given position using the shortest path based on the current Layout."""
+    """Moves to a given position using the shortest path based on the current Layout.
+    This is a general implementation and can be overriden by the Move class in your command books"""
 
     def __init__(self, x, y, max_steps=15):
         super().__init__(locals())
@@ -97,6 +73,7 @@ class Move(Command):
         counter = self.max_steps
         path = config.layout.shortest_path(config.player_pos, self.target)
         for i, point in enumerate(path):
+            toggle = True
             self.prev_direction = ''
             local_error = utils.distance(config.player_pos, point)
             global_error = utils.distance(config.player_pos, self.target)
@@ -104,39 +81,48 @@ class Move(Command):
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
                 d_x = point[0] - config.player_pos[0]
-                d_y = point[1] - config.player_pos[1]
-                if abs(d_x) > settings.move_tolerance:
+                if abs(d_x) > settings.move_tolerance / math.sqrt(2):
                     if d_x < 0:
                         key = 'left'
                     else:
                         key = 'right'
-
                     self._new_direction(key)
-
+                    if abs(d_x) > settings.move_tolerance * 10:
+                        TripleJump().main()
+                    if abs(d_x) > settings.move_tolerance * 5:
+                        DoubleJump().main()
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
                     if i < len(path) - 1:
                         time.sleep(0.15)
-                    key_up(key)
                 else:
-                    if abs(d_y) > settings.move_tolerance:
+                    d_y = point[1] - config.player_pos[1]
+                    if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
-                            key = 'up'
+                            if abs(d_y) < 0.1:
+                                UpJump().main()
+                                time.sleep(0.5)
+                            else:
+                                Rope().main()
+                                time.sleep(2)
                         else:
-                            key = 'down'
-                        step(key, point)
+                            key_down('down')
+                            time.sleep(0.05)
+                            press(Key.JUMP, 3, down_time=0.1)
+                            key_up('down')
+                            time.sleep(0.5)
                         if settings.record_layout:
                             config.layout.add(*config.player_pos)
-                        counter -= 1
                         if i < len(path) - 1:
                             time.sleep(0.05)
+                    counter -= 1
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
+                toggle = not toggle
             if self.prev_direction:
                 key_up(self.prev_direction)
-        key_up("left")
-        key_up("right")
+
 
 
 class Adjust(Command):
@@ -154,7 +140,7 @@ class Adjust(Command):
             d_x = self.target[0] - config.player_pos[0]
             d_y = self.target[1] - config.player_pos[1]
             threshold = settings.adjust_tolerance / math.sqrt(2)
-            if abs(d_x) > threshold:
+            if abs(d_x) > settings.adjust_tolerance and counter > self.max_steps // 2:
                 walk_counter = 0
                 if d_x < 0:
                     key_down('left')
@@ -176,7 +162,6 @@ class Adjust(Command):
                 key_up("right")
                 time.sleep(0.5)
                 if abs(d_y) > threshold:
-                    print("adjust y")
                     if d_y < 0:
                         if abs(d_y) < 0.1:
                             UpJump().main()
@@ -190,9 +175,10 @@ class Adjust(Command):
                         press(Key.JUMP, 3, down_time=0.1)
                         key_up('down')
                         time.sleep(0.5)
-                    counter -= 1
-
+                counter -= 1
             error = utils.distance(config.player_pos, self.target)
+
+
 
 
 class Buff(Command):
@@ -339,6 +325,18 @@ class Theater6_Point3_JUMP(Command):
         press(Key.JUMP, n=1, down_time=0.125, up_time=0.141)
         press(Key.BLADE_TORNADO, n=1, down_time=0.109, up_time=0.250)
         key_up("left")
+
+class TripleJump(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+
+class DoubleJump(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+
 
 class Final_Cut(Command):
     def main(self):
