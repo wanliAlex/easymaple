@@ -1,0 +1,29 @@
+$, target=move_tolerance, value=0.03
+
+@, label=start_left_bottom
+*, x=0.117, y=0.279, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+
+@, label=bot_right
+*, x=0.905, y=0.279, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    UpJump
+
+@, label=mid_right
+*, x=0.922, y=0.179, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+
+@, label=mid_mid
+*, x=0.475, y=0.173, frequency=1, skip=False, adjust=False
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    Wait, duration=0.5
+    Walk, direction=Right, duration=0.8
+    Bomb_Punch
