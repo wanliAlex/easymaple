@@ -188,6 +188,17 @@ class JumpPunch(Command):
         key_up(self.direction)
         time.sleep(0.4)
 
+class StraightJumpPunch(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        press(self.direction)
+        DoubleJump().main()
+        Bomb_Punch().main()
+        time.sleep(0.4)
+
+
 
 class Buff(Command):
     """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
