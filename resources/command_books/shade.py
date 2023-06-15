@@ -186,7 +186,7 @@ class JumpPunch(Command):
         DoubleJump().main()
         Bomb_Punch().main()
         key_up(self.direction)
-        time.sleep(0.3)
+        time.sleep(0.4)
 
 
 class Buff(Command):
@@ -221,7 +221,7 @@ class Buff(Command):
 class UpJump(Command):
     def main(self):
         key_down("up")
-        press(Key.JUMP, 1, down_time = 0.05, up_time = 0.5)
+        press(Key.JUMP, 1, down_time = 0.05, up_time = 0.01)
         press(Key.JUMP, 1, down_time = 0.05, up_time = 1.5)
         key_up("up")
 
