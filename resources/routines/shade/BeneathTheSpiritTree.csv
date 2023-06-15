@@ -15,5 +15,6 @@ $, target=move_tolerance, value=0.035
     JumpPunch, direction=Left
     JumpPunch, direction=Left
     JumpPunch, direction=Left
+    DownJump, wait_time=1.2
     DownJump, wait_time=0.5
-    DownJump, wait_time=0.5
+    Wait, duration=0.5
