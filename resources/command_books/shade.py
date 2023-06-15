@@ -245,3 +245,13 @@ class DoubleJump(Command):
     def main(self):
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+
+class DownJump(Command):
+    def __init__(self, wait_time = 0.3):
+        super().__init__(locals())
+        self.wait_time = float(wait_time)
+
+    def main(self):
+        key_down("down")
+        press("space", 1, 0.01, up_time =self.wait_time)
+        key_up("down")

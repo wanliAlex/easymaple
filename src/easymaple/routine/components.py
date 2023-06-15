@@ -368,15 +368,5 @@ class Buff(Command):
         print("\n[!] 'Buff' command not implemented in current command book, aborting process.")
         config.enabled = False
 
-class DownJump(Command):
-
-    def __init__(self, wait_time = 0.3):
-        super().__init__(locals())
-        self.wait_time = float(wait_time)
-
-    def main(self):
-        key_down("down")
-        press("space", 1, 0.01, up_time =self.wait_time)
-        key_up("down")
 
 
