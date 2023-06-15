@@ -1,0 +1,18 @@
+$, target=move_tolerance, value=0.035
+
+@, label=erda
+*, x=0.823, y=0.203, frequency=7, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.3
+
+@, label=start
+*, x=0.823, y=0.203, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Left
+
+@, label=first_gap
+*, x=0.599, y=0.203, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    Fall, distance=0.5
