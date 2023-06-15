@@ -255,5 +255,6 @@ class DownJump(Command):
         key_down("down")
         time.sleep(0.1)
         press(Key.JUMP, 3, 0.01, up_time =0.01)
+        time.sleep(self.wait_time / 2.0)
         key_up("down")
-        time.sleep(self.wait_time)
+        time.sleep(self.wait_time / 2.0)
