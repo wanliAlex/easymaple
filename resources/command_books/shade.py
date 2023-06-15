@@ -253,5 +253,6 @@ class DownJump(Command):
 
     def main(self):
         key_down("down")
-        press("space", 1, 0.01, up_time =self.wait_time)
+        press(Key.JUMP, 2, 0.01, up_time =0.01)
         key_up("down")
+        time.sleep(self.wait_time)
