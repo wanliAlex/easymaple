@@ -228,7 +228,7 @@ class Buff(Command):
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass
             for key in buffs_180:
-                press(key, 3, up_time=0.3)
+                press(key, 3, up_time=0.4)
             self.buff_time_180 = now
 
 class UpJump(Command):
