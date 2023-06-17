@@ -18,7 +18,8 @@ class Key:
     SPIRIT_FLOW = "f2"
     SPIRIT_BOND = "f1"
     DICE = "f3"
-    MAPLE_WORRIOR = "f5"
+    SHAPR_EYE = "f4"
+    COMBAT_ORDER = "f5"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -211,7 +212,7 @@ class Buff(Command):
 
     def main(self):
         buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
-        buffs_180 = [Key.DICE]
+        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
         now = time.time()
        #if self.haku_time == 0 or now - self.haku_time > 490:
        #     press(Key.HAKU, 2)
