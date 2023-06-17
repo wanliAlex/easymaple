@@ -233,7 +233,7 @@ class UpJump(Command):
     def main(self):
         key_down("up")
         press(Key.JUMP, 1, down_time = 0.05, up_time = 0.01)
-        press(Key.JUMP, 1, down_time = 0.05, up_time = 1.5)
+        press(Key.JUMP, 1, down_time = 0.05, up_time = 1.2)
         key_up("up")
 
 class Rope(Command):
