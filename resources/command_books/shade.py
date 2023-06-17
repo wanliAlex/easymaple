@@ -188,7 +188,7 @@ class JumpPunch(Command):
         DoubleJump().main()
         Bomb_Punch().main()
         key_up(self.direction)
-        time.sleep(0.6)
+        time.sleep(0.5)
 
 class StraightJumpPunch(Command):
     def __init__(self, direction):
