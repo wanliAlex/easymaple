@@ -20,6 +20,7 @@ class Key:
     DICE = "f3"
     SHAPR_EYE = "f4"
     COMBAT_ORDER = "f5"
+    TRUE_SPIRIT_CLAW = "2"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -270,3 +271,8 @@ class DownJump(Command):
         time.sleep(self.wait_time / 2.0)
         key_up("down")
         time.sleep(self.wait_time / 2.0)
+
+
+class TrueSpiritClaw(Command):
+    def main(self):
+        press(Key.TRUE_SPIRIT_CLAW, 2)
