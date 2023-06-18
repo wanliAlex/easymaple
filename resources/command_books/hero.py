@@ -11,32 +11,43 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 class Key:
     # Movement
     JUMP = 'space'
-    TELEPORT = '4'
-    ROPE = "s"
+    UPWAIRD_CHARGE  = "s"  #up jump skill
+    SHENGZI = 'f'
+    # Skills[Buffs]
+    BUFF_MACROS = "-"
+    HOLY_SYMBOL = "="
 
-    # Skills
-    ERDA_FOUNTAIN = "x"
-    BigBang = "1"
-    Genesis = "g"
-    FOV = "f"
-
+    # Skills[Damages]
+    ERDA_FOUNTAIN = "end"
+    PUNCTURE = "r"
+    RAGING_BLOW = "a"
+    BURNING_BLAD = "3"
+    
 
 
 #########################
 #       Commands        #
 #########################
-def step(direction, error):
-    pass
-#     """
-#     Performs one movement step in the given DIRECTION towards TARGET.
-#     Should not press any arrow keys, as those are handled by Auto Maple.
-#     """
-#     print("using step")
-#
-#     num_presses = 1
-#     press(Key.TELEPORT, num_presses)
-#     time.sleep(0.3)
 
+def long_jump():
+
+    press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.1)
+    press(Key.JUMP, n=1, down_time=0.14, up_time=0.09)
+    press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
+
+def short_jump():
+
+    press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
+    press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
+
+
+
+def step(direction, target):
+    """
+    Performs one movement step in the given DIRECTION towards TARGET.
+    Should not press any arrow keys, as those are handled by Auto Maple.
+    """
+    pass
 
 
 class Move(Command):
@@ -73,8 +84,8 @@ class Move(Command):
                     else:
                         key = 'right'
                     self._new_direction(key)
-                    if abs(d_x) > settings.move_tolerance * 1.5:
-                        press(Key.TELEPORT, 1)
+                    if abs(d_x) > settings.move_tolerance * 5:
+                        DoubleJump().main()
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
@@ -84,11 +95,18 @@ class Move(Command):
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
-                            key = 'up'
+                            if abs(d_y) < 0.1:
+                                UpJump().main()
+                                time.sleep(0.5)
+                            else:
+                                Rope().main()
+                                time.sleep(2)
                         else:
-                            key = 'down'
-                        self._new_direction(key)
-                        step(key, point)
+                            key_down('down')
+                            time.sleep(0.05)
+                            press(Key.JUMP, 3, down_time=0.1)
+                            key_up('down')
+                            time.sleep(0.5)
                         if settings.record_layout:
                             config.layout.add(*config.player_pos)
                         if i < len(path) - 1:
@@ -140,8 +158,12 @@ class Adjust(Command):
                 time.sleep(0.5)
                 if abs(d_y) > threshold:
                     if d_y < 0:
-                        Teleport('up').main()
-                        time.sleep(0.5)
+                        if abs(d_y) < 0.1:
+                            UpJump().main()
+                            time.sleep(0.5)
+                        else:
+                            Rope().main()
+                            time.sleep(2)
                     else:
                         key_down('down')
                         time.sleep(0.05)
@@ -152,119 +174,75 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
+class Puncture():
+    def main(self):
+        press(Key.PUNCTURE)
+
+class RagingBlow():
+    def main(self):
+        press(Key.RAGING_BLOW)
+
+class JumpPuncture (Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    
+    def main(self):
+        press(self.direction)
+        DoubleJump().main()
+        Puncture().main()
+        time.sleep(0.7)
+
+
+class JumpRagingBlow (Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    
+    def main(self):
+        press(self.direction)
+        DoubleJump().main()
+        RagingBlow().main()
+        time.sleep(0.3250)
+
+class Shengzi(Command):
+    def main(self):
+        press(Key.SHENGZI)
+
 class Buff(Command):
     """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
 
     def __init__(self):
         super().__init__(locals())
-        self.haku_time = 0
-        self.buff_time = 0
+        
+        self.buff_time_200=0
+        self.buff_time_180 = 0
 
     def main(self):
-        pass
+        buff_macro_200 = [Key.BUFF_MACROS] 
+        buffs_180 = [Key.HOLY_SYMBOL]
+        now = time.time()
+       
+        if self.buff_time_200 == 0 or now - self.buff_time_200 > 200:
+            pass
+            for key in buff_macro_200:
+                press(key, 1, up_time=0.3)
+                time.sleep(3)
+            self.buff_time_200 = now
 
+        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
+            pass
+            for key in buffs_180:
+                press(key, 1, up_time=0.3)
+            self.buff_time_180 = now
 
-class Teleport(Command):
-    """
-    Teleports in a given direction, jumping if specified. Adds the player's position
-    to the current Layout if necessary.
-    """
-
-    def __init__(self, direction, jump='False'):
-        super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
-        self.jump = settings.validate_boolean(jump)
-
+class UpJump(Command):
     def main(self):
-        num_presses = 3
-        time.sleep(0.05)
-        if self.direction in ['up', 'down']:
-            num_presses = 2
-        if self.direction != 'up':
-            key_down(self.direction)
-            time.sleep(0.05)
-        if self.jump:
-            if self.direction == 'down':
-                press(Key.JUMP, 3, down_time=0.1)
-            else:
-                press(Key.JUMP, 1)
-        if self.direction == 'up':
-            key_down(self.direction)
-            time.sleep(0.05)
-        press(Key.TELEPORT, num_presses)
-        key_up(self.direction)
-        if settings.record_layout:
-            config.layout.add(*config.player_pos)
-
-
-
-
-class Big_Bang(Command):
-    def __init__(self, repetitions=2):
-        super().__init__(locals())
-        self.repetitions = int(repetitions)
-
-    def main(self):
-        for _ in range(self.repetitions):
-            press(Key.BigBang, 1, up_time=1)
-
-
-
-class LucidSoul(Command):
-    """
-    Places 'Lucid Soul Summon' in a given direction, or towards the center of the map if
-    no direction is specified.
-    """
-
-    def __init__(self, direction=None):
-        super().__init__(locals())
-        if direction is None:
-            self.direction = direction
-        else:
-            self.direction = settings.validate_horizontal_arrows(direction)
-
-    def main(self):
-        if self.direction:
-            press(self.direction, 1, down_time=0.1, up_time=0.05)
-        else:
-            if config.player_pos[0] > 0.5:
-                press('left', 1, down_time=0.1, up_time=0.05)
-            else:
-                press('right', 1, down_time=0.1, up_time=0.05)
-        press(Key.LUCID_SOUL, 3)
-
-
-class Genesis(Command):
-
-    def main(self):
-        press(Key.Genesis, 2)
+        press(Key.UPWAIRD_CHARGE)
 
 class Rope(Command):
     def main(self):
-        press(Key.ROPE, 1, down_time=0.1, up_time=0.15)
-
-class Fountain_of_Vengeance(Command):
-    """
-    Places 'Lucid Soul Summon' in a given direction, or towards the center of the map if
-    no direction is specified.
-    """
-
-    def __init__(self, direction=None):
-        super().__init__(locals())
-        if direction is None:
-            self.direction = direction
-        else:
-            self.direction = settings.validate_horizontal_arrows(direction)
-
-    def main(self):
-        if self.direction:
-            press(self.direction, 1, down_time=0.1, up_time=0.05)
-        else:
-            if config.player_pos[0] > 0.5:
-                press('left', 1, down_time=0.1, up_time=0.05)
-            else:
-                press('right', 1, down_time=0.1, up_time=0.05)
-        press(Key.FOV, 2)
+        press(Key.ROPE, 1, up_time = 0.3)
 
 class ErdaFountain(Command):
 
@@ -273,3 +251,25 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
 
+class ErdaShower(Command):
+
+    def main(self):
+        press(Key.ERDA_FOUNTAIN, 2)
+
+class DoubleJump(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+
+class DownJump(Command):
+    def __init__(self, wait_time = 0.3):
+        super().__init__(locals())
+        self.wait_time = float(wait_time)
+
+    def main(self):
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 3, 0.01, up_time =0.01)
+        time.sleep(self.wait_time / 2.0)
+        key_up("down")
+        time.sleep(self.wait_time / 2.0)
