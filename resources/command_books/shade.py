@@ -230,8 +230,7 @@ class Buff(Command):
             for key in buffs_180:
                 press(key, 3, up_time=0.4)
             self.buff_time_180 = now
-
-        time.sleep(0.5)
+            time.sleep(1)
 
 class UpJump(Command):
     def main(self):
