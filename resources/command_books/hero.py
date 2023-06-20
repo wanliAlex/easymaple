@@ -12,18 +12,19 @@ class Key:
     # Movement
     JUMP = 'space'
     UPWAIRD_CHARGE  = "s"  #up jump skill
-    SHENGZI = 'f'
+    
     # Skills[Buffs]
     BUFF_MACROS = "-"
     HOLY_SYMBOL = "="
 
-    # Skills[Damages]
-    ERDA_FOUNTAIN = "end"
+    # Skills[Damage:attack]
+    
     PUNCTURE = "r"
     RAGING_BLOW = "a"
-    BURNING_BLAD = "3"
     
-
+    # Skills [Placement]
+    ERDA_FOUNTAIN = "end"
+    BURNING_BLADE = "1"
 
 #########################
 #       Commands        #
@@ -203,32 +204,36 @@ class JumpRagingBlow (Command):
         press(self.direction)
         DoubleJump().main()
         RagingBlow().main()
-        time.sleep(0.3250)
+        time.sleep(0.4)
 
-class Shengzi(Command):
+class BurningBlade(Command):
     def main(self):
-        press(Key.SHENGZI)
+        press(Key.BURNING_BLADE,4)
+        time.sleep(3)
+        press(Key.BURNING_BLADE,4)
 
 class Buff(Command):
-    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
+    
 
     def __init__(self):
         super().__init__(locals())
         
-        self.buff_time_200=0
+        #self.buff_time_200=0
         self.buff_time_180 = 0
 
     def main(self):
-        buff_macro_200 = [Key.BUFF_MACROS] 
+        #buff_macro_200 = [Key.BUFF_MACROS] 
         buffs_180 = [Key.HOLY_SYMBOL]
         now = time.time()
-       
+
+        """
         if self.buff_time_200 == 0 or now - self.buff_time_200 > 200:
             pass
             for key in buff_macro_200:
                 press(key, 1, up_time=0.3)
                 time.sleep(3)
             self.buff_time_200 = now
+        """
 
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass

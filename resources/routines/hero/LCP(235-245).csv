@@ -1,0 +1,19 @@
+$, target=move_tolerance, value=0.04
+
+@, label=burning blade
+*, x=0.303, y=0.190, frequency=10, skip=False, adjust=True
+    BurningBlade
+*, x=0.216, y=0.190, frequency=1, skip=False, adjust=True
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+
+@, label=erda
+*, x=0.706, y=0.190, frequency=5, skip=False, adjust=True
+    ErdaFountain
+*, x=0.788, y=0.190, frequency=1, skip=False, adjust=True
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
