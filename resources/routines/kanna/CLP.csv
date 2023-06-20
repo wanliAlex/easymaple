@@ -1,0 +1,55 @@
+$, target=move_tolerance, value=0.04
+
+@, label=Boss
+*, x=0.541, y=0.069, frequency=6, skip=False, adjust=True
+    Teleport, direction=Left, jump=False
+*, x=0.468, y=0.069, frequency=6, skip=False, adjust=true
+    Yaksha, direction=Left
+
+@, label=loot
+*, x=0.223, y=0.069, frequency=24, skip=False, adjust=True
+    Tengu
+    Wait, duration=0.5
+    Teleport, direction=down, jump=False
+    Wait, duration=0.5
+*, x=0.223, y=0.167, frequency=24, skip=False, adjust=False
+    Wait, duration=0.5
+
+@, label=Kishin
+*, x=0.322, y=0.167, frequency=12, skip=False, adjust=true
+    Kishin
+
+@, label=erda
+*, x=0.455, y=0.167, frequency=12, skip=False, adjust=True
+    Teleport, direction=right, jump=False
+*, x=0.571, y=0.167, frequency=12, skip=False, adjust=true
+    ErdaFountain
+
+@, label=lucid
+*, x=0.674, y=0.167, frequency=12, skip=False, adjust=True
+    LucidSoul, direction=right
+
+@, label=loot2
+*, x=0.760, y=0.167, frequency=24, skip=False, adjust=False
+    Tengu
+    Wait, duration=0.5
+    Teleport, direction=up, jump=False
+*, x=0.760, y=0.069, frequency=24, skip=False, adjust=True
+    Tengu
+    Wait, duration=0.5
+
+@, label=auto_attack
+*, x=0.674, y=0.069, frequency=1, skip=False, adjust=True
+    Shikigami, direction=Right, attacks=2, repetitions=1
+    Wait, duration=0.3
+    Tengu
+    Wait, duration=0.3
+    Teleport, direction=down, jump=False
+    Wait, duration=0.2
+*, x=0.674, y=0.167, frequency=1, skip=False, adjust=True
+    Shikigami, direction=right, attacks=2, repetitions=1
+    Wait, duration=0.3
+    Tengu
+    Wait, duration=0.3
+    Teleport, direction=up, jump=False
+    Wait, duration=0.2
