@@ -99,12 +99,8 @@ class Move(Command):
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
-                            if abs(d_y) < 0.1:
-                                UpJump().main()
-                                time.sleep(0.5)
-                            else:
-                                Rope().main()
-                                time.sleep(2)
+                            UpJump().main()
+                            time.sleep(2)
                         else:
                             key_down('down')
                             time.sleep(0.05)
@@ -214,19 +210,22 @@ class Buff(Command):
 
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass
+            time.sleep(1)
             for key in buffs_180:
                 press(key, 3, up_time=0.2)
             self.buff_time_180 = now
 
 
 class UpJump(Command):
-    def __init__(self, duration = 1.5):
+    def __init__(self, duration = 0.7):
         super().__init__(locals())
         self.duration = float(duration)
     def main(self):
         key_down("up")
-        press(Key.JUMP, 1, down_time = 0.01, up_time = 0.01)
-        press(Key.JUMP, 1, down_time = self.duration, up_time = 0.01)
+        press(Key.JUMP, 1, down_time = 0.15, up_time = 0.15)
+        key_down(Key.JUMP)
+        time.sleep(self.duration)
+        key_up(Key.JUMP)
         key_up("up")
 
 class Rope(Command):
@@ -270,9 +269,10 @@ class FanGale(Command):
         press(Key.FANGALE, 2)
 
 class FanStoneCombo(Command):
-    def __init__(self, direction, repetition=1):
+    def __init__(self, direction, repetition=1, wait=1):
         super().__init__(locals())
         self.repetition = int(repetition)
+        self.wait = float(wait)
         self.direction = settings.validate_horizontal_arrows(direction)
 
     def main(self):
@@ -282,3 +282,4 @@ class FanStoneCombo(Command):
             time.sleep(0.3)
             Stone().main()
             time.sleep(0.2)
+            time.sleep(self.wait)
