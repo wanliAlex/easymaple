@@ -197,17 +197,17 @@ class Buff(Command):
        #     press(Key.HAKU, 2)
        #     press(Key.AKATSUKI_WARRIOR, 2)
        #     self.haku_time = now
-        if self.buff_time_45 == 0 or now - self.buff_time_45 > 45:
-            pass
-            for key in buffs_45:
-                press(key, 3, up_time=0.2)
-            self.buff_time_45 = now
-
         if self.buff_time_90 == 0 or now - self.buff_time_90 > 90:
             pass
             for key in buffs_90:
                 press(key, 3, up_time=0.2)
             self.buff_time_90 = now
+
+        if self.buff_time_45 == 0 or now - self.buff_time_45 > 45:
+            pass
+            for key in buffs_45:
+                press(key, 3, up_time=0.2)
+            self.buff_time_45 = now
 
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass
@@ -267,12 +267,14 @@ class FanGale(Command):
         press(Key.FANGALE, 2)
 
 class FanStoneCombo(Command):
-    def __init__(self, repetition=1):
+    def __init__(self, direction, repetition=1):
         super().__init__(locals())
         self.repetition = int(repetition)
+        self.direction = settings.validate_horizontal_arrows(direction)
 
     def main(self):
-        for _ in self.repetition:
+        press(self.direction)
+        for _ in range(self.repetition):
             FanGale().main()
             time.sleep(0.3)
             Stone().main()
