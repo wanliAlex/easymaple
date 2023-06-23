@@ -188,36 +188,36 @@ class Buff(Command):
         self.buff_time_180 = 0
 
     def main(self):
-        buffs_45 = [Key.FLAME]
-        buffs_90 = [Key.TONIC, Key.BUFFERFLY]
+        buffs_45 = [Key.FLAME, Key.TONIC]
+        buffs_90 = [Key.BUFFERFLY]
         buffs_180 = [Key.CLONE]
         now = time.time()
        #if self.haku_time == 0 or now - self.haku_time > 490:
        #     press(Key.HAKU, 2)
        #     press(Key.AKATSUKI_WARRIOR, 2)
        #     self.haku_time = now
-        if self.buff_time_90 == 0 or now - self.buff_time_90 > 90:
-            pass
-            for key in buffs_90:
-                press(key, 3, up_time=0.2)
-            self.buff_time_90 = now
-
         if self.buff_time_45 == 0 or now - self.buff_time_45 > 45:
             pass
             for key in buffs_45:
-                press(key, 3, up_time=0.2)
+                press(key, 3, up_time=0.1)
             self.buff_time_45 = now
+
+        if self.buff_time_90 == 0 or now - self.buff_time_90 > 90:
+            pass
+            for key in buffs_90:
+                press(key, 3, up_time=0.1)
+            self.buff_time_90 = now
 
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass
             time.sleep(1)
             for key in buffs_180:
-                press(key, 3, up_time=0.2)
+                press(key, 3, up_time=0.1)
             self.buff_time_180 = now
 
 
 class UpJump(Command):
-    def __init__(self, duration = 0.7):
+    def __init__(self, duration = 0.5):
         super().__init__(locals())
         self.duration = float(duration)
     def main(self):
