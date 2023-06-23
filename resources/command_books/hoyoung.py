@@ -69,7 +69,10 @@ class Move(Command):
 
     def main(self):
         counter = self.max_steps
-        path = config.layout.shortest_path(config.player_pos, self.target)
+        try:
+            path = config.layout.shortest_path(config.player_pos, self.target)
+        except Exception:
+            pass
         for i, point in enumerate(path):
             toggle = True
             self.prev_direction = ''
