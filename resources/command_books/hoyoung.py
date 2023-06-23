@@ -206,7 +206,7 @@ class Buff(Command):
 
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
             pass
-            time.sleep(1)
+            time.sleep(2)
             for key in buffs_180:
                 press(key, 3, up_time=0.1)
             self.buff_time_180 = now
