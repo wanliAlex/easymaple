@@ -99,7 +99,7 @@ class Move(Command):
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
-                            UpJump().main()
+                            UpJump(abs(d_y) / 0.1 * 0.4).main()
                             time.sleep(2)
                         else:
                             key_down('down')
@@ -158,12 +158,8 @@ class Adjust(Command):
                 time.sleep(0.5)
                 if abs(d_y) > threshold:
                     if d_y < 0:
-                        if abs(d_y) < 0.3:
-                            UpJump().main()
-                            time.sleep(0.5)
-                        else:
-                            Rope().main()
-                            time.sleep(2)
+                        UpJump(abs(d_y) / 0.1 * 0.4).main()
+                        time.sleep(2)
                     else:
                         key_down('down')
                         time.sleep(0.05)
@@ -188,7 +184,7 @@ class Buff(Command):
         self.buff_time_180 = 0
 
     def main(self):
-        buffs_45 = [Key.FLAME, Key.TONIC]
+        buffs_45 = [Key.TONIC, Key.FLAME]
         buffs_90 = [Key.BUFFERFLY]
         buffs_180 = [Key.CLONE]
         now = time.time()
