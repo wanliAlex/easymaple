@@ -24,6 +24,7 @@ class Key:
     FLAME = "w"
     BUFFERFLY = "e"
 
+    PET = "5"
 
 
 #########################
@@ -186,14 +187,14 @@ class Buff(Command):
         f_0 = [Key.TONIC, Key.FLAME, Key.BUFFERFLY, Key.CLONE]
         f_1 = [Key.FLAME]
         f_2 = [Key.TONIC, Key.FLAME, Key.BUFFERFLY]
-        f_3 = [Key.FLAME]
+        f_3 = [Key.FLAME, Key.PET]
         combination = [f_0, f_1, f_2, f_3]
         now = time.time()
         if self.timer == 0 or now - self.timer > 45:
             for key in combination[self.counter]:
                 if key == Key.CLONE:
-                    time.sleep(2)
-                press(key, 3, up_time = 0.1)
+                    time.sleep(3.5)
+                press(key, 1, up_time = 0.1)
             self.counter = (self.counter + 1) % 4
             self.timer = now
 
