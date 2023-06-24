@@ -179,42 +179,24 @@ class Buff(Command):
     def __init__(self):
         super().__init__(locals())
         self.haku_time = 0
-        self.buff_time_45 = 0
-        self.buff_time_90 = 0
-        self.buff_time_180 = 0
+        self.timer  = 0
+        self.counter = 0
 
     def main(self):
-        buffs_45 = [Key.FLAME]
-        buffs_90 = [Key.TONIC, Key.BUFFERFLY]
-        buffs_180 = [Key.CLONE]
+        f_0 = [Key.TONIC, Key.FLAME, Key.BUFFERFLY, Key.CLONE]
+        f_1 = [Key.FLAME]
+        f_2 = [Key.TONIC, Key.FLAME, Key.BUFFERFLY]
+        f_3 = [Key.FLAME]
+        combination = [f_0, f_1, f_2, f_3]
         now = time.time()
-       #if self.haku_time == 0 or now - self.haku_time > 490:
-       #     press(Key.HAKU, 2)
-       #     press(Key.AKATSUKI_WARRIOR, 2)
-       #     self.haku_time = now
-        if self.buff_time_45 == 0:
-            press(Key.TONIC)
-
-        if self.buff_time_45 == 0 or now - self.buff_time_45 > 40:
-            pass
-            for key in buffs_45:
-                press(key, 3, up_time=0.1)
-            self.buff_time_45 = now
-
-        if self.buff_time_90 == 0 or now - self.buff_time_90 > 100:
-            pass
-            for key in buffs_90:
-                press(key, 3, up_time=0.1)
-            self.buff_time_90 = now
-
-        if self.buff_time_180 == 0 or now - self.buff_time_180 > 200:
-            pass
-            if self.buff_time_180 == 0:
-                time.sleep(3)
-            for key in buffs_180:
-                press(key, 3, up_time=0.1)
-            self.buff_time_180 = now
-
+        if self.timer == 0 or now - self.timer > 45:
+            for key in combination[self.counter]:
+                if key == Key.CLONE:
+                    time.sleep(1)
+                else:
+                    press(key, 3, up_time = 0.1)
+            self.counter = (self.counter + 1) % 4
+            self.timer = now
 
 class UpJump(Command):
     def __init__(self, duration = 0.5):
