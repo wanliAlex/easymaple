@@ -194,7 +194,7 @@ class Buff(Command):
             for key in combination[self.counter]:
                 if key == Key.CLONE:
                     time.sleep(3.5)
-                press(key, 3, up_time = 0.1)
+                press(key, 3, up_time = 0.2)
             self.counter = (self.counter + 1) % 4
             self.timer = now
 
