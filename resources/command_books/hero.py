@@ -14,7 +14,7 @@ class Key:
     UPWAIRD_CHARGE  = "s"  #up jump skill
     
     # Skills[Buffs]
-    BUFF_MACROS = "-"
+    
     HOLY_SYMBOL = "="
 
     # Skills[Damage:attack]
@@ -175,11 +175,11 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
-class Puncture():
+class Puncture(Command):
     def main(self):
         press(Key.PUNCTURE)
 
-class RagingBlow():
+class RagingBlow(Command):
     def main(self):
         press(Key.RAGING_BLOW)
 
@@ -212,34 +212,8 @@ class BurningBlade(Command):
         time.sleep(3)
         press(Key.BURNING_BLADE,4)
 
-class Buff(Command):
-    
-
-    def __init__(self):
-        super().__init__(locals())
-        
-        #self.buff_time_200=0
-        self.buff_time_180 = 0
-
-    def main(self):
-        #buff_macro_200 = [Key.BUFF_MACROS] 
-        buffs_180 = [Key.HOLY_SYMBOL]
-        now = time.time()
-
-        """
-        if self.buff_time_200 == 0 or now - self.buff_time_200 > 200:
-            pass
-            for key in buff_macro_200:
-                press(key, 1, up_time=0.3)
-                time.sleep(3)
-            self.buff_time_200 = now
-        """
-
-        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
-            pass
-            for key in buffs_180:
-                press(key, 1, up_time=0.3)
-            self.buff_time_180 = now
+class Buff(Command):    
+    pass
 
 class UpJump(Command):
     def main(self):
