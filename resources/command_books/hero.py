@@ -209,7 +209,7 @@ class JumpRagingBlow (Command):
 class BurningBlade(Command):
     def main(self):
         press(Key.BURNING_BLADE,4)
-        time.sleep(3)
+        time.sleep(1)
         press(Key.BURNING_BLADE,4)
 
 class Buff(Command):    
