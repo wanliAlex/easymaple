@@ -101,7 +101,7 @@ class Move(Command):
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
                             UpJump(abs(d_y) / 0.1 * 0.4).main()
-                            time.sleep(2)
+                            time.sleep(1)
                         else:
                             key_down('down')
                             time.sleep(0.05)
@@ -160,7 +160,7 @@ class Adjust(Command):
                 if abs(d_y) > threshold:
                     if d_y < 0:
                         UpJump(abs(d_y) / 0.1 * 0.4).main()
-                        time.sleep(2)
+                        time.sleep(1)
                     else:
                         key_down('down')
                         time.sleep(0.05)
