@@ -265,3 +265,14 @@ class FanStoneCombo(Command):
             Stone().main()
             time.sleep(0.2)
             time.sleep(self.wait)
+
+class DownJump(Command):
+    def __init__(self,direction, duration = 0.5):
+        super().__init__(locals())
+        self. duration = float(duration)
+    def main(self):
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 3, 0.05, 0.05)
+        key_up("down")
+        time.sleep(self.duration)
