@@ -1,0 +1,25 @@
+*, x=0.824, y=0.371, frequency=4, skip=False, adjust=True
+    DarkFlare, direction=left
+    ErdaShower, direction=down, jump=False
+    MesoExplosion
+    Wait, duration=0.2
+    SlashShadowFormation
+*, x=0.868, y=0.302, frequency=8, skip=False, adjust=True
+    Wait, duration=1
+    SuddenRaid
+*, x=0.849, y=0.484, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    MesoExplosion
+    JumpAttack, direction=left
+    MesoExplosion
+    JumpAttack, direction=left
+    MesoExplosion
+    StraightJumpAttack, direction=left
+*, x=0.157, y=0.484, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    MesoExplosion
+    JumpAttack, direction=right
+    MesoExplosion
+    JumpAttack, direction=right
+    MesoExplosion
+    StraightJumpAttack, direction=right
