@@ -12,11 +12,12 @@ class Key:
     # Movement
     JUMP = 'space'
     UPWAIRD_CHARGE  = "s"  #up jump skill
+    ROPE = 'alt'
     
     # Skills[Buffs]
     
-    HOLY_SYMBOL = "="
-
+    
+    
     # Skills[Damage:attack]
     
     PUNCTURE = "r"
@@ -25,6 +26,7 @@ class Key:
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
     BURNING_BLADE = "1"
+    WILL ="page down"
 
 #########################
 #       Commands        #
@@ -204,7 +206,7 @@ class JumpRagingBlow (Command):
         press(self.direction)
         DoubleJump().main()
         RagingBlow().main()
-        time.sleep(0.4)
+        time.sleep(0.)
 
 class BurningBlade(Command):
     def main(self):
@@ -222,6 +224,10 @@ class UpJump(Command):
 class Rope(Command):
     def main(self):
         press(Key.ROPE, 1, up_time = 0.3)
+
+class will(Command):
+    def main(self):
+        press(Key.WILL, 1, up_time = 0.3)
 
 class ErdaFountain(Command):
 
