@@ -22,6 +22,7 @@ class Key:
     
     PUNCTURE = "r"
     RAGING_BLOW = "a"
+    BEAM_BLADE = "w"
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
@@ -183,7 +184,26 @@ class Puncture(Command):
 
 class RagingBlow(Command):
     def main(self):
-        press(Key.RAGING_BLOW)
+        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+
+class BeamBlade(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
+        key_up(self.direction)
+
+class JumpBeamBlade(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        press(self.direction)
+        press(Key.JUMP)
+        BeamBlade().main()
+        time.sleep(0.35)
 
 class JumpPuncture (Command):
     def __init__(self, direction):
@@ -206,7 +226,7 @@ class JumpRagingBlow (Command):
         press(self.direction)
         DoubleJump().main()
         RagingBlow().main()
-        time.sleep(0.)
+        time.sleep(0.335)
 
 class BurningBlade(Command):
     def main(self):
