@@ -1,0 +1,37 @@
+$, target=move_tolerance, value=0.04
+
+@, label=burning blade rotation
+*, x=0.185, y=0.312, frequency=8, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=1.05
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    BurningBlade
+    Wait, duration=0.25
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+*, x=0.846, y=0.312, frequency=8, skip=False, adjust=True
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+
+@, label=normal rotation
+*, x=0.185, y=0.312, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=1.05
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+    JumpRagingBlow, direction=right
+*, x=0.846, y=0.312, frequency=1, skip=False, adjust=True
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left
+    JumpRagingBlow, direction=left

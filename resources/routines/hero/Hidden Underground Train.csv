@@ -1,0 +1,11 @@
+$, target=move_tolerance, value=0.04
+*, x=0.197, y=0.197, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=Right
+    JumpPuncture, direction=Right
+    JumpPuncture, direction=Right
+    JumpPuncture, direction=Right
+*, x=0.824, y=0.197, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=Left
+    JumpPuncture, direction=Left
+    JumpPuncture, direction=Left
+    JumpPuncture, direction=Left
