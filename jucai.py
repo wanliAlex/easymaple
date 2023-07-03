@@ -68,13 +68,15 @@ def get_actions(n):
     return actions
 
 preset_actions = {
+    #挂草
     '1': [
         {"type": "1", "input": None, "delay": 2, "hold": 0},  # 鼠标点击
         {"type": "2", "input": KeyCode(char='y'), "delay": 2, "hold": 15},  # 按键
         {"type": "1", "input": None, "delay": 2, "hold": 0},  # 鼠标点击
         {"type": "1", "input": None, "delay": 2, "hold": 0},  # 鼠标点击
-        {"type": "2", "input": KeyCode(char='y'), "delay": 1805, "hold": 5}   # 按键
+        {"type": "2", "input": KeyCode(char='y'), "delay": 180, "hold": 5}   # 按键
     ],
+    #做药
     '2': [
         {"type": "1", "input": None, "delay": 2, "hold": 0},  # 鼠标点击
         {"type": "2", "input": Key.enter, "delay": 4, "hold": 0},  # 按键
