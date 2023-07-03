@@ -2,11 +2,14 @@ import time
 from pynput.mouse import Button, Controller as MouseController, Listener as MouseListener
 from pynput.keyboard import Controller as KeyboardController, Listener as KeyboardListener, Key, KeyCode
 
+
+# TODO Maybe use the argparser to pass arguments to the python file
 # Initialize mouse and keyboard controllers
 mouse = MouseController()
 keyboard = KeyboardController()
 
 # Set a special hotkey to start or stop the program
+# TODO Add a indicator (sound or output in the console) when you "start" or "stop" the action
 start_stop_key = KeyCode(char='s')
 
 # Flag to control if the program is running
@@ -67,6 +70,7 @@ def get_actions(n):
             actions.append(action)
     return actions
 
+# TODO Can you we just Maplestory window as an anchor to determine the position.
 preset_actions = {
     '1': [
         {"type": "1", "input": None, "delay": 2, "hold": 0}, 
@@ -102,6 +106,7 @@ else:
     actions = get_actions(num_actions)
 
 while True:
+    # TODO Add a counter for this one, maybe shut down the machine automatically
     if running:
         for action in actions:
             if action["type"] == "1":
