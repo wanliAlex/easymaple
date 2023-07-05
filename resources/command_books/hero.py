@@ -183,17 +183,23 @@ class Puncture(Command):
         press(Key.PUNCTURE)
 
 class RagingBlow(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
+        press(self.direction)
+        time.sleep(0.05)
         press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+        time.sleep(0.335)
 
 class BeamBlade(Command):
     def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_arrows(direction)
     def main(self):
-        key_down(self.direction)
+        press(self.direction,n = 5, down_time = 0.01, up_time = 0.01)
         press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
-        key_up(self.direction)
+        
 
 class JumpBeamBlade(Command):
     def __init__(self, direction):
@@ -202,8 +208,9 @@ class JumpBeamBlade(Command):
     def main(self):
         press(self.direction)
         press(Key.JUMP)
-        BeamBlade().main()
-        time.sleep(0.35)
+        time.sleep(0.1)
+        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
+        time.sleep(0.275)
 
 class JumpPuncture (Command):
     def __init__(self, direction):
@@ -212,26 +219,31 @@ class JumpPuncture (Command):
     
     def main(self):
         press(self.direction)
-        DoubleJump().main()
-        Puncture().main()
-        time.sleep(0.7)
+        press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+        press(Key.PUNCTURE)
+        time.sleep(0.27)
 
 
 class JumpRagingBlow (Command):
-    def __init__(self, direction):
+    def __init__(self, direction,repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
-    
+        self.repetitions = int(repetitions)
     def main(self):
-        press(self.direction)
-        DoubleJump().main()
-        RagingBlow().main()
-        time.sleep(0.335)
+        
+        for _ in range(self.repetitions):
+            
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            
+            press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.285)
+            
 
 class BurningBlade(Command):
     def main(self):
         press(Key.BURNING_BLADE,4)
-        time.sleep(1)
+        time.sleep(0.65)
         press(Key.BURNING_BLADE,4)
 
 class Buff(Command):    
@@ -263,8 +275,8 @@ class ErdaShower(Command):
 
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
+        press(Key.JUMP, n = 1, down_time=0.064, up_time=0.01)
 
 class DownJump(Command):
     def __init__(self, wait_time = 0.3):
