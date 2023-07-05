@@ -9,8 +9,7 @@ $, target=move_tolerance, value=0.04
     BurningBlade
     Wait, duration=0.15
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1
-*, x=0.846, y=0.312, frequency=10, skip=False, adjust=False
+*, x=0.846, y=0.312, frequency=10, skip=False, adjust=True
     JumpPuncture, direction=left
     JumpRagingBlow, direction=left, repetitions=4
 
@@ -22,7 +21,6 @@ $, target=move_tolerance, value=0.04
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.15
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1
-*, x=0.846, y=0.312, frequency=1, skip=False, adjust=False
+*, x=0.846, y=0.312, frequency=1, skip=False, adjust=True
     JumpPuncture, direction=left
     JumpRagingBlow, direction=left, repetitions=4

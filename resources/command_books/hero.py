@@ -15,7 +15,7 @@ class Key:
     ROPE = 'alt'
     
     # Skills[Buffs]
-    
+    GREEN_POT = "9"
     
     
     # Skills[Damage:attack]
@@ -246,8 +246,39 @@ class BurningBlade(Command):
         time.sleep(0.65)
         press(Key.BURNING_BLADE,4)
 
-class Buff(Command):    
-    pass
+class Buff(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.green_pot = 0
+        '''
+        self.buff_time_120 = 0
+        self.buff_time_180 = 0
+        '''
+
+    def main(self):
+        '''
+        buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
+        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
+        '''
+        now = time.time()
+
+        if self.green_pot == 0 or now - self.green_pot > 1800:
+            press(Key.GREEN_POT)
+            self.green_pot = now
+
+        '''
+        if self.buff_time_120 == 0 or now - self.buff_time_120 > 120:            
+            for key in buffs_120:
+                press(key, 3, up_time=0.3)
+            self.buff_time_120 = now
+
+        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:            
+            for key in buffs_180:
+                press(key, 3, up_time=0.4)
+            self.buff_time_180 = now
+            time.sleep(1)
+        '''
 
 class UpJump(Command):
     def main(self):
