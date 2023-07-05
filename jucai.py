@@ -73,7 +73,7 @@ preset_actions = {
         {"type": "2", "input": KeyCode(char='y'), "delay": 2, "hold": 15},
         {"type": "1", "input": None, "delay": 2, "hold": 0},  
         {"type": "1", "input": None, "delay": 2, "hold": 0},  
-        {"type": "2", "input": KeyCode(char='y'), "delay": 180, "hold": 5} 
+        {"type": "2", "input": KeyCode(char='y'), "delay": 1800, "hold": 5} 
     ],
     '2': [
         {"type": "1", "input": None, "delay": 2, "hold": 0},  
@@ -83,14 +83,26 @@ preset_actions = {
 }
 
 def get_preset_actions():
-    print('Current available preset schemes (1,2):', ', '.join(preset_actions.keys()))
+    print('Current available preset schemes (1:herb pack,2:make potion):', ', '.join(preset_actions.keys()))
     preset_name = input('Please enter the name of the preset scheme you want to use:')
-    if preset_name in preset_actions:
+    
+    if preset_name == '1':
+        actions = preset_actions['1']
+        for action in actions:
+            if action["type"] == "1":
+                action["input"] = get_position()
+        double_actions = actions + actions
+        double_actions[4]['delay'] = 20
+        return double_actions
+
+    elif preset_name in preset_actions and  preset_name != '1':
         actions = preset_actions[preset_name]
         for action in actions:
             if action["type"] == "1":
                 action["input"] = get_position()
+        
         return actions
+    
     else:
         return None
 
