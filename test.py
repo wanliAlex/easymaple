@@ -1,3 +1,5 @@
-from src.src.easymaple.modules.bot import Bot
+import pygetwindow as gw
 
-bot = Bot()
+window = gw.getWindowsWithTitle("MapleStory")[0]
+anchor = tuple(window.topleft)
+print(anchor)

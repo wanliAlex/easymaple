@@ -1,12 +1,20 @@
 import time
+import pygetwindow as gw
 from pynput.mouse import Button, Controller as MouseController, Listener as MouseListener
 from pynput.keyboard import Controller as KeyboardController, Listener as KeyboardListener, Key, KeyCode
 
+
+# TODO Maybe use the argparser to pass arguments to the python file
 # Initialize mouse and keyboard controllers
 mouse = MouseController()
 keyboard = KeyboardController()
 
+# set game window topleft as an anchor
+window = gw.getWindowsWithTitle("MapleStory")[0]
+anchor = tuple(window.topleft)
+
 # Set a special hotkey to start or stop the program
+# TODO Add a indicator (sound or output in the console) when you "start" or "stop" the action
 start_stop_key = KeyCode(char='s')
 
 # Flag to control if the program is running
@@ -17,7 +25,10 @@ def on_press(key):
     global running
     if key == start_stop_key:
         running = not running  # Toggle running state
-
+        if running == True:
+            print("open")
+        else:
+            print("close")
 # Use a keyboard listener
 listener = KeyboardListener(on_press=on_press)
 listener.start()
@@ -67,13 +78,25 @@ def get_actions(n):
             actions.append(action)
     return actions
 
+#calculate game icon coordinate
+Ask = (635,625)
+Blub = (48,272)
+Complete= (754,350)
+
+def add_tuple(t1,t2):
+    return tuple(x+y for x,y in zip(t1,t2))
+
+Anchor_Ask = add_tuple(Ask,anchor)
+Anchor_Blub = add_tuple(Blub,anchor)
+Anchor_Complete = add_tuple(Complete,anchor)
+
 preset_actions = {
     '1': [
-        {"type": "1", "input": None, "delay": 2, "hold": 0}, 
-        {"type": "2", "input": KeyCode(char='y'), "delay": 2, "hold": 15},
-        {"type": "1", "input": None, "delay": 2, "hold": 0},  
-        {"type": "1", "input": None, "delay": 2, "hold": 0},  
-        {"type": "2", "input": KeyCode(char='y'), "delay": 180, "hold": 5} 
+        {"type": "1", "input": Anchor_Ask, "delay": 2, "hold": 0}, 
+        {"type": "2", "input": KeyCode(char='y'), "delay":2, "hold": 15},
+        {"type": "1", "input": Anchor_Blub, "delay": 2, "hold": 0},  
+        {"type": "1", "input": Anchor_Complete, "delay": 2, "hold": 0},  
+        {"type": "2", "input": KeyCode(char='y'), "delay": 10, "hold": 5} 
     ],
     '2': [
         {"type": "1", "input": None, "delay": 2, "hold": 0},  
@@ -85,12 +108,16 @@ preset_actions = {
 def get_preset_actions():
     print('Current available preset schemes (1,2):', ', '.join(preset_actions.keys()))
     preset_name = input('Please enter the name of the preset scheme you want to use:')
-    if preset_name in preset_actions:
+    if preset_name =='1':
+        actions = preset_actions[preset_name]
+        return actions
+
+    elif preset_name in preset_actions :
         actions = preset_actions[preset_name]
         for action in actions:
             if action["type"] == "1":
                 action["input"] = get_position()
-        return actions
+        return actions        
     else:
         return None
 
@@ -102,6 +129,7 @@ else:
     actions = get_actions(num_actions)
 
 while True:
+    # TODO Add a counter for this one, maybe shut down the machine automatically
     if running:
         for action in actions:
             if action["type"] == "1":
@@ -127,4 +155,3 @@ while True:
                 time.sleep(1)
     else:
         time.sleep(0.1)
-
