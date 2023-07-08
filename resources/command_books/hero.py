@@ -213,15 +213,17 @@ class JumpBeamBlade(Command):
         time.sleep(0.275)
 
 class JumpPuncture (Command):
-    def __init__(self, direction):
+    def __init__(self, direction,repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
-    
+        self.repetitions = int(repetitions)
     def main(self):
-        press(self.direction)
-        press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
-        press(Key.PUNCTURE)
-        time.sleep(0.27)
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            
+            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.285)
 
 
 class JumpRagingBlow (Command):
@@ -230,9 +232,7 @@ class JumpRagingBlow (Command):
         self.direction = settings.validate_horizontal_arrows(direction)
         self.repetitions = int(repetitions)
     def main(self):
-        
         for _ in range(self.repetitions):
-            
             press(self.direction)
             press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             
@@ -308,6 +308,16 @@ class DoubleJump(Command):
     def main(self):
         press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
         press(Key.JUMP, n = 1, down_time=0.064, up_time=0.01)
+
+class HighDoubleJump(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        
+    def main(self):
+        press(self.direction)
+        press(Key.JUMP, n = 1, down_time = 0.320, up_time = 0.0)
+        press(Key.JUMP, n = 1, down_time=0.95, up_time=0.0)
 
 class DownJump(Command):
     def __init__(self, wait_time = 0.3):

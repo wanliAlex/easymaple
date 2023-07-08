@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.03
+
+@, label=Erda
+*, x=0.964, y=0.185, frequency=5, skip=False, adjust=True
+    Wait, duration=0.15
+    HighDoubleJump, direction=left
+    Wait, duration=0.15
+*, x=0.903, y=0.145, frequency=5, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.1
+    JumpPuncture, direction=left, repetitions=3
+    Wait, duration=0.25
+    JumpPuncture, direction=left, repetitions=4
+*, x=0.06, y=0.185, frequency=5, skip=False, adjust=True
+    JumpPuncture, direction=right, repetitions=7
+
+@, label=normal
+*, x=0.782, y=0.185, frequency=1, skip=False, adjust=False
+    Wait, duration=0.15
+    JumpPuncture, direction=left, repetitions=7
+*, x=0.06, y=0.185, frequency=1, skip=False, adjust=False
+    Wait, duration=0.15
+    JumpPuncture, direction=right, repetitions=7

@@ -93,7 +93,7 @@ Anchor_Complete = add_tuple(Complete,anchor)
 preset_actions = {
     '1': [
         {"type": "1", "input": Anchor_Ask, "delay": 2, "hold": 0}, 
-        {"type": "2", "input": KeyCode(char='y'), "delay":2, "hold": 15},
+        {"type": "2", "input": KeyCode(char='y'), "delay":1810, "hold": 15},
         {"type": "1", "input": Anchor_Blub, "delay": 2, "hold": 0},  
         {"type": "1", "input": Anchor_Complete, "delay": 2, "hold": 0},  
         {"type": "2", "input": KeyCode(char='y'), "delay": 10, "hold": 5} 
