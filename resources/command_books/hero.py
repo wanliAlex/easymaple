@@ -14,6 +14,7 @@ class Key:
     UPWAIRD_CHARGE  = "s"  #up jump skill
     ROPE = 'alt'
     
+    RIGHT_ARROW = 'right'
     # Skills[Buffs]
     GREEN_POT = "9"
     
@@ -220,8 +221,8 @@ class JumpPuncture (Command):
     def main(self):
         for _ in range(self.repetitions):
             press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
-            
+            #press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
             time.sleep(0.285)
 
@@ -237,7 +238,7 @@ class JumpRagingBlow (Command):
             press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             
             press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.285)
+            time.sleep(0.3)
             
 
 class BurningBlade(Command):
@@ -296,12 +297,18 @@ class ErdaFountain(Command):
 
     def main(self):
         key_down("down")
+        press(Key.RIGHT_ARROW,2)
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
+class Move_right(Command):
+    
+    def main(self):
+        press(Key.RIGHT_ARROW,n=1,down_time=2,up_time=0.01)
 
 class ErdaShower(Command):
 
     def main(self):
+        
         press(Key.ERDA_FOUNTAIN, 2)
 
 class DoubleJump(Command):
