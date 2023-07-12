@@ -16,7 +16,10 @@ class Key:
     STONE = "x"
     FANGALE = "3"
     ERDA_FOUNTAIN = "c"
-    ROPE  = "s"
+    ROPE = "s"
+    MOUNTAIN="a"
+    HEAVEN = "z"
+    CUDGE = "1"
 
     # Buff
     TONIC = "r"
@@ -32,16 +35,14 @@ class Key:
 #########################
 
 def long_jump():
-
-    press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.1)
+    press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
     press(Key.JUMP, n=1, down_time=0.14, up_time=0.09)
     press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
 
-def short_jump():
 
+def short_jump():
     press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
     press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
-
 
 
 def step(direction, target):
@@ -120,7 +121,6 @@ class Move(Command):
                 key_up(self.prev_direction)
 
 
-
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
 
@@ -173,14 +173,13 @@ class Adjust(Command):
         time.sleep(0.4)
 
 
-
 class Buff(Command):
     """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
 
     def __init__(self):
         super().__init__(locals())
         self.haku_time = 0
-        self.timer  = 0
+        self.timer = 0
         self.counter = 0
 
     def main(self):
@@ -194,25 +193,29 @@ class Buff(Command):
             for key in combination[self.counter]:
                 if key == Key.CLONE:
                     time.sleep(3.5)
-                press(key, 3, up_time = 0.2)
+                press(key, 3, up_time=0.2)
             self.counter = (self.counter + 1) % 4
             self.timer = now
 
+
 class UpJump(Command):
-    def __init__(self, duration = 0.5):
+    def __init__(self, duration=0.5):
         super().__init__(locals())
         self.duration = float(duration)
+
     def main(self):
         key_down("up")
-        press(Key.JUMP, 1, down_time = 0.15, up_time = 0.15)
+        press(Key.JUMP, 1, down_time=0.15, up_time=0.15)
         key_down(Key.JUMP)
         time.sleep(self.duration)
         key_up(Key.JUMP)
         key_up("up")
 
+
 class Rope(Command):
     def main(self):
-        press(Key.ROPE, 1, up_time = 0.3)
+        press(Key.ROPE, 1, up_time=0.3)
+
 
 class ErdaFountain(Command):
     def main(self):
@@ -220,35 +223,41 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
 
+
 class ErdaShower(Command):
     def main(self):
         press(Key.ERDA_FOUNTAIN, 2)
 
+
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+
 
 class DownJump(Command):
-    def __init__(self, wait_time = 0.3):
+    def __init__(self, wait_time=0.3):
         super().__init__(locals())
         self.wait_time = float(wait_time)
 
     def main(self):
         key_down("down")
         time.sleep(0.1)
-        press(Key.JUMP, 3, 0.01, up_time =0.01)
+        press(Key.JUMP, 3, 0.01, up_time=0.01)
         time.sleep(self.wait_time / 2.0)
         key_up("down")
         time.sleep(self.wait_time / 2.0)
+
 
 class Stone(Command):
     def main(self):
         press(Key.STONE, 3)
 
+
 class FanGale(Command):
     def main(self):
         press(Key.FANGALE, 2)
+
 
 class FanStoneCombo(Command):
     def __init__(self, direction, repetition=1, wait=1):
@@ -266,13 +275,65 @@ class FanStoneCombo(Command):
             time.sleep(0.2)
             time.sleep(self.wait)
 
+
 class DownJump(Command):
-    def __init__(self,direction, duration = 0.5):
+    def __init__(self, direction, duration=0.5):
         super().__init__(locals())
-        self. duration = float(duration)
+        self.duration = float(duration)
+
     def main(self):
         key_down("down")
         time.sleep(0.1)
         press(Key.JUMP, 3, 0.05, 0.05)
         key_up("down")
         time.sleep(self.duration)
+
+
+class Direction(Command):
+    def __init__(self, direction, repetition=1):
+        super().__init__(locals())
+        self.direction = direction
+        self.repetition = int(repetition)
+
+    def main(self):
+        press(self.direction, self.repetition, 0.01, 0.01)
+
+class Mountain(Command):
+
+    def main(self):
+        press(Key.MOUNTAIN, 2, 0.01, 0.1)
+        time.sleep(0.2)
+
+class AttackAndMountain(Command):
+
+    def main(self):
+        press("left", 1, 0.08, 0.01)
+        for i in range(5):
+            press(Key.FANGALE, 5, 0.01, 0.01)
+            time.sleep(1)
+
+        press(Key.FANGALE, 3, 0.01, 0.01)
+        time.sleep(0.5)
+        press(Key.HEAVEN, 3, 0.01, 0.01)
+        time.sleep(1)
+
+class Portal(Command):
+    def __init__(self, direction, duration):
+        super().__init__(locals())
+        self.direction = direction
+        self.duration = float(duration)
+
+    def main(self):
+        key_down(self.direction)
+        press("up", int(self.duration // 0.04) + 1, 0.02, 0.02)
+        key_up(self.direction)
+
+
+class DoubleJumpAttack(Command):
+    def main(self):
+        key_down("left")
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+        press(Key.CUDGE, 3)
+        key_up("left")
+        time.sleep(0.3)
