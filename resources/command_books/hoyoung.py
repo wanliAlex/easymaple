@@ -302,7 +302,7 @@ class Mountain(Command):
 
     def main(self):
         press(Key.MOUNTAIN, 2, 0.01, 0.1)
-        time.sleep(0.2)
+        time.sleep(0.4)
 
 class AttackAndMountain(Command):
 
