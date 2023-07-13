@@ -16,9 +16,8 @@ class Key:
     
     RIGHT_ARROW = 'right'
     # Skills[Buffs]
-    GREEN_POT = "9"
-    
-    
+    GREEN_POT = "="
+    YELLO_POT = "-"
     # Skills[Damage:attack]
     
     PUNCTURE = "r"
@@ -224,7 +223,7 @@ class JumpPuncture (Command):
             #press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.285)
+            time.sleep(0.3)
 
 
 class JumpRagingBlow (Command):
@@ -251,7 +250,8 @@ class Buff(Command):
 
     def __init__(self):
         super().__init__(locals())
-        self.green_pot = 0
+        
+        self.monster_park_pot_30mins = 0
         '''
         self.buff_time_120 = 0
         self.buff_time_180 = 0
@@ -262,12 +262,14 @@ class Buff(Command):
         buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
         buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
         '''
+        buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
+
         now = time.time()
 
-        if self.green_pot == 0 or now - self.green_pot > 1800:
-            press(Key.GREEN_POT)
-            self.green_pot = now
-
+        if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
+            for key in buffs_1800:
+                press(key,1,down_time=0.5,up_time=0.3)
+            self.monster_park_pot_30mins = now
         '''
         if self.buff_time_120 == 0 or now - self.buff_time_120 > 120:            
             for key in buffs_120:
@@ -302,8 +304,11 @@ class ErdaFountain(Command):
         key_up("down")
 class Move_right(Command):
     
+    def __init__(self,key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
     def main(self):
-        press(Key.RIGHT_ARROW,n=1,down_time=2,up_time=0.01)
+        press(Key.RIGHT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
 
 class ErdaShower(Command):
 
