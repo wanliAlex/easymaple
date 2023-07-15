@@ -196,7 +196,8 @@ def key_up(key):
     :param key:     The key to press.
     :return:        None
     """
-
+    if key == '':
+        return
     key = key.lower()
     if key not in KEY_MAP.keys():
         print(f"Invalid keyboard input: `{key}`.")
