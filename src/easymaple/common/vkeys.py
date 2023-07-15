@@ -179,10 +179,11 @@ def key_down(key):
     :param key:     The key to press.
     :return:        None
     """
-
+    if key == '':
+        return
     key = key.lower()
     if key not in KEY_MAP.keys():
-        print(f"Invalid keyboard input: '{key}'.")
+        print(f"Invalid keyboard input: `{key}`.")
     else:
         x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key]))
         user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
@@ -198,7 +199,7 @@ def key_up(key):
 
     key = key.lower()
     if key not in KEY_MAP.keys():
-        print(f"Invalid keyboard input: '{key}'.")
+        print(f"Invalid keyboard input: `{key}`.")
     else:
         x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
         user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
