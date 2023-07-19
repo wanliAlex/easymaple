@@ -13,16 +13,18 @@ class Key:
     JUMP = 'space'
     UPWAIRD_CHARGE  = "s"  #up jump skill
     ROPE = 'alt'
-    
     RIGHT_ARROW = 'right'
+    RUSH = 'd'
+
     # Skills[Buffs]
     GREEN_POT = "="
     YELLO_POT = "-"
+
     # Skills[Damage:attack]
-    
     PUNCTURE = "r"
     RAGING_BLOW = "a"
     BEAM_BLADE = "w"
+    SCREEN_CUT = "q"
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
@@ -343,3 +345,16 @@ class DownJump(Command):
         time.sleep(self.wait_time / 2.0)
         key_up("down")
         time.sleep(self.wait_time / 2.0)
+
+class ScreenCut(Command):
+    def main(self):
+        press(Key.SCREEN_CUT,2)
+
+class Rush(Command):
+    def __init__(self,direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    
+    def main(self):
+        press(self.direction)
+        press(Key.RUSH,2)

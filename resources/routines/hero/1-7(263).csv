@@ -9,8 +9,10 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.15
     JumpPuncture, direction=right, repetitions=1
     Wait, duration=0.25
-    RagingBlow, direction=right
-    Move_right, key_down_time=1.5
+    ScreenCut
+    Wait, duration=0.5
+    Rush, direction=right
+    Wait, duration=0.25
     JumpPuncture, direction=right, repetitions=1
     Wait, duration=0.25
     JumpPuncture, direction=right, repetitions=2
