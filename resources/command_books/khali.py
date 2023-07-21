@@ -270,6 +270,7 @@ class Insanity(Command):
             if direction:
                 key_up(direction)
         if self.reset:
-            press(Key.CRESCENTUM, 2, 0.05, 0.05)
+
+            press(Key.CRESCENTUM, 4, 0.05, 0.05)
 
 
