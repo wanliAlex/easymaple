@@ -1,0 +1,24 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.320, y=0.340, frequency=6, skip=False, adjust=True
+*, x=0.306, y=0.163, frequency=6, skip=False, adjust=True
+    ErdaFountain
+    Portal, direction=right, duration=1
+
+@, label=bot_portal
+*, x=0.531, y=0.456, frequency=6, skip=False, adjust=False
+    Mountain
+
+@, label=loot
+*, x=0.531, y=0.456, frequency=12, skip=False, adjust=False
+    Wait, duration=0.2
+    DoubleJumpAttack
+*, x=0.306, y=0.456, frequency=12, skip=False, adjust=False
+    Wait, duration=0.5
+*, x=0.605, y=0.238, frequency=12, skip=False, adjust=True
+    Wait, duration=0.1
+
+@, label=attack
+*, x=0.599, y=0.340, frequency=1, skip=False, adjust=True
+    AttackAndMountain
