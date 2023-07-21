@@ -315,7 +315,6 @@ class Move_right(Command):
 class ErdaShower(Command):
 
     def main(self):
-        
         press(Key.ERDA_FOUNTAIN, 2)
 
 class DoubleJump(Command):

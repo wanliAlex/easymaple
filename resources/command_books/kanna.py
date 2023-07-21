@@ -45,15 +45,6 @@ class Key:
 #########################
 def step(direction, error):
     pass
-#     """
-#     Performs one movement step in the given DIRECTION towards TARGET.
-#     Should not press any arrow keys, as those are handled by Auto Maple.
-#     """
-#     print("using step")
-#
-#     num_presses = 1
-#     press(Key.TELEPORT, num_presses)
-#     time.sleep(0.3)
 
 
 
@@ -99,19 +90,27 @@ class Move(Command):
                     counter -= 1
                     if i < len(path) - 1:
                         time.sleep(0.15)
-                else:
-                    d_y = point[1] - config.player_pos[1]
-                    if abs(d_y) > settings.move_tolerance / math.sqrt(2):
-                        if d_y < 0:
-                            key = 'up'
+                d_y = point[1] - config.player_pos[1]
+                key_up(self.prev_direction)
+                if abs(d_y) > settings.move_tolerance / math.sqrt(2):
+                    if d_y < 0:  # targe is above player
+                        if abs(d_y) < 0.5:
+                            Teleport("up").main()
                         else:
-                            key = 'down'
-                        self._new_direction(key)
-                        step(key, point)
-                        if settings.record_layout:
-                            config.layout.add(*config.player_pos)
-                        if i < len(path) - 1:
-                            time.sleep(0.05)
+                            Rope().main()
+                            time.sleep(2)
+                    else:  # targe is blow the player
+                        if abs(d_y) < 0.15:
+                            Teleport("down").main()
+                        else:
+                            key_down('down')
+                            press(Key.JUMP, 2, 0.1, 0.01)
+                            time.sleep(1)
+                            key_up("down")
+                    if settings.record_layout:
+                        config.layout.add(*config.player_pos)
+                    if i < len(path) - 1:
+                        time.sleep(0.05)
                     counter -= 1
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
@@ -169,46 +168,6 @@ class Adjust(Command):
                         time.sleep(0.5)
                 counter -= 1
             error = utils.distance(config.player_pos, self.target)
-
-    # def main(self):
-    #     counter = self.max_steps
-    #     toggle = True
-    #     error = utils.distance(config.player_pos, self.target)
-    #     while config.enabled and counter > 0 and error > settings.adjust_tolerance:
-    #         if toggle:
-    #             d_x = self.target[0] - config.player_pos[0]
-    #             threshold = settings.adjust_tolerance / math.sqrt(2)
-    #             if abs(d_x) > threshold:
-    #                 walk_counter = 0
-    #                 if d_x < 0:
-    #                     key_down('left')
-    #                     while config.enabled and d_x < -1 * threshold and walk_counter < 60:
-    #                         time.sleep(0.05)
-    #                         walk_counter += 1
-    #                         d_x = self.target[0] - config.player_pos[0]
-    #                     key_up('left')
-    #                 else:
-    #                     key_down('right')
-    #                     while config.enabled and d_x > threshold and walk_counter < 60:
-    #                         time.sleep(0.05)
-    #                         walk_counter += 1
-    #                         d_x = self.target[0] - config.player_pos[0]
-    #                     key_up('right')
-    #                 counter -= 1
-    #         else:
-    #             d_y = self.target[1] - config.player_pos[1]
-    #             if abs(d_y) > settings.adjust_tolerance / math.sqrt(2):
-    #                 if d_y < 0:
-    #                     Teleport('up').main()
-    #                 else:
-    #                     key_down('down')
-    #                     time.sleep(0.05)
-    #                     press(Key.JUMP, 3, down_time=0.1)
-    #                     key_up('down')
-    #                     time.sleep(0.05)
-    #                 counter -= 1
-    #         error = utils.distance(config.player_pos, self.target)
-    #         toggle = not toggle
 
 
 class Buff(Command):
