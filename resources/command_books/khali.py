@@ -39,9 +39,8 @@ def long_jump():
     press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
 
 def short_jump():
-
-    press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
-    press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
+    press(Key.JUMP, n=1, down_time=0.110, up_time=0.437)
+    press(Key.JUMP, n=1, down_time=0.110, up_time=0.547)
 
 
 
@@ -57,7 +56,7 @@ class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
     This is a general implementation and can be overriden by the Move class in your command books"""
 
-    def __init__(self, x, y, max_steps=15):
+    def __init__(self, x, y, max_steps=60):
         super().__init__(locals())
         self.target = (float(x), float(y))
         self.max_steps = settings.validate_nonnegative_int(max_steps)
@@ -81,20 +80,29 @@ class Move(Command):
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
                 d_x = point[0] - config.player_pos[0]
+                print("d_x", abs(d_x))
+                print("threshold", settings.move_tolerance / math.sqrt(2))
                 if abs(d_x) > settings.move_tolerance / math.sqrt(2):
+                    print("we in d_x")
                     if d_x < 0:
                         key = 'left'
                     else:
                         key = 'right'
                     self._new_direction(key)
                     if abs(d_x) > settings.move_tolerance * 5:
+                        print("double_jump" * 10)
                         DoubleJump().main()
+                    elif abs(d_x) > settings.move_tolerance * 3.5 and abs(d_x) < settings.move_tolerance * 5:
+                        print("short_jump" * 10)
+                        short_jump()
+                    elif abs(d_x) < settings.move_tolerance * 3.5:
+                        print("sleep" * 10)
+                        time.sleep(1)
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
-                    if i < len(path) - 1:
-                        time.sleep(0.15)
                 else:
+                    print("we in d_y")
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance / math.sqrt(2):
                         if d_y < 0:
@@ -118,6 +126,10 @@ class Move(Command):
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
                 toggle = not toggle
+                print("local_error", local_error)
+                print("global_error", global_error)
+                print("counter", counter)
+            print("breaked")
             if self.prev_direction:
                 key_up(self.prev_direction)
 
@@ -159,7 +171,7 @@ class Adjust(Command):
                 key_up("left")
                 key_up("right")
                 time.sleep(0.5)
-                if abs(d_y) > threshold:
+                if abs(d_y) > 0.02:
                     if d_y < 0:
                         if abs(d_y) < 0.1:
                             UpJump().main()
@@ -185,9 +197,13 @@ class UpJump(Command):
 
 
 class Furry(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = str(direction)
 
     def main(self):
-        press(Key.FLURRY, 2, 0.05, 0.05)
+        press(self.direction, 1, 0.05,0.05)
+        press(Key.FLURRY, 2, 0.1, 0.1)
 
 
 class JumpAttack(Command):
@@ -272,5 +288,59 @@ class Insanity(Command):
         if self.reset:
 
             press(Key.CRESCENTUM, 4, 0.05, 0.05)
+
+
+class SHInsanity(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.repetition = 3
+
+    def main(self):
+        direction_list = ["up", "right", "right"]
+        for i in range(self.repetition):
+            direction = direction_list[i]
+            if direction:
+                key_down(direction)
+            press(Key.INSANITY, 3, 0.02, 0.06)
+            if direction:
+                key_up(direction)
+
+            if i == 0:
+                time.sleep(0.08)
+                key_down("left")
+                press(Key.SWEEP, 3, 0.05, 0.05)
+                key_up("left")
+                time.sleep(0.10)
+
+
+class SHJump(Command):
+
+    def main(self):
+        key_down("right")
+        time.sleep(0.078)
+        press(Key.JUMP, 1, 0.109, 0.500)
+        press(Key.JUMP, 1, 0.125, 0.360)
+        key_up("right")
+        time.sleep(0.109)
+        key_down("left")
+        time.sleep(0.125)
+        press(Key.JUMP, 1, 0.088, 0.868)
+        key_up("left")
+
+class ShortJump(Command):
+
+    def main(self):
+        key_up("left")
+        key_up("right")
+        time.sleep(0.3)
+        press(Key.JUMP, 1, 0.109, 0.150)
+
+
+class short_jump(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.110, up_time=0.437)
+        press(Key.JUMP, n=1, down_time=0.110, up_time=0.047)
+
+
 
 

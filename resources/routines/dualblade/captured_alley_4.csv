@@ -17,6 +17,8 @@ $, target=jump_threshold, value=0.13
 @, label=Tornado
 *, x=0.389, y=0.343, frequency=1, skip=False, adjust=True
     CA4_Tornado
+    Wait, duration=0.1
+    Walk, direction=left, duration=0.5
 
 @, label=Waiting Point
 *, x=0.135, y=0.268, frequency=1, skip=False, adjust=True
