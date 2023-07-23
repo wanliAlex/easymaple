@@ -90,7 +90,7 @@ class Bot(Configurable):
                 auto_feed = pet_settings.auto_feed.get()
                 num_pets = pet_settings.num_pets.get()
                 now = time.time()
-                if auto_feed and now - last_fed > 1200 / num_pets:
+                if auto_feed and now - last_fed > 600 / num_pets:
                     press(self.config['Feed pet'], 1)
                     last_fed = now
 
