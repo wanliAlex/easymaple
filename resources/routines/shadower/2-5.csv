@@ -1,12 +1,19 @@
 *, x=0.509, y=0.484, frequency=8, skip=False, adjust=True
     ShadowVeil, direction=right
-    ShadowAssault, direction=right, jump=True
+    ShadowAssault, direction=Left, jump=True
     MesoExplosion
+*, x=0.245, y=0.484, frequency=8, skip=False, adjust=True
+    ErdaShower, direction=down, jump=False
+    Wait, duration=1
+    SuddenRaid
+    MesoExplosion
+    ShadowAssault, direction=right, jump=True
+    ShadowAssault, direction=right, jump=True
 *, x=0.836, y=0.484, frequency=8, skip=False, adjust=True
     SlashShadowFormation
     Wait, duration=0.2
     Rope
-    Wait, duration=1
+    Wait, duration=1.5
     DarkFlare, direction=left
     Walk, direction=left, duration=1.2
     MesoExplosion
@@ -16,11 +23,6 @@
     JumpAttack, direction=left
     MesoExplosion
     StraightJumpAttack, direction=left
-    MesoExplosion
-*, x=0.245, y=0.484, frequency=8, skip=False, adjust=True
-    ErdaShower, direction=down, jump=False
-    Wait, duration=1
-    SuddenRaid
     MesoExplosion
 *, x=0.245, y=0.484, frequency=1, skip=False, adjust=True
     JumpAttack, direction=right

@@ -9,17 +9,11 @@
     SuddenRaid
 *, x=0.849, y=0.484, frequency=1, skip=False, adjust=True
     JumpAttack, direction=left
-    MesoExplosion
     JumpAttack, direction=left
-    MesoExplosion
     JumpAttack, direction=left
-    MesoExplosion
     StraightJumpAttack, direction=left
 *, x=0.157, y=0.484, frequency=1, skip=False, adjust=True
     JumpAttack, direction=right
-    MesoExplosion
     JumpAttack, direction=right
-    MesoExplosion
     JumpAttack, direction=right
-    MesoExplosion
     StraightJumpAttack, direction=right
