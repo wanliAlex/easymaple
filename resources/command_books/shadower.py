@@ -35,7 +35,6 @@ class Key:
     TRICKBLADE = 'a'
     SLASH_SHADOW_FORMATION = 'end'
     SONIC_BLOW = 'v'
-    ROPE = 'page down'
 
 #########################
 #       Commands        #
@@ -293,6 +292,7 @@ class JumpAttack(Command):
         DoubleJump().main()
         CruelStabRandomDirection().main()
         key_up(self.direction)
+        MesoExplosion().main()
         time.sleep(0.4)
 
 class StraightJumpAttack(Command):
@@ -303,6 +303,7 @@ class StraightJumpAttack(Command):
         press(self.direction)
         DoubleJump().main()
         CruelStabRandomDirection().main()
+        MesoExplosion().main()
         time.sleep(0.4)
 
 class MesoExplosion(Command):
