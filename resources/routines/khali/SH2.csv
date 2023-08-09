@@ -1,0 +1,31 @@
+$, target=move_tolerance, value=0.035
+
+@, label=erda_fountain
+*, x=0.835, y=0.264, frequency=7, skip=False, adjust=True
+*, x=0.835, y=0.216, frequency=7, skip=False, adjust=True
+    ErdaFountain
+    Walk, direction=left, duration=0.15
+    short_jump
+    Walk, direction=right, duration=0.1
+
+@, label=start
+*, x=0.692, y=0.264, frequency=1, skip=False, adjust=True
+    ShortJump
+    Insanity, repetition=3, direction_1=left, direction_2=left, direction_3=left, reset=True
+    Wait, duration=0.3
+
+@, label=left_point
+*, x=0.31, y=0.264, frequency=1, skip=False, adjust=False
+    Walk, direction=left, duration=0.01
+    SHInsanity
+    Wait, duration=0.6
+
+@, label=right_point
+*, x=0.635, y=0.130, frequency=1, skip=False, adjust=False
+    Wait, duration=0.05
+    SHJump
+
+@, label=end_point
+*, x=0.697, y=0.264, frequency=1, skip=False, adjust=True
+    Furry, direction=right
+    Wait, duration=0.5
