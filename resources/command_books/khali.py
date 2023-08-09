@@ -294,7 +294,7 @@ class SHInsanity(Command):
 
     def main(self):
         direction_list = ["up", "right", "right"]
-        press("left", 1, 0.08, 0.001)
+        press("left", 1, 0.08, 0.05)
         for i in range(self.repetition):
 
             direction = direction_list[i]
