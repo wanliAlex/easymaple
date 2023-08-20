@@ -15,6 +15,7 @@ from src.easymaple.routine.routine import Routine
 from src.easymaple.routine.components import Point
 from src.easymaple.common.vkeys import press, click
 from src.easymaple.common.interfaces import Configurable
+from src.easymaple.common.vkeys import press, key_down, key_up
 
 
 # The rune's buff icon
@@ -82,6 +83,7 @@ class Bot(Configurable):
         self.ready = True
         config.listener.enabled = True
         last_fed = time.time()
+        key_up("left"); key_up("right")
         while True:
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
