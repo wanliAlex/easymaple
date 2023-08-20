@@ -201,8 +201,8 @@ class DoubleJumpAttack(Command):
         DoubleJump().main()
         time.sleep(0.1)
         Show_Down().main()
+        time.sleep(0.55)
         key_up(self.direction)
-        time.sleep(0.5)
 
 
 class StraightJumpAttack(Command):
