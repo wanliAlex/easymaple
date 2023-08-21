@@ -292,4 +292,4 @@ class SuddenRaid(Command):
 
 class DeathStar(Command):
     def main(self):
-        press(Key.DEATH_STAR, 3, 0.05, 0.05)
+        press(Key.DEATH_STAR, 3, 0.1, 0.1)
