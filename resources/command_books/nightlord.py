@@ -231,9 +231,10 @@ class Buff(Command):
 
 class UpJump(Command):
     def main(self):
+        key_up("left"); key_up("right")
         time.sleep(0.05)
-        press(Key.JUMP, 1, down_time = 0.1, up_time = 0.20)
-        press(Key.LEAP, 1, down_time = 0.15, up_time = 0.4)
+        press(Key.JUMP, 1, down_time = 0.156, up_time = 0.172)
+        press(Key.LEAP, 1, down_time = 0.391, up_time = 0.1)
 
 
 class Rope(Command):
