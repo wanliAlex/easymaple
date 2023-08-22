@@ -229,6 +229,7 @@ class Buff(Command):
     def main(self):
         pass
 
+
 class UpJump(Command):
     def main(self):
         key_up("left"); key_up("right")
