@@ -233,7 +233,7 @@ class UpJump(Command):
     def main(self):
         key_up("left"); key_up("right")
         time.sleep(0.05)
-        press(Key.JUMP, 1, down_time = 0.156, up_time = 0.172)
+        press(Key.JUMP, 1, down_time = 0.156, up_time = 0.25)
         press(Key.LEAP, 1, down_time = 0.391, up_time = 0.1)
 
 
