@@ -19,6 +19,7 @@ class Key:
     LEAP = "z"
     SUDDEN_RAID = "w"
     DEATH_STAR = "a"
+    WARRIOR = "f5"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -77,7 +78,7 @@ class Move(Command):
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
                 d_x = point[0] - config.player_pos[0]
-                if abs(d_x) > settings.move_tolerance / math.sqrt(2):
+                if abs(d_x) > max(settings.move_tolerance / math.sqrt(2), 0.02):
                     if d_x < 0:
                         key = 'left'
                     else:
@@ -157,7 +158,7 @@ class Adjust(Command):
                 key_up("left")
                 key_up("right")
                 time.sleep(0.5)
-                if abs(d_y) > threshold:
+                if abs(d_y) > max(threshold, 0.02):
                     if d_y < 0:
                         if abs(d_y) < 0.1:
                             UpJump().main()
@@ -222,12 +223,13 @@ class Buff(Command):
 
     def __init__(self):
         super().__init__(locals())
-        self.haku_time = 0
-        self.buff_time_120 = 0
-        self.buff_time_180 = 0
+        self.buff_time = 0
 
     def main(self):
-        pass
+        now = time.time()
+        if self.buff_time == 0 or now - self.buff_time > 1140:
+            press(Key.WARRIOR, 3, 0.1, 0.001)
+            self.buff_time = now
 
 
 class UpJump(Command):
@@ -295,3 +297,63 @@ class SuddenRaid(Command):
 class DeathStar(Command):
     def main(self):
         press(Key.DEATH_STAR, 3, 0.1, 0.1)
+
+
+class SH2_POINT_1(Command):
+    def main(self):
+        key_down("right")
+        time.sleep(0.078)
+        key_up("right")
+        press(Key.JUMP, 1, 0.109, 0.094)
+        press(Key.JUMP, 1, 0.109, 0.032)
+        time.sleep(0.015)
+        press("left", 1, 0.110, 0.062)
+        press(Key.SHOW_DOWN, 1, 0.094, 0.6)
+
+
+class SH2_POINT_2(Command):
+    def main(self):
+        key_down("right")
+        time.sleep(0.125)
+        press(Key.JUMP, 1, 0.094, 0.094)
+        press(Key.JUMP, 1, 0.140, 0.047)
+        key_up("right")
+        time.sleep(0.110)
+        press(Key.SHOW_DOWN, 1, 0.109, 0.6)
+
+class SH2_POINT_3(Command):
+    def main(self):
+        key_down("right")
+        time.sleep(0.094)
+        press(Key.JUMP, 1, 0.109, 0.172)
+        press(Key.JUMP, 1, 0.125, 0.001)
+        key_up("right")
+        time.sleep(0.032)
+        press(Key.SHOW_DOWN, 2, 0.1, 0.6)
+        time.sleep(0.35)
+
+class SH2_POINT_4(Command):
+    def main(self):
+        press("left", 1, 0.01, 0.001)
+        DoubleJumpAttack("left").main()
+
+
+class SH2_POINT_5(Command):
+    def main(self):
+        press("left", 1, 0.01, 0.001)
+        DoubleJumpAttack("left").main()
+
+
+class SH2_POINT_6(Command):
+    def main(self):
+        press("left", 1, 0.01, 0.001)
+        DoubleJumpAttack("left").main()
+
+
+class SH2_POINT_7(Command):
+    def main(self):
+        key_down("left")
+        time.sleep(0.187)
+        press("space", 1, 0.141, 0.109)
+        press(Key.LEAP, 1, 0.235, 0.094)
+        key_up("left")
