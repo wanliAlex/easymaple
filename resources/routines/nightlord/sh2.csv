@@ -13,6 +13,9 @@ $, target=move_tolerance, value=0.04
     SH2_POINT_3
 
 @, label=right_point_4
+*, x=0.827, y=0.264, frequency=6, skip=False, adjust=False
+    DarkFlare
+    Wait, duration=0.8
 *, x=0.827, y=0.264, frequency=1, skip=False, adjust=False
     SH2_POINT_4
 
