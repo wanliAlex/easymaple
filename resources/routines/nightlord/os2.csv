@@ -11,7 +11,7 @@ $, target=move_tolerance, value=0.04
 
 @, label=dark_flare
 *, x=0.264, y=0.213, frequency=4, skip=False, adjust=True
-    Wait, duration=0.2
+    Wait, duration=0.5
     UpJump
     Wait, duration=0.1
     Walk, direction=right, duration=0.3
@@ -28,6 +28,7 @@ $, target=move_tolerance, value=0.04
     DoubleJump
     Wait, duration=0.5
     DeathStar
+    Wait, duration=0.3
 
 @, label=erda
 *, x=0.828, y=0.126, frequency=4, skip=False, adjust=True
@@ -51,5 +52,3 @@ $, target=move_tolerance, value=0.04
     DoubleJumpAttack, direction=right
     DoubleJumpAttack, direction=right
     DoubleJumpAttack, direction=right
-    Walk, direction=right, duration=0.2
-    Show_Down
