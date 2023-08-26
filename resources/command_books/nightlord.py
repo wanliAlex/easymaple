@@ -334,19 +334,19 @@ class SH2_POINT_3(Command):
 
 class SH2_POINT_4(Command):
     def main(self):
-        press("left", 1, 0.01, 0.001)
+        press("left", 1, 0.11, 0.001)
         DoubleJumpAttack("left").main()
 
 
 class SH2_POINT_5(Command):
     def main(self):
-        press("left", 1, 0.01, 0.001)
+        press("left", 1, 0.11, 0.001)
         DoubleJumpAttack("left").main()
 
 
 class SH2_POINT_6(Command):
     def main(self):
-        press("left", 1, 0.01, 0.001)
+        press("left", 1, 0.11, 0.001)
         DoubleJumpAttack("left").main()
 
 
