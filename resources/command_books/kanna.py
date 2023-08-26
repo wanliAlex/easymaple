@@ -16,7 +16,7 @@ class Key:
 
     # Buffs
     HAKU = 'f'
-    AKATSUKI_WARRIOR = 'f3'
+    AKATSUKI_WARRIOR = 'f5'
     HOLY_SYMBOL = 'f2'
     SPEED_INFUSION = 'f1'
 
@@ -179,17 +179,14 @@ class Buff(Command):
         self.buff_time = 0
 
     def main(self):
-        buffs = [Key.SPEED_INFUSION, Key.HOLY_SYMBOL]
         now = time.time()
         if self.haku_time == 0 or now - self.haku_time > 490:
             press(Key.HAKU, 2)
             press(Key.AKATSUKI_WARRIOR, 2)
             self.haku_time = now
-        if self.buff_time == 0 or now - self.buff_time > settings.buff_cooldown:
-            pass
-            #for key in buffs:
-            #    press(key, 3, up_time=0.3)
-            #self.buff_time = now
+        if self.buff_time == 0 or now - self.buff_time > 180:
+            press(Key.NINE_TAILS, 3, 0.05, 0.05)
+            self.buff_time = now
 
 
 class Teleport(Command):
