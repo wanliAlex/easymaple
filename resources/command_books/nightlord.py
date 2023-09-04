@@ -54,7 +54,7 @@ class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
     This is a general implementation and can be overriden by the Move class in your command books"""
 
-    def __init__(self, x, y, max_steps=15):
+    def __init__(self, x, y, max_steps=10):
         super().__init__(locals())
         self.target = (float(x), float(y))
         self.max_steps = settings.validate_nonnegative_int(max_steps)
@@ -78,7 +78,7 @@ class Move(Command):
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
                 d_x = point[0] - config.player_pos[0]
-                if abs(d_x) > max(settings.move_tolerance / math.sqrt(2), 0.02):
+                if abs(d_x) > settings.move_tolerance:
                     if d_x < 0:
                         key = 'left'
                     else:
@@ -86,16 +86,19 @@ class Move(Command):
                     self._new_direction(key)
                     if abs(d_x) > settings.move_tolerance * 10:
                         TripleJump().main()
-                    if abs(d_x) > settings.move_tolerance * 5:
+                    elif settings.move_tolerance * 5 < abs(d_x) < settings.move_tolerance * 10:
                         DoubleJump().main()
+                    elif abs(d_x) < settings.move_tolerance * 5:
+                        time.sleep(0.05)
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
-                    if i < len(path) - 1:
-                        time.sleep(0.15)
                 else:
+                    key_up("left")
+                    key_up("right")
+                    time.sleep(0.5)
                     d_y = point[1] - config.player_pos[1]
-                    if abs(d_y) > settings.move_tolerance / math.sqrt(2):
+                    if abs(d_y) > settings.move_tolerance:
                         if d_y < 0:
                             if abs(d_y) < 0.12:
                                 UpJump().main()
@@ -113,13 +116,12 @@ class Move(Command):
                             config.layout.add(*config.player_pos)
                         if i < len(path) - 1:
                             time.sleep(0.05)
-                    counter -= 1
+                    counter -= 4
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
                 toggle = not toggle
             if self.prev_direction:
                 key_up(self.prev_direction)
-
 
 
 class Adjust(Command):
@@ -158,7 +160,7 @@ class Adjust(Command):
                 key_up("left")
                 key_up("right")
                 time.sleep(0.5)
-                if abs(d_y) > max(threshold, 0.02):
+                if abs(d_y) > 0.02:
                     if d_y < 0:
                         if abs(d_y) < 0.1:
                             UpJump().main()

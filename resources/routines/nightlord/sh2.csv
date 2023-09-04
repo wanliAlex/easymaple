@@ -30,4 +30,5 @@ $, target=move_tolerance, value=0.04
 @, label=left_point_7
 *, x=0.303, y=0.264, frequency=1, skip=False, adjust=True
     SH2_POINT_7
-    Wait, duration=0.4
+    Wait, duration=0.35
+    Walk, direction=right, duration=0.1
