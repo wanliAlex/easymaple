@@ -96,7 +96,6 @@ class Move(Command):
                 else:
                     key_up("left")
                     key_up("right")
-                    time.sleep(0.5)
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance:
                         if d_y < 0:
@@ -159,7 +158,6 @@ class Adjust(Command):
             else:
                 key_up("left")
                 key_up("right")
-                time.sleep(0.5)
                 if abs(d_y) > 0.02:
                     if d_y < 0:
                         if abs(d_y) < 0.1:
