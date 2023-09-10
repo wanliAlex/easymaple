@@ -302,7 +302,7 @@ class DeathStar(Command):
 class SH2_POINT_1(Command):
     def main(self):
         key_down("right")
-        time.sleep(0.078)
+        time.sleep(0.125)
         key_up("right")
         press(Key.JUMP, 1, 0.109, 0.094)
         press(Key.JUMP, 1, 0.109, 0.032)
