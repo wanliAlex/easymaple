@@ -22,6 +22,7 @@ $, target=move_tolerance, value=0.04
 *, x=0.587, y=0.084, frequency=12, skip=False, adjust=True
     DownJump, wait_time=0.2
     Dash, direction=down, jump=False
+    MESO_EXPLOSION
 *, x=0.587, y=0.251, frequency=12, skip=False, adjust=True
     SuddenRaid
 >, label=right, frequency=12, skip=False
