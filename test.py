@@ -22,17 +22,19 @@ def locate_potentail_redcube():
     rect_height = 60
     screenshot = pyautogui.screenshot(region=(x1, y1,rect_width, rect_height))
     screenshot.save('screenshot.png')
-
+image_count = 0
 def image_processing():
+    global image_count
 # Load the image using OpenCV
     image = cv2.imread('screenshot.png')
 # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
-
-
     _, thresholded_image = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    cv2.imwrite('gray.png',thresholded_image)
+    filename = f'grayscale_image/gray{image_count}.png'
+    
+    cv2.imwrite(filename,thresholded_image)
+    image_count+=1
 # Perform OCR on the image
     text = pytesseract.image_to_string(thresholded_image)
     text = text.replace(",", "").replace(".", "")
@@ -44,13 +46,17 @@ def image_processing():
     
     print(test_list)
     return test_list
+
+output_lines = ''
 while True:
     locate_potentail_redcube()
     test_list = image_processing()
-    
-
+    with open('D:/easymaple/output.txt', 'w') as file:
+        output_lines +=f'gray{image_count-1}'+' '+ ', '.join(test_list) + '\n'
+        file.write(output_lines)
     found = False
     count = 0
+    
     for i,potential_line in enumerate(test_list):
         if count == 2:
             break
@@ -61,6 +67,10 @@ while True:
             
     if found:
         break
-
+    
+    
     time.sleep(5) 
+
+   
+
     

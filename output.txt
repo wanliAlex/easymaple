@@ -1,0 +1,5 @@
+gray1 ¡®Max HP: +3%, DEF: +3%, INT: +6
+gray2 Max HP: +60, DEF: +3%, Max MP: +60
+gray3 LUK: +6, DEF: +120, INT: +6
+gray4 STR: +6, INT: +12, Max HP: +60
+gray5 Max MP: +60, Recover 24 MP every 4 seco, Max MP: +60
