@@ -22,21 +22,26 @@ def locate_potentail_redcube():
     rect_height = 60
     screenshot = pyautogui.screenshot(region=(x1, y1,rect_width, rect_height))
     screenshot.save('screenshot.png')
+
+
 image_count = 0
 def image_processing():
     global image_count
-# Load the image using OpenCV
-    image = cv2.imread('screenshot.png')
-# Convert the image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image =cv2.imread('screenshot.png')
+# Enlarge the image by a factor of 2 (for example)
+    scale_factor = 2.0
+    enlarged_image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
+    
+    # Convert the enlarged image to grayscale
+    gray = cv2.cvtColor(enlarged_image, cv2.COLOR_BGR2GRAY)
     
     _, thresholded_image = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     filename = f'grayscale_image/gray{image_count}.png'
     
-    cv2.imwrite(filename,thresholded_image)
+    cv2.imwrite(filename,gray)
     image_count+=1
 # Perform OCR on the image
-    text = pytesseract.image_to_string(thresholded_image)
+    text = pytesseract.image_to_string(gray)
     text = text.replace(",", "").replace(".", "")
 # Print the OCR result
     
@@ -46,6 +51,7 @@ def image_processing():
     
     print(test_list)
     return test_list
+
 
 output_lines = ''
 while True:
