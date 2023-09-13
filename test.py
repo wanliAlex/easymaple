@@ -52,31 +52,50 @@ def image_processing():
     print(test_list)
     return test_list
 
+def STR(test_list):
+    count = 0
+    found = False
+    for i, potential_line in enumerate(test_list):
+        # Test for temporary
+        if count == 2:
+            found = True
+            print("found, break loop")
+            break
+        if "STR" in potential_line:
+            count +=1
+            print("STR=", count)  
+    return found
 
+def DEX(test_list):
+    # Similar to STR function but for "DEX"
+    pass
+    
+def switch(potential, test_list):
+    if potential == "STR":
+        return STR(test_list)
+    elif potential == "DEX":
+        return DEX(test_list)
+
+    
 output_lines = ''
+line_count = 0
+found = False
+potential = input('Enter your desired 3 line stats, e.g: STR, DEX, INT, LUK, ATT, MATT: ')
 while True:
+    
+    
     locate_potentail_redcube()
     test_list = image_processing()
+    found = switch(potential, test_list)
+
     with open('D:/easymaple/output.txt', 'w') as file:
-        output_lines +=f'gray{image_count-1}'+' '+ ', '.join(test_list) + '\n'
+        output_lines += f'gray{image_count-1}' + ' ' + ', '.join(test_list) + '\n'
         file.write(output_lines)
-    found = False
-    count = 0
-    
-    for i,potential_line in enumerate(test_list):
-        if count == 2:
-            break
-            print("found 2 matt,break loop")
-        if "Magic ATT" in potential_line:
-            count +=1
-            print("matt=",count)
-            
+                
     if found:
         break
-    
-    
-    time.sleep(5) 
-
+        
+    time.sleep(5)
    
 
     
