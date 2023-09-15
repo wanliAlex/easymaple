@@ -1,0 +1,26 @@
+$, target=move_tolerance, value=0.04
+
+@, label=blade
+*, x=0.628, y=0.307, frequency=10, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=2
+    BurningBlade
+    Wait, duration=0.15
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.25
+    JumpPuncture, direction=left, repetitions=2
+
+@, label=erda
+*, x=0.329, y=0.307, frequency=5, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=1.5
+    ErdaFountain
+    JumpPuncture, direction=right, repetitions=3
+
+@, label=normal
+*, x=0.766, y=0.307, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=left, repetitions=4
+*, x=0.238, y=0.307, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=right, repetitions=4

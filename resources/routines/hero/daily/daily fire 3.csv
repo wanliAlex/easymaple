@@ -1,0 +1,9 @@
+$, target=move_tolerance, value=0.04
+*, x=0.880, y=0.309, frequency=1, skip=False, adjust=True
+    Wait, duration=0.25
+    JumpRagingBlow, direction=left, repetitions=6
+*, x=0.215, y=0.309, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=1.5
+    JumpPuncture, direction=right, repetitions=6

@@ -225,7 +225,7 @@ class JumpPuncture (Command):
             #press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.35)
+            time.sleep(0.315)
 
 
 class JumpRagingBlow (Command):
@@ -315,6 +315,7 @@ class Move_right(Command):
 class ErdaShower(Command):
 
     def main(self):
+        
         press(Key.ERDA_FOUNTAIN, 2)
 
 class DoubleJump(Command):
