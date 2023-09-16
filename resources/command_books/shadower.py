@@ -190,6 +190,7 @@ class TripleJumpAttack(Command):
     def main(self):
         key_down(self.direction)
         TripleJump().main()
+        time.sleep(0.5)
         CRUEL_STAB_MESO_EXPLOSION().main()
         key_up(self.direction)
         time.sleep(0.1)
@@ -312,4 +313,15 @@ class Dash(Command):
 class SHADOW_VEIL(Command):
     def main(self):
         press(Key.SHADOW_VEIL, 3, 0.2, 0.2)
+
+
+class DownAttack(Command):
+    def main(self):
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 2)
+        key_up("down")
+        press(Key.CRUEL_STAB)
+        press(Key.MESO_EXPLOSION, 3, 0.05, 0.05)
+        time.sleep(0.5)
 
