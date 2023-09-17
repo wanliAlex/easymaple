@@ -115,7 +115,7 @@ class Move(Command):
                             config.layout.add(*config.player_pos)
                         if i < len(path) - 1:
                             time.sleep(0.05)
-                        counter -= 4
+                    counter -= 4
                 local_error = utils.distance(config.player_pos, point)
                 global_error = utils.distance(config.player_pos, self.target)
                 toggle = not toggle
