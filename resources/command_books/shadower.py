@@ -298,10 +298,10 @@ class SuddenRaid(Command):
 
 
 class Dash(Command):
-    def __init__(self, direction, jump = False):
+    def __init__(self, direction, jump: bool = False):
         super().__init__(locals())
         self.direction = str(direction)
-        self.jump = jump
+        self.jump = bool(jump)
 
     def main(self):
         if self.jump:
