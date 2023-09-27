@@ -1,9 +1,29 @@
 $, target=move_tolerance, value=0.04
+
+@, label=burnblade route
+*, x=0.880, y=0.309, frequency=8, skip=False, adjust=True
+    Wait, duration=0.25
+    JumpRagingBlow, direction=left, repetitions=5
+    Wait, duration=0.15
+    JumpBeamBlade, direction=left
+*, x=0.215, y=0.309, frequency=8, skip=False, adjust=True
+    Wait, duration=0.15
+    Rope
+    Wait, duration=1.5
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.2
+    BurningBlade
+    Wait, duration=0.15
+    JumpPuncture, direction=right, repetitions=4
+
+@, label=normal route
 *, x=0.880, y=0.309, frequency=1, skip=False, adjust=True
     Wait, duration=0.25
-    JumpRagingBlow, direction=left, repetitions=6
+    JumpRagingBlow, direction=left, repetitions=5
+    Wait, duration=0.15
+    JumpBeamBlade, direction=left
 *, x=0.215, y=0.309, frequency=1, skip=False, adjust=True
     Wait, duration=0.15
     Rope
     Wait, duration=1.5
-    JumpPuncture, direction=right, repetitions=6
+    JumpPuncture, direction=right, repetitions=5

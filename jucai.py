@@ -10,7 +10,7 @@ keyboard = KeyboardController()
 
 # Set a special hotkey to start or stop the program
 # TODO Add a indicator (sound or output in the console) when you "start" or "stop" the action
-start_stop_key = KeyCode(char='s')
+start_stop_key = Key.f12
 
 # Flag to control if the program is running
 running = False

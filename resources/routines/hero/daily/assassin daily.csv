@@ -1,7 +1,7 @@
 $, target=move_tolerance, value=0.04
 
 @, label=blade
-*, x=0.628, y=0.307, frequency=10, skip=False, adjust=True
+*, x=0.628, y=0.307, frequency=11, skip=False, adjust=True
     Wait, duration=0.15
     Rope
     Wait, duration=2
@@ -12,7 +12,7 @@ $, target=move_tolerance, value=0.04
     JumpPuncture, direction=left, repetitions=2
 
 @, label=erda
-*, x=0.329, y=0.307, frequency=5, skip=False, adjust=True
+*, x=0.329, y=0.307, frequency=6, skip=False, adjust=True
     Wait, duration=0.15
     Rope
     Wait, duration=1.5
