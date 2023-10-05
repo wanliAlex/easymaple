@@ -14,6 +14,7 @@ class Key:
     UPWAIRD_CHARGE  = "s"  #up jump skill
     ROPE = 'alt'
     RIGHT_ARROW = 'right'
+    LEFT_ARROW = 'left'
     RUSH = 'd'
 
     # Skills[Buffs]
@@ -25,6 +26,7 @@ class Key:
     RAGING_BLOW = "a"
     BEAM_BLADE = "w"
     SCREEN_CUT = "q"
+    RISING_RAGE = "ctrl"
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
@@ -199,9 +201,10 @@ class BeamBlade(Command):
         super().__init__(locals())
         self.direction = settings.validate_arrows(direction)
     def main(self):
-        press(self.direction,n = 5, down_time = 0.01, up_time = 0.01)
-        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
+        key_down(self.direction)
         
+        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
+        key_up(self.direction)
 
 class JumpBeamBlade(Command):
     def __init__(self, direction):
@@ -244,9 +247,10 @@ class JumpRagingBlow (Command):
 
 class BurningBlade(Command):
     def main(self):
+        key_down("down")
+        press(Key.RIGHT_ARROW,2)
         press(Key.BURNING_BLADE,4)
-        time.sleep(0.65)
-        press(Key.BURNING_BLADE,4)
+        key_up("down")
 
 class Buff(Command):
 
@@ -302,7 +306,7 @@ class ErdaFountain(Command):
     def main(self):
         key_down("down")
         press(Key.RIGHT_ARROW,2)
-        press(Key.ERDA_FOUNTAIN, 4)
+        press(Key.ERDA_FOUNTAIN,2)
         key_up("down")
 class Move_right(Command):
     
@@ -311,6 +315,14 @@ class Move_right(Command):
         self.key_down_time = float(key_down_time)
     def main(self):
         press(Key.RIGHT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
+
+class Move_left(Command):
+    
+    def __init__(self,key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+    def main(self):
+        press(Key.LEFT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
 
 class ErdaShower(Command):
 
@@ -350,6 +362,10 @@ class ScreenCut(Command):
     def main(self):
         press(Key.SCREEN_CUT,2)
 
+class RisingRage(Command):
+    def main(self):
+        press(Key.RISING_RAGE,2)
+        
 class Rush(Command):
     def __init__(self,direction):
         super().__init__(locals())
