@@ -12,10 +12,10 @@ $, target=move_tolerance, value=0.04
     JumpPuncture, direction=left, repetitions=1
     Wait, duration=0.18
     JumpPuncture, direction=left, repetitions=1
-    Wait, duration=0.2
+    Wait, duration=0.6
     JumpPuncture, direction=left, repetitions=1
 *, x=0.229, y=0.307, frequency=6, skip=False, adjust=False
-    Wait, duration=0.4
+    Wait, duration=0.35
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.15
     BeamBlade, direction=up

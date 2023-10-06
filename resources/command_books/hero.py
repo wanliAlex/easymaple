@@ -225,7 +225,6 @@ class JumpPuncture (Command):
     def main(self):
         for _ in range(self.repetitions):
             press(self.direction)
-            #press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
             time.sleep(0.315)
