@@ -6,12 +6,12 @@ from src.easymaple.gui.settings.pets import Pets
 from src.easymaple.gui.settings.rune import Rune
 from src.easymaple.gui.interfaces import Tab, Frame
 from src.easymaple.common import config
-from src.easymaple.gui.settings.herb_and_potion import HerbAndPotion
+
 
 
 class Settings(Tab):
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, 'Setting', **kwargs)
+        super().__init__(parent, 'Settings', **kwargs)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(3, weight=1)
@@ -24,8 +24,6 @@ class Settings(Tab):
         self.rune = Rune(column1)
         self.rune.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
 
-        self.herb_and_potion = HerbAndPotion(column1)
-        self.herb_and_potion.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
 
         column2 = Frame(self)
         column2.grid(row=0, column=2, sticky=tk.N, padx=10, pady=10)
