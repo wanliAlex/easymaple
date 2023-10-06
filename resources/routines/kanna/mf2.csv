@@ -1,0 +1,43 @@
+$, target=move_tolerance, value=0.04
+
+@, label=Boss
+*, x=0.455, y=0.198, frequency=5, skip=False, adjust=True
+    Yaksha, direction=Left
+
+@, label=loot
+*, x=0.198, y=0.198, frequency=10, skip=False, adjust=true
+    Wait, duration=0.8
+
+@, label=kishin
+*, x=0.190, y=0.377, frequency=10, skip=False, adjust=True
+    Kishin
+    Tengu
+
+@, label=loot2
+*, x=0.455, y=0.377, frequency=10, skip=False, adjust=False
+    Wait, duration=0.5
+
+@, label=Lucid
+*, x=0.766, y=0.377, frequency=10, skip=False, adjust=True
+    LucidSoul, direction=Right
+
+@, label=tengu
+*, x=0.766, y=0.287, frequency=10, skip=False, adjust=True
+    Tengu
+
+@, label=erda
+*, x=0.766, y=0.150, frequency=10, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.5
+
+@, label=tengu2
+*, x=0.766, y=0.287, frequency=10, skip=False, adjust=True
+    Tengu
+
+@, label=AutoAttack
+*, x=0.599, y=0.287, frequency=1, skip=False, adjust=True
+    Shikigami, direction=Left, attacks=2, repetitions=2
+    Wait, duration=0.5
+    Shikigami, direction=Right, attacks=2, repetitions=2
+    Exorcist, jump=False
+    Wait, duration=2

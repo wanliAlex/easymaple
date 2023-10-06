@@ -1,0 +1,30 @@
+$, target=move_tolerance, value=0.05
+
+@, label=eerda
+*, x=0.782, y=0.216, frequency=22, skip=False, adjust=False
+    ErdaFountain
+    Wait, duration=0.5
+
+@, label=Kishin
+*, x=0.716, y=0.068, frequency=22, skip=False, adjust=False
+    Kishin
+    Wait, duration=0.5
+
+@, label=Boss
+*, x=0.506, y=0.185, frequency=11, skip=False, adjust=True
+*, x=0.426, y=0.185, frequency=11, skip=False, adjust=True
+    Yaksha, direction=Left
+    Wait, duration=0.5
+
+@, label=loot
+*, x=0.265, y=0.216, frequency=44, skip=False, adjust=False
+    Wait, duration=1
+*, x=0.259, y=0.068, frequency=44, skip=False, adjust=False
+    Wait, duration=1
+
+@, label=attack
+*, x=0.623, y=0.216, frequency=1, skip=False, adjust=False
+    Shikigami, direction=Right, attacks=2, repetitions=1
+    Wait, duration=0.3
+    Shikigami, direction=Left, attacks=2, repetitions=1
+    Wait, duration=1

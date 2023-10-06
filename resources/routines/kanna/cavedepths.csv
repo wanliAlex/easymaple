@@ -1,0 +1,4 @@
+$, target=move_tolerance, value=0.075
+*, x=0.551, y=0.062, frequency=1, skip=False, adjust=True
+    Move, x=0.551, y=0.062, max_steps=15
+    Kishin

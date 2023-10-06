@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.02
+$, target=jump_threshold, value=0.13
+
+@, label=Start & Final Cut
+*, x=0.34, y=0.214, frequency=8, skip=False, adjust=True
+    Final_Cut
+*, x=0.340, y=0.214, frequency=1, skip=False, adjust=True
+    Wait, duration=0.3
+
+@, label=Start
+*, x=0.396, y=0.214, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    Theater6_Point1_JUMP
+    Wait, duration=0.8
+*, x=0.711, y=0.428, frequency=1, skip=False, adjust=True
+    Theater6_Point2_JUMP
+*, x=0.517, y=0.428, frequency=1, skip=False, adjust=True
+    Theater6_Point3_JUMP
+*, x=0.313, y=0.428, frequency=1, skip=False, adjust=True
+    Rope
+    Wait, duration=2.2
+*, x=0.318, y=0.214, frequency=1, skip=False, adjust=True
+    ErdaShower

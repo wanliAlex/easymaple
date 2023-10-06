@@ -1,0 +1,39 @@
+$, target=move_tolerance, value=0.065
+
+@, label=kishin
+*, x=0.667, y=0.472, frequency=10, skip=False, adjust=True
+    LucidSoul, direction=right
+*, x=0.70, y=0.27, frequency=10, skip=False, adjust=True
+*, x=0.73, y=0.270, frequency=10, skip=False, adjust=True
+    ErdaFountain
+    Tengu
+*, x=0.843, y=0.270, frequency=10, skip=False, adjust=True
+    Shikigami, direction=left, attacks=1, repetitions=1
+    Teleport, direction=Up, jump=True
+*, x=0.550, y=0.176, frequency=10, skip=False, adjust=True
+    Kishin
+
+@, label=loot
+*, x=0.428, y=0.176, frequency=20, skip=False, adjust=False
+    Fall, distance=0.2
+    Teleport, direction=Down, jump=False
+*, x=0.226, y=0.472, frequency=20, skip=False, adjust=False
+    Shikigami, direction=Left, attacks=2, repetitions=1
+    Wait, duration=2
+
+@, label=Boss
+*, x=0.572, y=0.472, frequency=5, skip=False, adjust=True
+    Yaksha, direction=Left
+
+@, label=domain
+*, x=0.667, y=0.472, frequency=40, skip=False, adjust=True
+    Domain
+    Vanquisher
+
+@, label=attack
+*, x=0.652, y=0.472, frequency=1, skip=False, adjust=True
+    Wait, duration=0.6
+    Shikigami, direction=right, attacks=5, repetitions=1
+*, x=0.652, y=0.346, frequency=1, skip=False, adjust=True
+    Wait, duration=0.6
+    Shikigami, direction=right, attacks=5, repetitions=1

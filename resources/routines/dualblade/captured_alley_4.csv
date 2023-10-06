@@ -1,0 +1,27 @@
+$, target=move_tolerance, value=0.02
+$, target=jump_threshold, value=0.13
+
+@, label=Starting Point
+*, x=0.165, y=0.268, frequency=1, skip=False, adjust=True
+    CA4_Starting
+
+@, label=Door
+*, x=0.765, y=0.343, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    CA4_Door
+
+@, label=Erda
+*, x=0.748, y=0.172, frequency=1, skip=False, adjust=True
+    CA4_Erda
+
+@, label=Tornado
+*, x=0.389, y=0.343, frequency=1, skip=False, adjust=True
+    CA4_Tornado
+    Wait, duration=0.1
+    Walk, direction=left, duration=0.5
+
+@, label=Waiting Point
+*, x=0.135, y=0.268, frequency=1, skip=False, adjust=True
+    Sudden_Raid
+    Wait, duration=0.1
+    Final_Cut

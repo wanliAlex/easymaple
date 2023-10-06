@@ -1,0 +1,54 @@
+$, target=move_tolerance, value=0.04
+
+@, label=very_start
+*, x=0.897, y=0.213, frequency=4, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    Walk, direction=left, duration=0.3
+    Show_Down
+    Wait, duration=0.2
+
+@, label=dark_flare
+*, x=0.264, y=0.213, frequency=4, skip=False, adjust=True
+    Wait, duration=0.5
+    UpJump
+    Wait, duration=0.1
+    Walk, direction=right, duration=0.3
+*, x=0.264, y=0.109, frequency=4, skip=False, adjust=False
+    Walk, direction=right, duration=0.01
+    DarkFlare
+    Wait, duration=0.7
+    TripleJump
+    Wait, duration=0.5
+    SuddenRaid
+    Walk, direction=right, duration=0.3
+    Wait, duration=0.4
+*, x=0.499, y=0.063, frequency=4, skip=False, adjust=False
+    DoubleJump
+    Wait, duration=0.5
+    DeathStar
+    Wait, duration=0.3
+
+@, label=erda
+*, x=0.828, y=0.126, frequency=4, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.3
+    DownJump, wait_time=0.5
+    Show_Down
+
+@, label=start_right
+*, x=0.897, y=0.213, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    Walk, direction=left, duration=0.2
+    Show_Down
+
+@, label=start_left
+*, x=0.144, y=0.213, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right

@@ -1,0 +1,15 @@
+$, target=move_tolerance, value=0.04
+
+@, label=right_side
+*, x=0.686, y=0.165, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    StraightJumpPunch, direction=left
+
+@, label=left_side
+*, x=0.305, y=0.165, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    StraightJumpPunch, direction=Right

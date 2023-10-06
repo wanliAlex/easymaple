@@ -1,0 +1,13 @@
+$, target=move_tolerance, value=0.03
+
+@, label=erda
+*, x=0.137, y=0.196, frequency=12, skip=False, adjust=True
+    DownJump, direction=None, duration=1.2
+*, x=0.712, y=0.098, frequency=12, skip=False, adjust=True
+    ErdaFountain
+    DownJump, direction=None, duration=1.2
+
+@, label=hit
+*, x=0.444, y=0.196, frequency=1, skip=False, adjust=True
+    FanStoneCombo, direction=Left, repetition=1, wait=0.2
+    FanStoneCombo, direction=Right, repetition=1, wait=0.2

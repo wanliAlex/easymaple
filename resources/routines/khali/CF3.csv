@@ -1,0 +1,18 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.837, y=0.163, frequency=7, skip=False, adjust=True
+    ErdaFountain
+
+@, label=Start
+*, x=0.719, y=0.163, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.202, y=0.163, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.35
+    Insanity, repetition=3, direction_1=right, direction_2=right, direction_3=right, reset=True
+*, x=0.520, y=0.320, frequency=1, skip=False, adjust=True
+    Insanity, repetition=3, direction_1=right, direction_2=right, direction_3=up, reset=True
+    Walk, direction=left, duration=0.5
