@@ -27,6 +27,8 @@ class Key:
     BEAM_BLADE = "w"
     SCREEN_CUT = "q"
     RISING_RAGE = "ctrl"
+
+    BLITZ_SHEILD = "delete"
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
@@ -246,9 +248,11 @@ class JumpRagingBlow (Command):
 
 class BurningBlade(Command):
     def main(self):
+        key_down("up")
         key_down("down")
-        press(Key.RIGHT_ARROW,2)
+        
         press(Key.BURNING_BLADE,4)
+        key_up("up")
         key_up("down")
 
 class Buff(Command):
@@ -303,9 +307,11 @@ class will(Command):
 class ErdaFountain(Command):
 
     def main(self):
+        key_down("up")
         key_down("down")
         press(Key.RIGHT_ARROW,2)
         press(Key.ERDA_FOUNTAIN,2)
+        key_up("up")
         key_up("down")
 class Move_right(Command):
     
@@ -373,3 +379,8 @@ class Rush(Command):
     def main(self):
         press(self.direction)
         press(Key.RUSH,2)
+
+class BlitzSheild(Command):
+    def main(self):
+        
+        press(Key.BLITZ_SHEILD,2)
