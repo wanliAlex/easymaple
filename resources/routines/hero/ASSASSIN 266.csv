@@ -8,7 +8,9 @@ $, target=move_tolerance, value=0.04
     JumpRagingBlow, direction=left, repetitions=1
     Move_left, key_down_time=0.3
     RisingRage
-    Wait, duration=0.3
+    Wait, duration=0.425
+    JumpBeamBlade, direction=left
+    Wait, duration=0.2
     Rope
     Wait, duration=1.2
     BlitzSheild
@@ -23,9 +25,9 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.85
     JumpPuncture, direction=left, repetitions=1
 *, x=0.229, y=0.307, frequency=5, skip=False, adjust=False
-    Wait, duration=0.325
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
-    Wait, duration=0.15
+    Wait, duration=0.3
     BeamBlade, direction=up
     Wait, duration=0.2
     JumpPuncture, direction=right, repetitions=4

@@ -216,7 +216,7 @@ class JumpBeamBlade(Command):
         press(self.direction)
         press(Key.JUMP)
         time.sleep(0.1)
-        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
         time.sleep(0.275)
 
 class JumpPuncture (Command):
