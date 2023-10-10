@@ -1,0 +1,38 @@
+*, x=0.188, y=0.299, frequency=5, skip=False, adjust=False
+    DoubleJump
+    Wait, duration=0.25
+    Rope
+    Wait, duration=1.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1
+    BeamBlade, direction=right
+    Wait, duration=0.4
+    UpJump
+    Wait, duration=1
+    ErdaFountain
+    Wait, duration=0.4
+    Rush, direction=right
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1.5
+    JumpRagingBlow, direction=left, repetitions=5
+    Move_right, key_down_time=0.2
+*, x=0.188, y=0.299, frequency=1, skip=False, adjust=False
+    DoubleJump
+    Wait, duration=0.3
+    Rope
+    Wait, duration=1.5
+    Move_right, key_down_time=0.2
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.4
+    DownJump, wait_time=0.1
+    BeamBlade, direction=right
+    Move_left, key_down_time=0.5
+    JumpRagingBlow, direction=left, repetitions=2
+    JumpRagingBlow, direction=left, repetitions=1
+    Wait, duration=0.15
+    Move_right, key_down_time=0.1

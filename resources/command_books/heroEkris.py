@@ -21,12 +21,13 @@ class Key:
     PUNCTURE = "d"
     RAGING_BLOW = "q"
     BEAM_BLADE = "5"
-
+    RIGHT_ARROW = 'right'
+    LEFT_ARROW = 'left'
     # Skills [Placement]
     ERDA_FOUNTAIN = "page up"
     BURNING_BLADE = "r"
     WILL = "g"
-
+    RUSH = 'e'
 
 #########################
 #       Commands        #
@@ -180,8 +181,15 @@ class Puncture(Command):
 
 
 class RagingBlow(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+
     def main(self):
+        press(self.direction)
+        time.sleep(0.05)
         press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+        time.sleep(0.335)
 
 
 class BeamBlade(Command):
@@ -191,6 +199,7 @@ class BeamBlade(Command):
 
     def main(self):
         key_down(self.direction)
+
         press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
         key_up(self.direction)
 
@@ -203,43 +212,86 @@ class JumpBeamBlade(Command):
     def main(self):
         press(self.direction)
         press(Key.JUMP)
-        BeamBlade().main()
-        time.sleep(0.35)
+        time.sleep(0.1)
+        press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
+        time.sleep(0.275)
 
 
 class JumpPuncture(Command):
-    def __init__(self, direction):
+    def __init__(self, direction, repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
 
     def main(self):
-        press(self.direction)
-        DoubleJump().main()
-        Puncture().main()
-        time.sleep(0.7)
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n=2, down_time=0.085, up_time=0.01)
+            press(Key.PUNCTURE, n=1, down_time=0.094, up_time=0.046)
+            time.sleep(0.315)
 
 
 class JumpRagingBlow(Command):
-    def __init__(self, direction):
+    def __init__(self, direction, repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
 
     def main(self):
-        press(self.direction)
-        DoubleJump().main()
-        RagingBlow().main()
-        time.sleep(0.335)
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n=2, down_time=0.072, up_time=0.01)
+
+            press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+            time.sleep(0.3)
 
 
 class BurningBlade(Command):
     def main(self):
+        key_down("down")
+        press(Key.RIGHT_ARROW, 2)
         press(Key.BURNING_BLADE, 4)
-        time.sleep(1)
-        press(Key.BURNING_BLADE, 4)
+        key_up("down")
 
 
 class Buff(Command):
-    pass
+
+    def __init__(self):
+        super().__init__(locals())
+
+        self.monster_park_pot_30mins = 0
+        '''
+        self.buff_time_120 = 0
+        self.buff_time_180 = 0
+        '''
+
+    def main(self):
+        '''
+        buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
+        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
+        '''
+        '''
+        buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
+
+        now = time.time()
+
+        if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
+            for key in buffs_1800:
+                press(key, 1, down_time=0.5, up_time=0.3)
+            self.monster_park_pot_30mins = now
+        '''
+        '''
+        if self.buff_time_120 == 0 or now - self.buff_time_120 > 120:            
+            for key in buffs_120:
+                press(key, 3, up_time=0.3)
+            self.buff_time_120 = now
+
+        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:            
+            for key in buffs_180:
+                press(key, 3, up_time=0.4)
+            self.buff_time_180 = now
+            time.sleep(1)
+        '''
 
 
 class UpJump(Command):
@@ -261,8 +313,29 @@ class ErdaFountain(Command):
 
     def main(self):
         key_down("down")
-        press(Key.ERDA_FOUNTAIN, 4)
+        press(Key.RIGHT_ARROW, 2)
+        press(Key.ERDA_FOUNTAIN, 2)
         key_up("down")
+
+
+class Move_right(Command):
+
+    def __init__(self, key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+
+    def main(self):
+        press(Key.RIGHT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+
+
+class Move_left(Command):
+
+    def __init__(self, key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+
+    def main(self):
+        press(Key.LEFT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
 
 
 class ErdaShower(Command):
@@ -273,8 +346,19 @@ class ErdaShower(Command):
 
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
-        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
+        press(Key.JUMP, n=1, down_time=0.064, up_time=0.01)
+
+
+class HighDoubleJump(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+
+    def main(self):
+        press(self.direction)
+        press(Key.JUMP, n=1, down_time=0.320, up_time=0.0)
+        press(Key.JUMP, n=1, down_time=0.95, up_time=0.0)
 
 
 class DownJump(Command):
@@ -289,3 +373,23 @@ class DownJump(Command):
         time.sleep(self.wait_time / 2.0)
         key_up("down")
         time.sleep(self.wait_time / 2.0)
+
+
+class ScreenCut(Command):
+    def main(self):
+        press(Key.SCREEN_CUT, 2)
+
+
+class RisingRage(Command):
+    def main(self):
+        press(Key.RISING_RAGE, 2)
+
+
+class Rush(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+
+    def main(self):
+        press(self.direction)
+        press(Key.RUSH, 2)
