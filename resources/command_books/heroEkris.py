@@ -27,6 +27,7 @@ class Key:
     ERDA_FOUNTAIN = "page up"
     BURNING_BLADE = "r"
     WILL = "g"
+    SEREN = "t"
     RUSH = 'e'
 
 #########################
@@ -308,6 +309,9 @@ class will(Command):
     def main(self):
         press(Key.WILL, 1, up_time=0.3)
 
+class seren(Command):
+    def main(self):
+        press(Key.SEREN, 1, up_time=0.3)
 
 class ErdaFountain(Command):
 
