@@ -202,16 +202,21 @@ class DoubleJump(Command):
 
 
 class DownJump(Command):
-    def __init__(self, wait_time = 0.3):
+    def __init__(self, wait_time = 0.3, direction: str = ""):
         super().__init__(locals())
         self.wait_time = float(wait_time)
+        self.direction = str(direction)
 
     def main(self):
         key_down("down")
         time.sleep(0.1)
         press(Key.JUMP, 2, 0.1, up_time =0.05)
         press(Key.JUMP, 3, 0.05, 0.05)
-        time.sleep(self.wait_time / 2.0)
+        if self.direction:
+            press(self.direction, 3, 0.02, 0.02)
+            time.sleep(max(0, self.wait_time / 2.0 - 0.12))
+        else:
+            time.sleep(self.wait_time / 2.0)
         key_up("down")
         time.sleep(self.wait_time / 2.0)
 
@@ -250,5 +255,5 @@ class Attack(Command):
 
     def main(self):
         if self.direction:
-            press(self.direction, 3, 0.05, 0.05)
+            press(self.direction, 5, 0.02, 0.02)
         press(Key.PIERCING_ARROW, 1, 0.3, 0.3)

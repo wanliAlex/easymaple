@@ -1,0 +1,27 @@
+$, target=move_tolerance, value=0.03
+*, x=0.471, y=0.098, frequency=1, skip=False, adjust=False
+    Teleport
+
+@, label=Start
+*, x=0.471, y=0.098, frequency=15, skip=False, adjust=True
+    PlaceTeleport
+
+@, label=top
+*, x=0.471, y=0.098, frequency=1, skip=False, adjust=True
+    Attack, direction=left
+    Attack, direction=right
+    DownJump, wait_time=0.2, direction=
+
+@, label=mid
+*, x=0.471, y=0.196, frequency=1, skip=False, adjust=False
+    Attack, direction=right
+    Attack, direction=left
+    DownJump, wait_time=0.2, direction=
+
+@, label=bot
+*, x=0.471, y=0.294, frequency=1, skip=False, adjust=False
+    Attack, direction=left
+    Attack, direction=right
+    Teleport
+    Wait, duration=0.1
+>, label=Start, frequency=1, skip=False
