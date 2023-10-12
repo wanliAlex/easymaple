@@ -247,11 +247,26 @@ class JumpRagingBlow (Command):
             
 
 class BurningBlade(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
         key_down("up")
         key_down("down")
-        
+        press(self.direction,2)
         press(Key.BURNING_BLADE,4)
+        key_up("up")
+        key_up("down")
+
+class ErdaFountain(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down("up")
+        key_down("down")
+        press(self.direction,2)
+        press(Key.ERDA_FOUNTAIN,2)
         key_up("up")
         key_up("down")
 
@@ -304,15 +319,7 @@ class will(Command):
     def main(self):
         press(Key.WILL, 1, up_time = 0.3)
 
-class ErdaFountain(Command):
 
-    def main(self):
-        key_down("up")
-        key_down("down")
-        press(Key.RIGHT_ARROW,2)
-        press(Key.ERDA_FOUNTAIN,2)
-        key_up("up")
-        key_up("down")
 class Move_right(Command):
     
     def __init__(self,key_down_time=1):

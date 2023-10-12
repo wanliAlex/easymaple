@@ -9,23 +9,22 @@ $, target=move_tolerance, value=0.04
     Move_left, key_down_time=0.3
     RisingRage
     Wait, duration=0.425
-    JumpBeamBlade, direction=left
-    Wait, duration=0.2
     Rope
     Wait, duration=1.2
+    ErdaFountain, direction=right
     BlitzSheild
-    ErdaFountain
     Move_left, key_down_time=0.51
     JumpPuncture, direction=left, repetitions=1
     Wait, duration=0.28
     JumpPuncture, direction=left, repetitions=1
-    BurningBlade
+    Wait, duration=0.3
+    BurningBlade, direction=left
     Wait, duration=0.3
     ScreenCut
-    Wait, duration=0.85
+    Wait, duration=0.65
     JumpPuncture, direction=left, repetitions=1
 *, x=0.229, y=0.307, frequency=5, skip=False, adjust=False
-    Wait, duration=0.7
+    Wait, duration=0.52
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.3
     BeamBlade, direction=up
