@@ -244,13 +244,12 @@ class JumpRagingBlow(Command):
             press(Key.JUMP, n=2, down_time=0.072, up_time=0.01)
 
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
-            time.sleep(0.3)
+            time.sleep(0.335)
 
 
 class BurningBlade(Command):
     def main(self):
         key_down("down")
-        press(Key.RIGHT_ARROW, 2)
         press(Key.BURNING_BLADE, 4)
         key_up("down")
 
@@ -317,8 +316,7 @@ class ErdaFountain(Command):
 
     def main(self):
         key_down("down")
-        press(Key.RIGHT_ARROW, 2)
-        press(Key.ERDA_FOUNTAIN, 2)
+        press(Key.ERDA_FOUNTAIN, 5)
         key_up("down")
 
 

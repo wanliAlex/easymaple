@@ -6,13 +6,16 @@
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.8
     will
-    Wait, duration=0.5
+    Wait, duration=0.4
+    Move_left, key_down_time=0.1
     BurningBlade
     Wait, duration=0.7
+    Rush, direction=right
+    Wait, duration=0.5
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=1
     BeamBlade, direction=right
-    Wait, duration=0.4
+    Wait, duration=0.6
     UpJump
     Wait, duration=1
     ErdaFountain
@@ -135,7 +138,7 @@
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=1
     BeamBlade, direction=right
-    Wait, duration=0.4
+    Wait, duration=0.6
     UpJump
     Wait, duration=1
     ErdaFountain
@@ -257,12 +260,15 @@
     Wait, duration=0.8
     seren
     Wait, duration=0.5
+    Move_left, key_down_time=0.1
     BurningBlade
     Wait, duration=0.7
+    Rush, direction=right
+    Wait, duration=0.5
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=1
     BeamBlade, direction=right
-    Wait, duration=0.4
+    Wait, duration=0.6
     UpJump
     Wait, duration=1
     ErdaFountain
@@ -385,7 +391,7 @@
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=1
     BeamBlade, direction=right
-    Wait, duration=0.4
+    Wait, duration=0.6
     UpJump
     Wait, duration=1
     ErdaFountain
