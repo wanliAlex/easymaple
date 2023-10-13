@@ -238,9 +238,9 @@ class PlaceTeleport(Command):
 
     def main(self):
         key_down("down")
-        press(Key.TELEPORT, 2, 0.1, 0.1)
+        press(Key.TELEPORT, 2, 0.2, 0.2)
         key_up("down")
-        time.sleep(1.2)
+        time.sleep(1)
 
 class Teleport(Command):
 
