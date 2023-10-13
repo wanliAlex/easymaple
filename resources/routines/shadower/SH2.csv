@@ -1,0 +1,47 @@
+$, target=move_tolerance, value=0.04
+
+@, label=right_start
+*, x=0.817, y=0.264, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+*, x=0.649, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.490, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.320, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.160, y=0.264, frequency=1, skip=False, adjust=True
+
+@, label=loot
+*, x=0.16, y=0.264, frequency=6, skip=False, adjust=True
+    SHADOW_VEIL
+    Wait, duration=0.2
+    Dash, direction=Up, jump=
+*, x=0.236, y=0.183, frequency=6, skip=False, adjust=True
+    DoubleJumpAttack, direction=right
+*, x=0.365, y=0.159, frequency=6, skip=False, adjust=True
+    DoubleJumpAttack, direction=right
+*, x=0.543, y=0.125, frequency=6, skip=False, adjust=True
+    DarkFlare
+    Wait, duration=0.5
+    DoubleJump
+    Wait, duration=0.2
+    Dash, direction=right, jump=False
+*, x=0.808, y=0.135, frequency=6, skip=False, adjust=True
+    ErdaFountain
+    MESO_EXPLOSION
+    Wait, duration=1
+    DownJump, wait_time=0.2
+    MESO_EXPLOSION
+    Dash, direction=down, jump=False
+>, label=right_start, frequency=6, skip=False
+
+@, label=left_start
+*, x=0.160, y=0.264, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=right
+*, x=0.320, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.490, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.649, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.817, y=0.264, frequency=1, skip=False, adjust=True

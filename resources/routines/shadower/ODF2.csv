@@ -1,0 +1,28 @@
+$, target=move_tolerance, value=0.04
+
+@, label=left
+*, x=0.089, y=0.251, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=Right
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+
+@, label=right
+*, x=0.687, y=0.251, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+
+@, label=loot
+*, x=0.123, y=0.251, frequency=12, skip=False, adjust=True
+    SHADOW_VEIL
+    Dash, direction=up, jump=False
+*, x=0.123, y=0.084, frequency=12, skip=False, adjust=True
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+*, x=0.587, y=0.084, frequency=12, skip=False, adjust=True
+    DownJump, wait_time=0.2
+    Dash, direction=down, jump=False
+    MESO_EXPLOSION
+*, x=0.587, y=0.251, frequency=12, skip=False, adjust=True
+    SuddenRaid
+>, label=right, frequency=12, skip=False
