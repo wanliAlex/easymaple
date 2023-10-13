@@ -1,0 +1,22 @@
+$, target=move_tolerance, value=0.03
+*, x=0.361, y=0.159, frequency=1, skip=False, adjust=True
+    Teleport
+
+@, label=start
+*, x=0.361, y=0.159, frequency=12, skip=False, adjust=True
+    PlaceTeleport
+*, x=0.361, y=0.159, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    Wait, duration=0.2
+    Walk, direction=right, duration=0.2
+    DoubleJumpAttack, direction=right
+*, x=0.525, y=0.125, frequency=1, skip=False, adjust=True
+    LongDoubleJumpAttack, direction=right
+*, x=0.793, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.640, y=0.264, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.480, y=0.264, frequency=1, skip=False, adjust=False
+    Teleport
+    Wait, duration=0.2
+>, label=start, frequency=1, skip=False

@@ -197,7 +197,7 @@ class ErdaShower(Command):
 
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.086)
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
 
 
@@ -257,3 +257,44 @@ class Attack(Command):
         if self.direction:
             press(self.direction, 5, 0.02, 0.02)
         press(Key.PIERCING_ARROW, 1, 0.3, 0.3)
+
+
+class JumpAttack(Command):
+    def __init__(self, direction: str = ""):
+        super().__init__(locals())
+        self.direction = str(direction)
+
+    def main(self):
+        key_down(Key.JUMP)
+        time.sleep(0.05)
+        Attack(self.direction).main()
+        key_up(Key.JUMP)
+
+
+class DoubleJumpAttack(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        time.sleep(0.15)
+        Attack().main()
+        time.sleep(0.2)
+        key_up(self.direction)
+
+
+class LongDoubleJumpAttack(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        time.sleep(0.15)
+        Attack().main()
+        key_up(self.direction)
+        time.sleep(0.2)
+        Attack().main()
+        time.sleep(0.2)
+
