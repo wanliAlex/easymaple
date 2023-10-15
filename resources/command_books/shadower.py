@@ -13,12 +13,13 @@ class Key:
     JUMP = 'space'
 
     # Skills
-    SHOW_DOWN = "1"
+    CRUEL_STAB = "1"
     DARK_FLARE = "g"
-    LEAP = "z"
     SUDDEN_RAID = "w"
-    DEATH_STAR = "a"
+    MESO_EXPLOSION = "3"
+    SHADOW_VEIL="e"
     WARRIOR = "f5"
+    DASH = "d"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -88,7 +89,7 @@ class Move(Command):
                     elif settings.move_tolerance * 5 < abs(d_x) < settings.move_tolerance * 10:
                         DoubleJump().main()
                     elif abs(d_x) < settings.move_tolerance * 5:
-                        time.sleep(0.05)
+                        time.sleep(0.5)
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
@@ -175,9 +176,11 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
-class Show_Down(Command):
+class CRUEL_STAB_MESO_EXPLOSION(Command):
     def main(self):
-        press(Key.SHOW_DOWN)
+        press(Key.CRUEL_STAB)
+        press(Key.MESO_EXPLOSION, 3, 0.05, 0.05)
+
 
 
 class TripleJumpAttack(Command):
@@ -187,9 +190,10 @@ class TripleJumpAttack(Command):
     def main(self):
         key_down(self.direction)
         TripleJump().main()
-        Show_Down().main()
+        time.sleep(0.5)
+        CRUEL_STAB_MESO_EXPLOSION().main()
         key_up(self.direction)
-        time.sleep(0.4)
+        time.sleep(0.1)
 
 
 class DoubleJumpAttack(Command):
@@ -199,9 +203,9 @@ class DoubleJumpAttack(Command):
     def main(self):
         key_down(self.direction)
         DoubleJump().main()
-        time.sleep(0.1)
-        Show_Down().main()
-        time.sleep(0.55)
+        time.sleep(0.15)
+        CRUEL_STAB_MESO_EXPLOSION().main()
+        time.sleep(0.2)
         key_up(self.direction)
 
 
@@ -212,31 +216,26 @@ class StraightJumpAttack(Command):
     def main(self):
         press(self.direction)
         DoubleJump().main()
-        Show_Down().main()
-        time.sleep(0.4)
+        CRUEL_STAB_MESO_EXPLOSION().main()
+        time.sleep(0.1)
 
 
 
 class Buff(Command):
-    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
-
     def __init__(self):
         super().__init__(locals())
         self.buff_time = 0
 
     def main(self):
-        now = time.time()
-        if self.buff_time == 0 or now - self.buff_time > 1140:
-            press(Key.WARRIOR, 3, 0.1, 0.001)
-            self.buff_time = now
+        pass
 
 
 class UpJump(Command):
     def main(self):
-        key_up("left"); key_up("right")
-        time.sleep(0.05)
-        press(Key.JUMP, 1, down_time = 0.156, up_time = 0.19)
-        press(Key.LEAP, 1, down_time = 0.391, up_time = 0.1)
+        key_down("up")
+        press(Key.JUMP, 1, down_time=0.05, up_time=0.01)
+        press(Key.JUMP, 1, down_time=0.05, up_time=1.0)
+        key_up("up")
 
 
 class Rope(Command):
@@ -249,6 +248,11 @@ class ErdaFountain(Command):
         key_down("down")
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
+
+
+class MESO_EXPLOSION(Command):
+    def main(self):
+        press(Key.MESO_EXPLOSION, 3, 0.01, 0.01)
 
 
 class ErdaShower(Command):
@@ -290,69 +294,34 @@ class DarkFlare(Command):
 
 class SuddenRaid(Command):
     def main(self):
-        press(Key.SUDDEN_RAID, 3, 0.05, 0.05)
+        press(Key.SUDDEN_RAID, 3, 0.15, 0.05)
 
 
-class DeathStar(Command):
+class Dash(Command):
+    def __init__(self, direction, jump: bool = False):
+        super().__init__(locals())
+        self.direction = str(direction)
+        self.jump = bool(jump)
+
     def main(self):
-        press(Key.DEATH_STAR, 3, 0.1, 0.1)
+        if self.jump:
+            press(Key.JUMP, 1, 0.05, 0.1)
+        key_down(self.direction)
+        press(Key.DASH, 1, 0.1, 0.4)
+        key_up(self.direction)
 
-
-class SH2_POINT_1(Command):
+class SHADOW_VEIL(Command):
     def main(self):
-        key_down("right")
-        time.sleep(0.125)
-        key_up("right")
-        press(Key.JUMP, 1, 0.109, 0.094)
-        press(Key.JUMP, 1, 0.109, 0.032)
-        time.sleep(0.015)
-        press("left", 1, 0.110, 0.062)
-        press(Key.SHOW_DOWN, 1, 0.094, 0.6)
+        press(Key.SHADOW_VEIL, 3, 0.2, 0.2)
 
 
-class SH2_POINT_2(Command):
+class DownAttack(Command):
     def main(self):
-        key_down("right")
-        time.sleep(0.125)
-        press(Key.JUMP, 1, 0.094, 0.094)
-        press(Key.JUMP, 1, 0.140, 0.047)
-        key_up("right")
-        time.sleep(0.110)
-        press(Key.SHOW_DOWN, 1, 0.109, 0.6)
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 2)
+        key_up("down")
+        press(Key.CRUEL_STAB)
+        press(Key.MESO_EXPLOSION, 3, 0.05, 0.05)
+        time.sleep(0.5)
 
-class SH2_POINT_3(Command):
-    def main(self):
-        key_down("right")
-        time.sleep(0.094)
-        press(Key.JUMP, 1, 0.109, 0.172)
-        press(Key.JUMP, 1, 0.125, 0.001)
-        key_up("right")
-        time.sleep(0.032)
-        press(Key.SHOW_DOWN, 2, 0.1, 0.6)
-        time.sleep(0.35)
-
-class SH2_POINT_4(Command):
-    def main(self):
-        press("left", 1, 0.11, 0.001)
-        DoubleJumpAttack("left").main()
-
-
-class SH2_POINT_5(Command):
-    def main(self):
-        press("left", 1, 0.11, 0.001)
-        DoubleJumpAttack("left").main()
-
-
-class SH2_POINT_6(Command):
-    def main(self):
-        press("left", 1, 0.11, 0.001)
-        DoubleJumpAttack("left").main()
-
-
-class SH2_POINT_7(Command):
-    def main(self):
-        key_down("left")
-        time.sleep(0.187)
-        press("space", 1, 0.141, 0.109)
-        press(Key.LEAP, 1, 0.235, 0.094)
-        key_up("left")

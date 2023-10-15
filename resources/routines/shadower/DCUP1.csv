@@ -1,0 +1,39 @@
+$, target=move_tolerance, value=0.04
+
+@, label=RightTop
+*, x=0.868, y=0.068, frequency=1, skip=False, adjust=True
+
+@, label=LootTop
+*, x=0.868, y=0.068, frequency=6, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+*, x=0.706, y=0.068, frequency=6, skip=False, adjust=True
+    DoubleJumpAttack, direction=Left
+*, x=0.545, y=0.081, frequency=6, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.400, y=0.081, frequency=6, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.264, y=0.068, frequency=6, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.115, y=0.068, frequency=6, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+    Wait, duration=1.5
+
+@, label=AttacBottom
+*, x=0.868, y=0.068, frequency=1, skip=False, adjust=False
+    DownAttack
+    Walk, direction=left, duration=0.5
+*, x=0.868, y=0.183, frequency=1, skip=False, adjust=False
+    CRUEL_STAB_MESO_EXPLOSION
+*, x=0.779, y=0.183, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+*, x=0.617, y=0.200, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.468, y=0.200, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.311, y=0.200, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+*, x=0.170, y=0.183, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.034, y=0.183, frequency=1, skip=False, adjust=False
+    Walk, direction=left, duration=1
+    Wait, duration=0.3
