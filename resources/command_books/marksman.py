@@ -255,8 +255,8 @@ class Attack(Command):
 
     def main(self):
         if self.direction:
-            press(self.direction, 5, 0.02, 0.02)
-        press(Key.PIERCING_ARROW, 1, 0.3, 0.3)
+            press(self.direction, 1, 0.1, 0.001)
+        press(Key.PIERCING_ARROW, 1, 0.3, 0.6)
 
 
 class JumpAttack(Command):
