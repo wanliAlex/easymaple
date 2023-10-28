@@ -3,8 +3,9 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.35
     JumpPuncture, direction=left, repetitions=5
 *, x=0.177, y=0.292, frequency=1, skip=False, adjust=False
-    Move_right, key_down_time=0.05
+    Move_right, key_down_time=0.2
     DoubleJump
+    Wait, duration=0.06
     Rope
     Wait, duration=1.5
     JumpPuncture, direction=right, repetitions=6
