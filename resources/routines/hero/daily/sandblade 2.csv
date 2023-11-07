@@ -1,6 +1,6 @@
 $, target=move_tolerance, value=0.04
 *, x=0.927, y=0.292, frequency=1, skip=False, adjust=False
-    Wait, duration=0.35
+    Wait, duration=0.4
     JumpPuncture, direction=left, repetitions=5
 *, x=0.177, y=0.292, frequency=1, skip=False, adjust=False
     Move_right, key_down_time=0.2
