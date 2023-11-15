@@ -387,7 +387,7 @@ class Yukimusume(Command):
 
 class ErdaFountain(Command):
     def __init__(self, press_top: bool = False):
-        super.__init__(locals())
+        super().__init__(locals())
         self.press_top = bool(press_top)
 
     def main(self):
