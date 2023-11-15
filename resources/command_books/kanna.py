@@ -392,12 +392,12 @@ class ErdaFountain(Command):
 
     def main(self):
         if self.press_top:
-            key_down("top")
+            key_down("up")
         key_down("down")
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
         if self.press_top:
-            key_up("top")
+            key_up("up")
 
 
 class Balance(Command):
