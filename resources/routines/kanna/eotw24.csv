@@ -5,7 +5,8 @@ $, target=move_tolerance, value=0.065
     LucidSoul, direction=right
 *, x=0.70, y=0.27, frequency=10, skip=False, adjust=True
 *, x=0.73, y=0.270, frequency=10, skip=False, adjust=True
-    ErdaFountain
+    ErdaFountain, press_top=True
+    Wait, duration=0.5
     Tengu
 *, x=0.843, y=0.270, frequency=10, skip=False, adjust=True
     Shikigami, direction=left, attacks=1, repetitions=1
@@ -16,6 +17,7 @@ $, target=move_tolerance, value=0.065
 @, label=loot
 *, x=0.428, y=0.176, frequency=20, skip=False, adjust=False
     Fall, distance=0.2
+    Wait, duration=0.3
     Teleport, direction=Down, jump=False
 *, x=0.226, y=0.472, frequency=20, skip=False, adjust=False
     Shikigami, direction=Left, attacks=2, repetitions=1
