@@ -10,30 +10,24 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 # List of key mappings
 class Key:
     # Movement
-    JUMP = 'space'
-    UPWAIRD_CHARGE  = "s"  #up jump skill
-    ROPE = 'alt'
+    JUMP = 'c'
+
+    # Skills
+    FOX_SPIRIT = "f12"
+    BOMB_PUNCH = "a"
+    TRUE_SPIRIT_CLAW = "s"
+
+    # Buff
+    WILL = "5"
+    SEREN = "6"
+    SUN = "r"
+
+    ERDA_FOUNTAIN = "alt"
+    ROPE  = "v"
+
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
-    RUSH = 'd'
 
-    # Skills[Buffs]
-    GREEN_POT = "="
-    YELLO_POT = "-"
-
-    # Skills[Damage:attack]
-    PUNCTURE = "r"
-    RAGING_BLOW = "a"
-    BEAM_BLADE = "w"
-    SCREEN_CUT = "q"
-    RISING_RAGE = "ctrl"
-
-    BLITZ_SHEILD = "delete"
-    
-    # Skills [Placement]
-    ERDA_FOUNTAIN = "end"
-    BURNING_BLADE = "1"
-    WILL ="page down"
 
 #########################
 #       Commands        #
@@ -128,7 +122,9 @@ class Move(Command):
             if self.prev_direction:
                 key_up(self.prev_direction)
 
-
+class Will(Command):
+    def main(self):
+        press(Key.WILL, 3, 0.1, 0.1)
 
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
@@ -183,56 +179,12 @@ class Adjust(Command):
                 counter -= 1
             error = utils.distance(config.player_pos, self.target)
 
-
-class Puncture(Command):
+class Bomb_Punch(Command):
     def main(self):
-        press(Key.PUNCTURE)
-
-class RagingBlow(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    def main(self):
-        press(self.direction)
-        time.sleep(0.05)
-        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
-        time.sleep(0.335)
-
-class BeamBlade(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
-    def main(self):
-        key_down(self.direction)
-        
-        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
-        key_up(self.direction)
-
-class JumpBeamBlade(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    def main(self):
-        press(self.direction)
-        press(Key.JUMP)
-        time.sleep(0.1)
-        press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
-        time.sleep(0.275)
-
-class JumpPuncture (Command):
-    def __init__(self, direction,repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.repetitions = int(repetitions)
-    def main(self):
-        for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
-            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.315)
+        press(Key.BOMB_PUNCH)
 
 
-class JumpRagingBlow (Command):
+class JumpPunch (Command):
     def __init__(self, direction,repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
@@ -242,21 +194,54 @@ class JumpRagingBlow (Command):
             press(self.direction)
             press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             
-            press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.3)
+            press(Key.BOMB_PUNCH,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.265)
             
 
-class BurningBlade(Command):
+
+
+class StraightJumpPunch(Command):
     def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
+        press(self.direction)
+        DoubleJump().main()
+        Bomb_Punch().main()
+        time.sleep(0.4)
+
+
+
+class Buff(Command):
+    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
+
+    def __init__(self):
+        super().__init__(locals())
+        self.haku_time = 0
+        self.buff_time_180 = 0
+        self.buff_time_250 = 0
+
+    def main(self):
+        buffs_180 = [Key.SUN]
+        
+        now = time.time()
+
+        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:
+            for key in buffs_180:
+                press(key, 3, up_time=0.3)
+            self.buff_time_180 = now
+
+
+class UpJump(Command):
+    def main(self):
         key_down("up")
-        key_down("down")
-        press(self.direction,2)
-        press(Key.BURNING_BLADE,4)
+        press(Key.JUMP, 1, down_time = 0.05, up_time = 0.01)
+        press(Key.JUMP, 1, down_time = 0.05, up_time = 1.0)
         key_up("up")
-        key_up("down")
+
+class Rope(Command):
+    def main(self):
+        press(Key.ROPE, 1, up_time = 0.3)
 
 class ErdaFountain(Command):
     def __init__(self, direction):
@@ -265,60 +250,49 @@ class ErdaFountain(Command):
     def main(self):
         key_down("up")
         key_down("down")
-        press(self.direction,2)
-        press(Key.ERDA_FOUNTAIN,2)
+        press(self.direction,1)
+        press(Key.ERDA_FOUNTAIN,1)
         key_up("up")
         key_up("down")
 
-class Buff(Command):
+class ErdaShower(Command):
 
-    def __init__(self):
+    def main(self):
+        press(Key.ERDA_FOUNTAIN, 2)
+
+class DoubleJump(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+
+class DownJump(Command):
+    def __init__(self, wait_time = 0.3):
         super().__init__(locals())
-        
-        self.monster_park_pot_30mins = 0
-        '''
-        self.buff_time_120 = 0
-        self.buff_time_180 = 0
-        '''
+        self.wait_time = float(wait_time)
 
     def main(self):
-        '''
-        buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
-        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
-        '''
-        buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 3, 0.01, up_time =0.01)
+        time.sleep(self.wait_time / 2.0)
+        key_up("down")
+        time.sleep(self.wait_time / 2.0)
 
-        now = time.time()
 
-        if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
-            for key in buffs_1800:
-                press(key,1,down_time=0.5,up_time=0.3)
-            self.monster_park_pot_30mins = now
-        '''
-        if self.buff_time_120 == 0 or now - self.buff_time_120 > 120:            
-            for key in buffs_120:
-                press(key, 3, up_time=0.3)
-            self.buff_time_120 = now
-
-        if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:            
-            for key in buffs_180:
-                press(key, 3, up_time=0.4)
-            self.buff_time_180 = now
-            time.sleep(1)
-        '''
-
-class UpJump(Command):
+class TrueSpiritClaw(Command):
     def main(self):
-        press(Key.UPWAIRD_CHARGE)
+        press(Key.TRUE_SPIRIT_CLAW, 2)
 
-class Rope(Command):
+class Portal(Command):
+    def __init__(self, direction, duration):
+        super().__init__(locals())
+        self.direction = direction
+        self.duration = float(duration)
+
     def main(self):
-        press(Key.ROPE, 1, up_time = 0.3)
-
-class will(Command):
-    def main(self):
-        press(Key.WILL, 1, up_time = 0.3)
-
+        key_down(self.direction)
+        press("up", int(self.duration // 0.04) + 1, 0.02, 0.02)
+        key_up(self.direction)
 
 class Move_right(Command):
     
@@ -335,59 +309,3 @@ class Move_left(Command):
         self.key_down_time = float(key_down_time)
     def main(self):
         press(Key.LEFT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
-
-class ErdaShower(Command):
-
-    def main(self):
-        
-        press(Key.ERDA_FOUNTAIN, 2)
-
-class DoubleJump(Command):
-    def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
-        press(Key.JUMP, n = 1, down_time=0.064, up_time=0.01)
-
-class HighDoubleJump(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        
-    def main(self):
-        press(self.direction)
-        press(Key.JUMP, n = 1, down_time = 0.320, up_time = 0.0)
-        press(Key.JUMP, n = 1, down_time=0.95, up_time=0.0)
-
-class DownJump(Command):
-    def __init__(self, wait_time = 0.3):
-        super().__init__(locals())
-        self.wait_time = float(wait_time)
-
-    def main(self):
-        key_down("down")
-        time.sleep(0.1)
-        press(Key.JUMP, 3, 0.01, up_time =0.01)
-        time.sleep(self.wait_time / 2.0)
-        key_up("down")
-        time.sleep(self.wait_time / 2.0)
-
-class ScreenCut(Command):
-    def main(self):
-        press(Key.SCREEN_CUT,2)
-
-class RisingRage(Command):
-    def main(self):
-        press(Key.RISING_RAGE,2)
-        
-class Rush(Command):
-    def __init__(self,direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    
-    def main(self):
-        press(self.direction)
-        press(Key.RUSH,2)
-
-class BlitzSheild(Command):
-    def main(self):
-        
-        press(Key.BLITZ_SHEILD,2)

@@ -1,0 +1,36 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.766, y=0.307, frequency=6, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpRagingBlow, direction=left, repetitions=1
+    Move_left, key_down_time=0.5
+    Rope
+    Wait, duration=1.5
+    ErdaFountain
+    Move_left, key_down_time=0.6
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.18
+    JumpPuncture, direction=left, repetitions=1
+    ScreenCut
+    Wait, duration=0.8
+    JumpPuncture, direction=left, repetitions=1
+*, x=0.229, y=0.307, frequency=6, skip=False, adjust=False
+    Wait, duration=0.325
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.15
+    BeamBlade, direction=up
+    Wait, duration=0.2
+    JumpRagingBlow, direction=right, repetitions=4
+
+@, label=normal
+*, x=0.766, y=0.307, frequency=1, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpRagingBlow, direction=left, repetitions=5
+*, x=0.229, y=0.307, frequency=1, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.15
+    BeamBlade, direction=up
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=4

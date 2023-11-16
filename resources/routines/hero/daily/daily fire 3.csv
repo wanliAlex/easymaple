@@ -1,0 +1,13 @@
+$, target=move_tolerance, value=0.04
+
+@, label=normal
+*, x=0.880, y=0.309, frequency=1, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpRagingBlow, direction=left, repetitions=5
+    Wait, duration=0.2
+    JumpBeamBlade, direction=left
+*, x=0.229, y=0.307, frequency=1, skip=False, adjust=False
+    Wait, duration=0.28
+    Rope
+    Wait, duration=1.5
+    JumpPuncture, direction=right, repetitions=6

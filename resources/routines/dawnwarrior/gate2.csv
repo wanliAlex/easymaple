@@ -1,0 +1,38 @@
+$, target=move_tolerance, value=0.03
+
+@, label=normal
+*, x=0.868, y=0.325, frequency=5, skip=False, adjust=False
+    Wait, duration=0.4
+    JumpPunch, direction=left, repetitions=5
+*, x=0.132, y=0.325, frequency=5, skip=False, adjust=False
+    Wait, duration=0.3
+    Move_right, key_down_time=0.05
+    DoubleJump
+    Rope
+    Wait, duration=1.1
+    Rope
+    JumpPunch, direction=right, repetitions=1
+    Wait, duration=0.2
+    ErdaFountain, direction=left
+    Wait, duration=0.45
+    JumpPunch, direction=right, repetitions=1
+    Wait, duration=0.15
+    JumpPunch, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpPunch, direction=right, repetitions=1
+
+@, label=erda
+*, x=0.868, y=0.325, frequency=1, skip=False, adjust=False
+    Wait, duration=0.4
+    JumpPunch, direction=left, repetitions=5
+*, x=0.132, y=0.325, frequency=1, skip=False, adjust=False
+    Wait, duration=0.3
+    Move_right, key_down_time=0.05
+    DoubleJump
+    Rope
+    Wait, duration=1.25
+    JumpPunch, direction=right, repetitions=2
+    Wait, duration=0.2
+    JumpPunch, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpPunch, direction=right, repetitions=1

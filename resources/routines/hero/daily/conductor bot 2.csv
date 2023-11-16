@@ -1,0 +1,7 @@
+$, target=move_tolerance, value=0.04
+*, x=0.158, y=0.327, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=right, repetitions=5
+    Move_left, key_down_time=0.7
+    Rope
+    Wait, duration=1.5
+    JumpPuncture, direction=left, repetitions=5
