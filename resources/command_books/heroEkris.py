@@ -23,13 +23,14 @@ class Key:
     BEAM_BLADE = "5"
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
+    UP_ARROW = 'up'
     # Skills [Placement]
     ERDA_FOUNTAIN = "page up"
     BURNING_BLADE = "r"
     WILL = "g"
     SEREN = "t"
     RUSH = 'e'
-
+    RISING_RAGE = '3'
 #########################
 #       Commands        #
 #########################
@@ -217,6 +218,16 @@ class JumpBeamBlade(Command):
         press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
         time.sleep(0.275)
 
+class JumpBeamBladeTwo(Command):
+    def main(self):
+        press(Key.JUMP, n=2, down_time=0.085, up_time=0.01)
+        key_down(Key.UP_ARROW)
+        key_down(Key.RIGHT_ARROW)
+        press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
+        key_up(Key.RIGHT_ARROW)
+        key_up(Key.UP_ARROW)
+        time.sleep(0.275)
+
 
 class JumpPuncture(Command):
     def __init__(self, direction, repetitions=1):
@@ -319,6 +330,14 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 5)
         key_up("down")
 
+class Move_Up(Command):
+    def __init__(self, key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+
+    def main(self):
+        press(Key.UP_ARROW, n=1, down_time=self.key_down_time, up_time=1)
+
 
 class Move_right(Command):
 
@@ -345,6 +364,12 @@ class ErdaShower(Command):
     def main(self):
         press(Key.ERDA_FOUNTAIN, 2)
 
+class up(Command):
+    def __init__(self, key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+    def main(self):
+        press(Key.UP_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
 
 class DoubleJump(Command):
     def main(self):

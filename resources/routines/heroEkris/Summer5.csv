@@ -1,0 +1,67 @@
+*, x=0.790, y=0.240, frequency=5, skip=False, adjust=True
+    ErdaFountain
+    DownJump, wait_time=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1.2
+    up
+    DownJump, wait_time=0.8
+    RisingRage
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
