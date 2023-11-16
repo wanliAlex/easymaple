@@ -1,0 +1,42 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.122, y=0.325, frequency=5, skip=False, adjust=False
+    Wait, duration=0.28
+    Move_right, key_down_time=0.06
+    BlitzSheild
+    Wait, duration=0.3
+    DoubleJump
+    Wait, duration=0.3
+    Rope
+    Wait, duration=1.2
+    JumpRagingBlow, direction=right, repetitions=1
+    ErdaFountain, direction=left
+    BlitzSheild
+    Move_left, key_down_time=0.315
+    JumpRagingBlow, direction=right, repetitions=4
+*, x=0.868, y=0.325, frequency=5, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpPuncture, direction=left, repetitions=1
+    RisingRage
+    Wait, duration=1
+    DoubleJump
+    Wait, duration=0.35
+    BeamBlade, direction=up
+    Wait, duration=0.28
+    JumpPuncture, direction=left, repetitions=3
+
+@, label=normal
+*, x=0.122, y=0.325, frequency=1, skip=False, adjust=False
+    Wait, duration=0.28
+    JumpPuncture, direction=right, repetitions=5
+*, x=0.868, y=0.325, frequency=1, skip=False, adjust=True
+    Wait, duration=0.28
+    JumpPuncture, direction=left, repetitions=1
+    RisingRage
+    Wait, duration=1
+    DoubleJump
+    Wait, duration=0.35
+    BeamBlade, direction=up
+    Wait, duration=0.28
+    JumpPuncture, direction=left, repetitions=3

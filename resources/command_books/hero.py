@@ -15,6 +15,8 @@ class Key:
     ROPE = 'alt'
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
+    UP_ARROW = 'up'
+    DOWN_ARROR = 'down'
     RUSH = 'd'
 
     # Skills[Buffs]
@@ -211,7 +213,7 @@ class BeamBlade(Command):
 class JumpBeamBlade(Command):
     def __init__(self, direction):
         super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
+        self.direction = settings.validate_arrows(direction)
     def main(self):
         press(self.direction)
         press(Key.JUMP)
