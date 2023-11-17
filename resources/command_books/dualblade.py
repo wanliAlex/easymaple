@@ -471,8 +471,10 @@ class GS5_Second(Command):
 
 class GS5_Third(Command):
     def main(self):
-        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
-        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+        key_down("right")
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.096)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
 
 class GS5_End(Command):
@@ -480,8 +482,11 @@ class GS5_End(Command):
         key_up("left")
         key_up("right")
         point = (0.895, 0.13)
-        while utils.distance(config.player_pos, point) > 0.01:
-            time.sleep(0.05)
+        for _ in range(100):
+            if utils.distance(config.player_pos, point) < 0.01:
+                break
+            else:
+                time.sleep(0.05)
         press(Key.BLADE_FURY, 1, 0.1, 0.4)
         time.sleep(0.3)
         press("up", 1, 0.1)
