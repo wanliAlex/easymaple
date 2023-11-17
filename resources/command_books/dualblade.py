@@ -412,3 +412,77 @@ class CA4_Tornado(Command):
         time.sleep(0.5)
         key_up("left")
 
+
+class New_ErdaFountain(Command):
+    def __init__(self, press_top: bool = False, toggled: bool = True):
+        super().__init__(locals())
+        self.press_top = bool(press_top)
+        self.toggled = bool(toggled)
+
+    def main(self):
+        if self.toggled:
+            press(Key.ERDA_FOUNTAIN, 4)
+            time.sleep(0.1)
+        else:
+            if self.press_top:
+                key_down("up")
+            key_down("down")
+            press(Key.ERDA_FOUNTAIN, 4)
+            key_up("down")
+            if self.press_top:
+                key_up("up")
+
+timer = 0
+BOD_COOLDOWN = 6.8
+
+class GS5_Start(Command):
+
+    def main(self):
+        global timer
+        while True:
+            if timer == 0 or time.time() - timer > BOD_COOLDOWN:
+                key_down("right")
+                time.sleep(0.1)
+                press(Key.JUMP, 1, 0.1,0.2)
+                press(Key.JUMP, 1, 0.1)
+                press(Key.BOD, 1, 0.1, 0.1)
+                timer = time.time()
+                key_up("right")
+                time.sleep(0.3)
+                break
+            else:
+                time.sleep(BOD_COOLDOWN - (time.time() - timer))
+
+
+class GS5_First(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.BLADE_FURY, 1, 0.1, 0.05)
+
+class GS5_Second(Command):
+    def main(self):
+        key_up("right")
+        press(Key.JUMP, n=1, down_time=0.194, up_time=0.246)
+        press(Key.JUMP, n=1, down_time=0.041, up_time=0.11)
+        press(Key.BLADE_FURY, 1, 0.1, 0.05)
+
+
+class GS5_Third(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+        press(Key.BLADE_FURY, 1, 0.1, 0.05)
+
+class GS5_End(Command):
+    def main(self):
+        key_up("left")
+        key_up("right")
+        point = (0.895, 0.13)
+        while utils.distance(config.player_pos, point) > 0.01:
+            time.sleep(0.05)
+        press(Key.BLADE_FURY, 1, 0.1, 0.4)
+        time.sleep(0.3)
+        press("up", 1, 0.1)
+
