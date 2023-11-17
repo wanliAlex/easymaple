@@ -386,18 +386,23 @@ class Yukimusume(Command):
         press(Key.YUKIMUSUME, 2)
 
 class ErdaFountain(Command):
-    def __init__(self, press_top: bool = False):
+    def __init__(self, press_top: bool = False, toggled: bool = True):
         super().__init__(locals())
         self.press_top = bool(press_top)
+        self.toggled = bool(toggled)
 
     def main(self):
-        if self.press_top:
-            key_down("up")
-        key_down("down")
-        press(Key.ERDA_FOUNTAIN, 4)
-        key_up("down")
-        if self.press_top:
-            key_up("up")
+        if self.toggled:
+            press(Key.ERDA_FOUNTAIN, 4)
+            time.sleep(0.1)
+        else:
+            if self.press_top:
+                key_down("up")
+            key_down("down")
+            press(Key.ERDA_FOUNTAIN, 4)
+            key_up("down")
+            if self.press_top:
+                key_up("up")
 
 
 class Balance(Command):
