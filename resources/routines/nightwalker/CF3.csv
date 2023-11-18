@@ -1,0 +1,34 @@
+$, target=move_tolerance, value=0.035
+
+@, label=LeftTop
+*, x=0.21, y=0.163, frequency=1, skip=False, adjust=False
+    DarkOmen
+    Wait, duration=0.5
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+
+@, label=TopMid
+*, x=0.540, y=0.163, frequency=5, skip=False, adjust=False
+    DarkServant
+*, x=0.540, y=0.163, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+    DoubleJumpAttack, direction=right
+
+@, label=ErdaFountain
+*, x=0.871, y=0.163, frequency=5, skip=False, adjust=False
+    ErdaFountain, press_top=False, toggled=True
+
+@, label=RightTop
+*, x=0.871, y=0.163, frequency=1, skip=False, adjust=False
+    CF3_RightTop
+
+@, label=RightBot
+*, x=0.871, y=0.320, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+
+@, label=LeftBot
+*, x=0.21, y=0.320, frequency=1, skip=False, adjust=False
+    CF3_LeftBot
