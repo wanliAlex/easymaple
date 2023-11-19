@@ -1,0 +1,32 @@
+$, target=move_tolerance, value=0.035
+$, target=adjust_tolerance, value=0.01
+
+@, label=RightTop
+*, x=0.807, y=0.219, frequency=1, skip=False, adjust=True
+    DoubleJumpAttack, direction=left
+
+@, label=ErdaFountain
+*, x=0.641, y=0.219, frequency=5, skip=False, adjust=False
+    TFEL6_Erda
+
+@, label=MidRight
+*, x=0.641, y=0.219, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+    DoubleJumpAttack, direction=left
+    Wait, duration=0.5
+
+@, label=DarkServent
+*, x=0.344, y=0.219, frequency=5, skip=False, adjust=False
+    DarkServant
+
+@, label=MidLeft
+*, x=0.344, y=0.219, frequency=1, skip=False, adjust=False
+    TFEL6_MidLeft
+
+@, label=BotLeft
+*, x=0.344, y=0.302, frequency=1, skip=False, adjust=True
+    TFEL6_BotLeft
+
+@, label=BotRight
+*, x=0.870, y=0.302, frequency=1, skip=False, adjust=False
+    TFEL6_BotRight

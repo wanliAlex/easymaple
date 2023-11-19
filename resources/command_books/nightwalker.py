@@ -184,7 +184,7 @@ class TripleJumpAttack(Command):
         time.sleep(0.5)
         press(Key.QUINTUPLE_STAR, 1, 0.1, 0.1)
         key_up(self.direction)
-        time.sleep(0.1)
+        time.sleep(0.35)
 
 
 class DoubleJumpAttack(Command):
@@ -364,6 +364,94 @@ class PD2_YaJian(Command):
     @staticmethod
     def shadow_bite():
         press(Key.SHADOW_BITE, 1, 0.1)
+
+
+
+class TFEL6_Erda(Command):
+
+    _erda_point = (0.63, 0.13)
+    _current_point = (0.63, 0.219)
+
+    def main(self):
+        time.sleep(0.5)
+        key_down("up")
+        press(Key.JUMP, 1, down_time=0.1, up_time=0.1)
+        press(Key.JUMP, 1, down_time=0.05, up_time=0.5)
+        key_up("up")
+        time.sleep(0.5)
+        for i in range(100):
+            if abs(self._erda_point[1] - config.player_pos[1]) < 0.01:
+                break
+            else:
+                time.sleep(0.02)
+
+        ErdaFountain().main()
+
+        key_down("down")
+        press(Key.JUMP, 2, down_time=0.1, up_time=0.1)
+        key_up("down")
+        for i in range(100):
+            if abs(self._current_point[1] - config.player_pos[1]) < 0.01:
+                break
+            else:
+                time.sleep(0.02)
+        time.sleep(0.2)
+
+class TFEL6_MidLeft(Command):
+    _target_point = (0.344, 0.302)
+
+    def main(self):
+        key_down("down")
+        press(Key.JUMP, 2, down_time=0.05, up_time=0.05)
+        press("left", 1, 0.05)
+        press(Key.QUINTUPLE_STAR, 1, 0.05, 0.05)
+        key_up("down")
+
+        for i in range(100):
+            if abs(self._target_point[1] - config.player_pos[1]) < 0.001:
+                return True
+            else:
+                time.sleep(0.02)
+        time.sleep(0.2)
+
+class TFEL6_BotLeft(Command):
+    _target_point = (0.839, 0.219)
+    _counter = 0
+
+    def main(self):
+        DoubleJumpAttack("right").main()
+        DoubleJumpAttack("right").main()
+        TripleJumpAttack("right").main()
+
+class TFEL6_BotRight(Command):
+
+    _target_point = (0.839, 0.219)
+    _counter = 0
+
+    def main(self):
+        key_down("left")
+        key_down("up")
+        press(Key.JUMP, 1, down_time=0.1, up_time=0.1)
+        key_up("left")
+        press(Key.JUMP, 1, down_time=0.05, up_time=0.5)
+        key_up("up")
+
+        self.attack()
+
+        for i in range(100):
+            if abs(self._target_point[1] - config.player_pos[1]) < 0.01:
+                break
+            else:
+                time.sleep(0.02)
+        time.sleep(0.2)
+
+    def attack(self):
+        if self._counter % 2 == 0:
+            press(Key.DARK_OMEN, 1, 0.1)
+        else:
+            press(Key.SHADOW_BITE, 1, 0.1)
+        self._counter += 1
+
 
 
 
