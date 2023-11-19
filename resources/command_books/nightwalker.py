@@ -86,7 +86,7 @@ class Move(Command):
                     elif settings.move_tolerance * 5 < abs(d_x) < settings.move_tolerance * 10:
                         DoubleJump().main()
                     elif abs(d_x) < settings.move_tolerance * 5:
-                        time.sleep(0.5)
+                        time.sleep(0.25)
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
@@ -327,6 +327,43 @@ class CF3_LeftBot(Command):
                 break
             else:
                 time.sleep(0.02)
+
+
+
+class PD2_YaJian(Command):
+    erda_cd = 53
+    shadow_bite_cd = 11.5
+    tick = 0.5
+
+    def __init__(self):
+        super().__init__(locals())
+        self.erda_time = 0
+        self.shadow_bite_time = 0
+
+    def main(self):
+        now = time.time()
+        if self.erda_time == 0 or now - self.erda_time > self.erda_cd:
+            self.place_erda()
+            self.erda_time = time.time()
+
+        now = time.time()
+        if self.shadow_bite_time == 0 or now - self.shadow_bite_cd > self.shadow_bite_cd:
+            self.shadow_bite()
+            self.shadow_bite_time = time.time()
+
+        time.sleep(self.tick)
+
+    @staticmethod
+    def place_erda():
+        press(Key.DARK_SERVENT, 1, 0.2, 0.5)
+        press(Key.ROPE, 1, 0.1, 2.1)
+        ErdaFountain().main()
+        press(Key.DARK_SERVENT, 1, 0.1, 0.01)
+        time.sleep(0.3)
+
+    @staticmethod
+    def shadow_bite():
+        press(Key.SHADOW_BITE, 1, 0.1)
 
 
 
