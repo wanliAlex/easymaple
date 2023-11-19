@@ -81,24 +81,27 @@ class Move(Command):
                     local_error > settings.move_tolerance and \
                     global_error > settings.move_tolerance:
                 d_x = point[0] - config.player_pos[0]
-                if abs(d_x) > settings.move_tolerance / math.sqrt(2):
+                if abs(d_x) > settings.move_tolerance:
                     if d_x < 0:
                         key = 'left'
                     else:
                         key = 'right'
                     self._new_direction(key)
+
                     if abs(d_x) > settings.move_tolerance * 10:
                         TripleJump().main()
-                    if abs(d_x) > settings.move_tolerance * 5:
+                    elif settings.move_tolerance * 5 < abs(d_x) < settings.move_tolerance * 10:
                         DoubleJump().main()
+                    elif abs(d_x) < settings.move_tolerance * 5:
+                        time.sleep(0.25)
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
                     counter -= 1
-                    if i < len(path) - 1:
-                        time.sleep(0.15)
                 else:
+                    key_up("left")
+                    key_up("right")
                     d_y = point[1] - config.player_pos[1]
-                    if abs(d_y) > settings.move_tolerance / math.sqrt(2):
+                    if abs(d_y) > settings.move_tolerance:
                         if d_y < 0:
                             if abs(d_y) < 0.1:
                                 UpJump().main()
@@ -470,23 +473,33 @@ class GS5_Second(Command):
 
 
 class GS5_Third(Command):
+    _target_point = (0.895, 0.13)
+
     def main(self):
         key_down("right")
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.096)
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
         key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
+        for i in range(100):
+            if utils.distance(config.player_pos, self._target_point) < 0.02:
+                return True
+            else:
+                time.sleep(0.02)
+        DoubleJump().main()
 
 class GS5_End(Command):
+
+    _current_point = (0.895, 0.13)
+
     def main(self):
         key_up("left")
         key_up("right")
-        point = (0.895, 0.13)
         for _ in range(100):
-            if utils.distance(config.player_pos, point) < 0.01:
+            if utils.distance(config.player_pos, self._current_point) < 0.02:
                 break
             else:
-                time.sleep(0.05)
+                time.sleep(0.02)
         press(Key.BLADE_FURY, 1, 0.1, 0.4)
         time.sleep(0.3)
         press("up", 1, 0.1)
