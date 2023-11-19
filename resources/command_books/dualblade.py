@@ -459,16 +459,19 @@ class GS5_Start(Command):
 
 class GS5_First(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        key_down("right")
+        press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.109)
+        press(Key.JUMP, n = 1, down_time=0.125, up_time=0.156)
+        press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.206)
+        key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
 
 class GS5_Second(Command):
     def main(self):
-        key_up("right")
+        key_down("right")
         press(Key.JUMP, n=1, down_time=0.194, up_time=0.246)
         press(Key.JUMP, n=1, down_time=0.041, up_time=0.11)
+        key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
 
 
@@ -481,26 +484,24 @@ class GS5_Third(Command):
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
         key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
-        for i in range(100):
+        for _ in range(3):
+            for i in range(100):
+                if utils.distance(config.player_pos, self._target_point) < 0.02:
+                    press(Key.BLADE_FURY, 1, 0.1, 0.05)
+                    return True
+                else:
+                    time.sleep(0.01)
+            DoubleJump().main()
+
+class GS5_End(Command):
+    _target_point = (0.155, 0.16)
+
+    def main(self):
+        time.sleep(0.2)
+        press("up", 1, 0.1)
+        for i in range(3):
             if utils.distance(config.player_pos, self._target_point) < 0.02:
                 return True
             else:
-                time.sleep(0.02)
-        DoubleJump().main()
-
-class GS5_End(Command):
-
-    _current_point = (0.895, 0.13)
-
-    def main(self):
-        key_up("left")
-        key_up("right")
-        for _ in range(100):
-            if utils.distance(config.player_pos, self._current_point) < 0.02:
-                break
-            else:
-                time.sleep(0.02)
-        press(Key.BLADE_FURY, 1, 0.1, 0.4)
-        time.sleep(0.3)
-        press("up", 1, 0.1)
+                press("up", 1, 0.1)
 
