@@ -317,6 +317,16 @@ class Rope(Command):
     def main(self):
         press(Key.ROPE, 1, up_time = 0.3)
 
+class ShortRope(Command):
+    def main(self):
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+        press(Key.ROPE, 1,down_time=0.1, up_time = 0.1)
+
 class will(Command):
     def main(self):
         press(Key.WILL, 1, up_time = 0.3)
