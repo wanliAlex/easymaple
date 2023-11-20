@@ -2,7 +2,7 @@ $, target=move_tolerance, value=0.035
 $, target=adjust_tolerance, value=0.01
 
 @, label=RightTop
-*, x=0.807, y=0.219, frequency=1, skip=False, adjust=True
+*, x=0.790, y=0.219, frequency=1, skip=False, adjust=True
     DoubleJumpAttack, direction=left
 
 @, label=ErdaFountain
