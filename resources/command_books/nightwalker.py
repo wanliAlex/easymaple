@@ -402,7 +402,7 @@ class TFEL6_MidLeft(Command):
 
     def main(self):
         key_down("down")
-        press(Key.JUMP, 2, down_time=0.05, up_time=0.05)
+        press(Key.JUMP, 2, down_time=0.1)
         press("left", 1, 0.05)
         press(Key.QUINTUPLE_STAR, 1, 0.05, 0.05)
         key_up("down")

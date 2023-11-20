@@ -22,6 +22,7 @@ $, target=adjust_tolerance, value=0.01
 @, label=MidLeft
 *, x=0.344, y=0.219, frequency=1, skip=False, adjust=False
     TFEL6_MidLeft
+    Wait, duration=0.2
 
 @, label=BotLeft
 *, x=0.344, y=0.302, frequency=1, skip=False, adjust=True
