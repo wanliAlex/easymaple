@@ -451,7 +451,7 @@ class GS5_Start(Command):
                 press(Key.BOD, 1, 0.1, 0.1)
                 timer = time.time()
                 key_up("right")
-                time.sleep(0.3)
+                time.sleep(0.2)
                 break
             else:
                 time.sleep(BOD_COOLDOWN - (time.time() - timer))
