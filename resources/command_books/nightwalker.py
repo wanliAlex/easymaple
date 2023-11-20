@@ -429,6 +429,7 @@ class TFEL6_BotRight(Command):
     _counter = 0
 
     def main(self):
+        time.sleep(0.2)
         key_down("left")
         key_down("up")
         press(Key.JUMP, 1, down_time=0.1, up_time=0.1)
