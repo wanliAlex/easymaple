@@ -2,7 +2,7 @@ $, target=move_tolerance, value=0.035
 $, target=adjust_tolerance, value=0.01
 
 @, label=RightTop
-*, x=0.790, y=0.219, frequency=1, skip=False, adjust=True
+*, x=0.800, y=0.219, frequency=1, skip=False, adjust=True
     DoubleJumpAttack, direction=left
 
 @, label=ErdaFountain
@@ -13,7 +13,7 @@ $, target=adjust_tolerance, value=0.01
 *, x=0.641, y=0.219, frequency=1, skip=False, adjust=False
     DoubleJumpAttack, direction=left
     DoubleJumpAttack, direction=left
-    Wait, duration=0.5
+    Walk, direction=right, duration=0.3
 
 @, label=DarkServent
 *, x=0.344, y=0.219, frequency=5, skip=False, adjust=False
