@@ -1,0 +1,71 @@
+*, x=0.766, y=0.167, frequency=5, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.5
+    StraightJumpAttack, direction=left
+    Wait, duration=0.4
+    JumpShadowAssault
+    Wait, duration=0.4
+    DashShort
+    Wait, duration=0.3
+    DarkFlare
+    Wait, duration=0.4
+    StraightJumpAttack, direction=LEFT
+    JumpShadowAssaultBot
+    Wait, duration=0.4
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    Walk, direction=left, duration=0.4
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    Walk, direction=right, duration=0.2
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    Walk, direction=left, duration=0.4
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    Walk, direction=right, duration=0.2
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    Walk, direction=left, duration=0.4
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    Walk, direction=right, duration=0.2
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    Walk, direction=left, duration=0.4
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    StraightJumpAttack, direction=left
+    Walk, direction=right, duration=0.2
+    StraightJumpAttack, direction=right
+    Wait, duration=0.3
+    StraightJumpShadowVeil, direction=right, repetitions=1
+    Wait, duration=0.2
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    StraightJumpAttack, direction=right
+    Wait, duration=1
