@@ -1,66 +1,275 @@
-*, x=0.790, y=0.240, frequency=5, skip=False, adjust=True
+*, x=0.790, y=0.240, frequency=1, skip=False, adjust=True
     ErdaFountain
     DownJump, wait_time=0.5
     JumpRagingBlow, direction=right, repetitions=1
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
-    RisingRage
+    Wait, duration=0.7
+    Move_right, key_down_time=0.3
     Wait, duration=0.8
+    will
+    Wait, duration=0.6
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.8
+    BurningBlade
+    Wait, duration=0.7
+    DownJump, wait_time=0.6
+    DownJump, wait_time=0.6
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
-    Wait, duration=0.8
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
-    Wait, duration=0.8
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
-    Wait, duration=0.8
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
-    Wait, duration=0.8
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
-    Wait, duration=0.8
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
     JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=1.2
+*, x=0.790, y=0.240, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    DownJump, wait_time=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1
     up
-    DownJump, wait_time=0.8
+    DownJump, wait_time=0.6
     RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+*, x=0.790, y=0.240, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    DownJump, wait_time=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1
+    up
+    Wait, duration=0.7
+    Move_right, key_down_time=0.3
     Wait, duration=0.8
+    seren
+    Wait, duration=0.6
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.8
+    BurningBlade
+    Wait, duration=0.7
+    DownJump, wait_time=0.6
+    DownJump, wait_time=0.6
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+*, x=0.790, y=0.240, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    DownJump, wait_time=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.5
+    JumpBeamBladeTwo
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=1
+    up
+    DownJump, wait_time=0.6
+    RisingRage
+    Wait, duration=0.7
     JumpRagingBlow, direction=right, repetitions=1
     Wait, duration=0.5
     JumpBeamBladeTwo
