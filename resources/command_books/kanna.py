@@ -39,6 +39,7 @@ class Key:
     YUKIMUSUME = 'end'
     MANA_BALANCE = 'd'
     ROPE = "n"
+    fma = "t"
 
 #########################
 #       Commands        #
@@ -417,3 +418,23 @@ class Charm(Command):
 
     def main(self):
         press(Key.CHARM, 2)
+
+
+class Domain_FMA_Iterator(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.counter = 0
+
+    def main(self):
+        if self.counter % 2 == 0:
+            self.cast_domain()
+        elif self.counter % 2 == 1:
+            self.cast_fma()
+        self.counter = (self.counter + 1) % 2
+
+    def cast_domain(self):
+        press(Key.DOMAIN, 2, 0.2, 0.01)
+
+    def cast_fma(self):
+        press(Key.fma, 2, 0.1, 0.01)
+
