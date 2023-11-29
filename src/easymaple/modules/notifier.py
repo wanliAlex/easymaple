@@ -78,13 +78,13 @@ class Notifier:
                 #    self._alert('siren')
 
                 # Check for other players entering the map
-                filtered = utils.filter_color(minimap, OTHER_RANGES)
-                others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
-                config.stage_fright = others > 0
-                if others != prev_others:
-                    if others > prev_others:
-                        self._ping('ding')
-                    prev_others = others
+                #filtered = utils.filter_color(minimap, OTHER_RANGES)
+                #others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
+                #config.stage_fright = others > 0
+                #if others != prev_others:
+                #    if others > prev_others:
+                #        self._ping('ding')
+                #    prev_others = others
 
                 # Check for rune
                 now = time.time()
