@@ -117,8 +117,8 @@ class Notifier:
     def is_rune_cooldown(frame) -> bool:
         rune_cd = utils.multi_match(frame[:frame.shape[0] // 8, :],
                                       RUNE_COOLDOWN_TEMPLATE,
-                                      threshold=0.8)
-        return len(rune_cd) > 0
+                                      threshold=0.6)
+        return bool(len(rune_cd) > 0)
 
 
     def _alert(self, name, volume=0.75):
