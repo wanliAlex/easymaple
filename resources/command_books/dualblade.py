@@ -208,7 +208,7 @@ class Buff(Command):
 class UpJump(Command):
     def main(self):
         key_down("up")
-        press(Key.JUMP, 1, down_time = 0.05, up_time = 0.05)
+        press(Key.JUMP, 1, down_time = 0.1, up_time = 0.05)
         press(Key.BLADE_ASCENSION, 1, down_time = 0.1, up_time = 0.3)
         key_up("up")
 

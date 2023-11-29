@@ -28,8 +28,8 @@ OTHER_TEMPLATE = cv2.cvtColor(other_filtered, cv2.COLOR_BGR2GRAY)
 # The Elite Boss's warning sign
 ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
 
-RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd.png', 0)
-
+RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd_template.jpg', 0)
+RUNE_COOLDOWN_TEMPLATE_1 = cv2.imread('assets/rune_cd_template_1.jpg', 0)
 
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
@@ -117,8 +117,12 @@ class Notifier:
     def is_rune_cooldown(frame) -> bool:
         rune_cd = utils.multi_match(frame[:frame.shape[0] // 8, :],
                                       RUNE_COOLDOWN_TEMPLATE,
-                                      threshold=0.6)
-        return bool(len(rune_cd) > 0)
+                                      threshold=0.8)
+
+        rune_cd_1 = utils.multi_match(frame[:frame.shape[0] // 8, :],
+                                      RUNE_COOLDOWN_TEMPLATE_1,
+                                      threshold=0.9)
+        return bool((len(rune_cd) > 0) or (len(rune_cd_1 ) > 0))
 
 
     def _alert(self, name, volume=0.75):
