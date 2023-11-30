@@ -4,6 +4,7 @@ $, target=jump_threshold, value=0.13
 @, label=Erda
 *, x=0.155, y=0.240, frequency=8, skip=False, adjust=False
     New_ErdaFountain, press_top=False, toggled=True
+    Wait, duration=0.2
 
 @, label=Start
 *, x=0.155, y=0.160, frequency=1, skip=False, adjust=False
