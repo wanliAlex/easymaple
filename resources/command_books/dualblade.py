@@ -435,26 +435,28 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
-timer = 0
 BOD_COOLDOWN = 6.8
 
 class GS5_Start(Command):
 
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+
     def main(self):
-        global timer
         while True:
-            if timer == 0 or time.time() - timer > BOD_COOLDOWN:
+            if self.timer == 0 or time.time() - self.timer > BOD_COOLDOWN:
                 key_down("right")
                 time.sleep(0.1)
                 press(Key.JUMP, 1, 0.1,0.2)
                 press(Key.JUMP, 1, 0.1)
                 press(Key.BOD, 1, 0.1, 0.1)
-                timer = time.time()
+                self.timer = time.time()
                 key_up("right")
                 time.sleep(0.2)
                 break
             else:
-                time.sleep(BOD_COOLDOWN - (time.time() - timer))
+                time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
 
 
 class GS5_First(Command):
@@ -490,7 +492,7 @@ class GS5_Third(Command):
                     press(Key.BLADE_FURY, 1, 0.1, 0.05)
                     return True
                 else:
-                    time.sleep(0.01)
+                    time.sleep(0.05)
             DoubleJump().main()
 
 class GS5_End(Command):
