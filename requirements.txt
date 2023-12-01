@@ -6,5 +6,4 @@ opencv-python-headless
 Pillow
 pygame
 pywin32
-tensorflow
 pynput
