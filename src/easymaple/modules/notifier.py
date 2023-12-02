@@ -96,8 +96,13 @@ class Notifier:
                 # Check for rune
 
                 if self.counter >= RUNE_DETECT_FREQUENCY:
+                    print("Doing rune detection")
                     now = time.time()
                     is_rune_cooldown = self.is_rune_cooldown(frame)
+                    if is_rune_cooldown:
+                        print("rune is in cooldown")
+                    else:
+                        print("rune is NOT in cooldown")
                     if not is_rune_cooldown:
                         if not config.bot.rune_active:
                             filtered = utils.filter_color(minimap, RUNE_RANGES)
