@@ -133,7 +133,7 @@ class Notifier:
 
         rune_cd_1 = utils.multi_match(frame[:frame.shape[0] // 8, :],
                                       RUNE_COOLDOWN_TEMPLATE_1,
-                                      threshold=0.8)
+                                      threshold=0.85)
         return bool((len(rune_cd) > 0) or (len(rune_cd_1 ) > 0))
 
 
