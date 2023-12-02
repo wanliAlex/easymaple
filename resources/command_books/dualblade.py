@@ -454,7 +454,7 @@ class GS5_Start(Command):
                 self.timer = time.time()
                 key_up("right")
                 time.sleep(0.2)
-                break
+                return
             else:
                 time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
 
@@ -493,7 +493,10 @@ class GS5_Third(Command):
                     return True
                 else:
                     time.sleep(0.05)
+            key_down("right")
             DoubleJump().main()
+            key_up("right")
+
 
 class GS5_End(Command):
     _target_point = (0.155, 0.16)
