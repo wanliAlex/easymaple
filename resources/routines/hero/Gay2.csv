@@ -23,7 +23,7 @@ $, target=move_tolerance, value=0.04
     ErdaFountain, direction=left
     BlitzSheild
     Move_left, key_down_time=0.315
-    Wait, duration=0.1
+    Wait, duration=0.2
     JumpRagingBlow, direction=right, repetitions=2
     BurningBlade, direction=right
     Wait, duration=0.3

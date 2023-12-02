@@ -1,7 +1,24 @@
 $, target=move_tolerance, value=0.04
-*, x=0.158, y=0.327, frequency=1, skip=False, adjust=False
-    JumpPuncture, direction=right, repetitions=5
-    Move_left, key_down_time=0.7
+*, x=0.158, y=0.311, frequency=6, skip=False, adjust=True
+    Wait, duration=0.35
+    JumpPuncture, direction=right, repetitions=4
+    ErdaFountain, direction=left
+    Wait, duration=0.3
+    Rope
+    Wait, duration=1.5
+    BurningBlade, direction=left
+    Wait, duration=0.3
+    JumpPuncture, direction=left, repetitions=3
+    ScreenCut
+    Wait, duration=0.8
+    Rush, direction=left
+    Wait, duration=0.25
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.158, y=0.311, frequency=1, skip=False, adjust=False
+    Wait, duration=0.35
+    JumpPuncture, direction=right, repetitions=4
+    Wait, duration=0.25
     Rope
     Wait, duration=1.5
     JumpPuncture, direction=left, repetitions=5
