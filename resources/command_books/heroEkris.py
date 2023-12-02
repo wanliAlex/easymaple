@@ -255,7 +255,7 @@ class JumpRagingBlow(Command):
             press(Key.JUMP, n=2, down_time=0.072, up_time=0.01)
 
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
-            time.sleep(0.335)
+            time.sleep(0.4)
 
 
 class BurningBlade(Command):
