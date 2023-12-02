@@ -114,8 +114,9 @@ class Notifier:
                         elif now - rune_start_time > self.rune_alert_delay:     # Alert if rune hasn't been solved
                             config.bot.rune_active = False
                             self._alert('siren')
-
-            self.counter = (self.counter + 1) % RUNE_DETECT_FREQUENCY
+                    self.counter = 0
+                else:
+                    self.counter += 1
             time.sleep(0.05)
 
 
