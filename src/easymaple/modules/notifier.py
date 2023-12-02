@@ -31,6 +31,8 @@ ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
 RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd_template.jpg', 0)
 RUNE_COOLDOWN_TEMPLATE_1 = cv2.imread('assets/rune_cd_template_1.jpg', 0)
 
+RUNE_DETECT_FREQUENCY = 20
+
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
 
@@ -51,6 +53,8 @@ class Notifier:
         self.room_change_threshold = 0.9
         self.rune_alert_delay = 270         # 4.5 minutes
 
+        self.counter = 0
+
     def start(self):
         """Starts this Notifier's thread."""
 
@@ -59,7 +63,6 @@ class Notifier:
 
     def _main(self):
         self.ready = True
-        prev_others = 0
         rune_start_time = time.time()
         while True:
             if config.enabled:
@@ -91,27 +94,30 @@ class Notifier:
 
 
                 # Check for rune
-                now = time.time()
 
-                is_rune_cooldown = self.is_rune_cooldown(frame)
+                if self.counter >= RUNE_DETECT_FREQUENCY:
+                    now = time.time()
+                    is_rune_cooldown = self.is_rune_cooldown(frame)
+                    if not is_rune_cooldown:
+                        if not config.bot.rune_active:
+                            filtered = utils.filter_color(minimap, RUNE_RANGES)
+                            matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.9)
+                            rune_start_time = now
+                            if matches and config.routine.sequence:
+                                abs_rune_pos = (matches[0][0], matches[0][1])
+                                config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
+                                distances = list(map(distance_to_rune, config.routine.sequence))
+                                index = np.argmin(distances)
+                                config.bot.rune_closest_pos = config.routine[index].location
+                                config.bot.rune_active = True
+                                self._ping('rune_appeared', volume=0.75)
+                        elif now - rune_start_time > self.rune_alert_delay:     # Alert if rune hasn't been solved
+                            config.bot.rune_active = False
+                            self._alert('siren')
 
-                if not is_rune_cooldown:
-                    if not config.bot.rune_active:
-                        filtered = utils.filter_color(minimap, RUNE_RANGES)
-                        matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.9)
-                        rune_start_time = now
-                        if matches and config.routine.sequence:
-                            abs_rune_pos = (matches[0][0], matches[0][1])
-                            config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
-                            distances = list(map(distance_to_rune, config.routine.sequence))
-                            index = np.argmin(distances)
-                            config.bot.rune_closest_pos = config.routine[index].location
-                            config.bot.rune_active = True
-                            self._ping('rune_appeared', volume=0.75)
-                    elif now - rune_start_time > self.rune_alert_delay:     # Alert if rune hasn't been solved
-                        config.bot.rune_active = False
-                        self._alert('siren')
+            self.counter = (self.counter + 1) % RUNE_DETECT_FREQUENCY
             time.sleep(0.05)
+
 
     @staticmethod
     def is_rune_cooldown(frame) -> bool:
@@ -121,7 +127,7 @@ class Notifier:
 
         rune_cd_1 = utils.multi_match(frame[:frame.shape[0] // 8, :],
                                       RUNE_COOLDOWN_TEMPLATE_1,
-                                      threshold=0.9)
+                                      threshold=0.8)
         return bool((len(rune_cd) > 0) or (len(rune_cd_1 ) > 0))
 
 
