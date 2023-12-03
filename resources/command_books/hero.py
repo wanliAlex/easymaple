@@ -233,6 +233,19 @@ class JumpPuncture (Command):
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
             time.sleep(0.315)
 
+class JumpPunctures (Command):
+    def __init__(self, direction,repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.15, up_time = 0.01)
+            press(Key.JUMP, n = 2, down_time = 0.05, up_time = 0.01)
+            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.315)
+
 
 class JumpRagingBlow (Command):
     def __init__(self, direction,repetitions=1):

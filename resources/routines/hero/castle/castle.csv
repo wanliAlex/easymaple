@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.082, y=0.312, frequency=5, skip=False, adjust=True
+    JumpRagingBlow, direction=right, repetitions=4
+    Wait, duration=0.3
+    ShortRope
+    ErdaFountain, direction=left
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=5
+
+@, label=normal
+*, x=0.176, y=0.312, frequency=1, skip=False, adjust=True
+    JumpRagingBlow, direction=right, repetitions=1
+    RisingRage
+    Wait, duration=0.6
+    DoubleJump
+    Wait, duration=0.3
+    BeamBlade, direction=up
+    Wait, duration=0.3
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=4
