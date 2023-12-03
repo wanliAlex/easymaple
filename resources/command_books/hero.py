@@ -18,7 +18,7 @@ class Key:
     UP_ARROW = 'up'
     DOWN_ARROR = 'down'
     RUSH = 'd'
-
+    LEAP_ATTACK = '7'
     # Skills[Buffs]
     GREEN_POT = "="
     YELLO_POT = "-"
@@ -325,6 +325,10 @@ class Buff(Command):
 class UpJump(Command):
     def main(self):
         press(Key.UPWAIRD_CHARGE)
+
+class LeapAttack(Command):
+    def main(self):
+        press(Key.LEAP_ATTACK)
 
 class Rope(Command):
     def main(self):
