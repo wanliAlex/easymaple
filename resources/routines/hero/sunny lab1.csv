@@ -1,0 +1,43 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.895, y=0.542, frequency=4, skip=False, adjust=True
+    Wait, duration=0.35
+    BlitzSheild
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=1
+    Wait, duration=0.2
+    ShortRope
+    Wait, duration=0.5
+    ErdaFountain, direction=left
+    BlitzSheild
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=1
+    BurningBlade, direction=left
+    Wait, duration=0.3
+    ScreenCut
+    Wait, duration=0.75
+    JumpRagingBlow, direction=left, repetitions=3
+    LeapAttack
+    LeapAttack
+    LeapAttack
+    Move_right, key_down_time=0.9
+*, x=0.07, y=0.542, frequency=4, skip=False, adjust=False
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=5
+
+@, label=normal
+*, x=0.968, y=0.542, frequency=1, skip=False, adjust=False
+    Wait, duration=0.55
+    JumpRagingBlow, direction=left, repetitions=3
+    Wait, duration=0.1
+    DoubleJump
+    BeamBlade, direction=up
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=1
+*, x=0.039, y=0.523, frequency=1, skip=False, adjust=False
+    Wait, duration=0.55
+    JumpRagingBlow, direction=right, repetitions=1
+    RisingRage
+    Wait, duration=0.65
+    JumpRagingBlow, direction=right, repetitions=4

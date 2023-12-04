@@ -12,12 +12,11 @@ $, target=move_tolerance, value=0.04
 @, label=normal
 *, x=0.176, y=0.312, frequency=1, skip=False, adjust=True
     JumpRagingBlow, direction=right, repetitions=1
-    RisingRage
-    Wait, duration=0.6
     DoubleJump
-    Wait, duration=0.3
     BeamBlade, direction=up
     Wait, duration=0.3
+    RisingRage
+    Wait, duration=0.6
     JumpRagingBlow, direction=right, repetitions=3
     Wait, duration=0.3
     JumpRagingBlow, direction=left, repetitions=4
