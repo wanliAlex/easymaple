@@ -278,12 +278,12 @@ class ErdaFountain(Command):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
-        key_down("up")
-        key_down("down")
+
+
         press(self.direction,2)
         press(Key.ERDA_FOUNTAIN,2)
-        key_up("up")
-        key_up("down")
+
+
 
 class Buff(Command):
 

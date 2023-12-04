@@ -28,8 +28,6 @@ OTHER_TEMPLATE = cv2.cvtColor(other_filtered, cv2.COLOR_BGR2GRAY)
 # The Elite Boss's warning sign
 ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
 
-RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd_template.jpg', 0)
-RUNE_COOLDOWN_TEMPLATE_1 = cv2.imread('assets/rune_cd_template_1.jpg', 0)
 
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
@@ -79,51 +77,33 @@ class Notifier:
                 #if len(elite) > 0:
                 #    self._alert('siren')
 
-                # Disable check for players
                 # Check for other players entering the map
-                # filtered = utils.filter_color(minimap, OTHER_RANGES)
-                # others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
-                # config.stage_fright = others > 0
-                # if others != prev_others:
-                #     if others > prev_others:
-                #         self._ping('ding')
-                #     prev_others = others
-
+                filtered = utils.filter_color(minimap, OTHER_RANGES)
+                others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
+                config.stage_fright = others > 0
+                if others != prev_others:
+                    if others > prev_others:
+                        self._ping('ding')
+                    prev_others = others
 
                 # Check for rune
                 now = time.time()
-
-                is_rune_cooldown = self.is_rune_cooldown(frame)
-
-                if not is_rune_cooldown:
-                    if not config.bot.rune_active:
-                        filtered = utils.filter_color(minimap, RUNE_RANGES)
-                        matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.9)
-                        rune_start_time = now
-                        if matches and config.routine.sequence:
-                            abs_rune_pos = (matches[0][0], matches[0][1])
-                            config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
-                            distances = list(map(distance_to_rune, config.routine.sequence))
-                            index = np.argmin(distances)
-                            config.bot.rune_closest_pos = config.routine[index].location
-                            config.bot.rune_active = True
-                            self._ping('rune_appeared', volume=0.75)
-                    elif now - rune_start_time > self.rune_alert_delay:     # Alert if rune hasn't been solved
-                        config.bot.rune_active = False
-                        self._alert('siren')
+                if not config.bot.rune_active:
+                    filtered = utils.filter_color(minimap, RUNE_RANGES)
+                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.9)
+                    rune_start_time = now
+                    if matches and config.routine.sequence:
+                        abs_rune_pos = (matches[0][0], matches[0][1])
+                        config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
+                        distances = list(map(distance_to_rune, config.routine.sequence))
+                        index = np.argmin(distances)
+                        config.bot.rune_closest_pos = config.routine[index].location
+                        config.bot.rune_active = True
+                        self._ping('rune_appeared', volume=0.75)
+                elif now - rune_start_time > self.rune_alert_delay:     # Alert if rune hasn't been solved
+                    config.bot.rune_active = False
+                    self._alert('siren')
             time.sleep(0.05)
-
-    @staticmethod
-    def is_rune_cooldown(frame) -> bool:
-        rune_cd = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                      RUNE_COOLDOWN_TEMPLATE,
-                                      threshold=0.8)
-
-        rune_cd_1 = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                      RUNE_COOLDOWN_TEMPLATE_1,
-                                      threshold=0.9)
-        return bool((len(rune_cd) > 0) or (len(rune_cd_1 ) > 0))
-
 
     def _alert(self, name, volume=0.75):
         """
