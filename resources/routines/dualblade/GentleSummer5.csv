@@ -1,0 +1,31 @@
+$, target=move_tolerance, value=0.03
+$, target=jump_threshold, value=0.13
+
+@, label=Erda
+*, x=0.155, y=0.240, frequency=8, skip=False, adjust=False
+    New_ErdaFountain, press_top=False, toggled=True
+    Wait, duration=0.2
+
+@, label=Start
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=False
+    GS5_Start
+    Wait, duration=0.7
+
+@, label=First
+*, x=0.405, y=0.240, frequency=1, skip=False, adjust=False
+    GS5_First
+    Wait, duration=0.7
+
+@, label=Second
+*, x=0.655, y=0.300, frequency=1, skip=False, adjust=False
+    GS5_Second
+    Wait, duration=0.6
+
+@, label=Third
+*, x=0.790, y=0.300, frequency=1, skip=False, adjust=False
+    GS5_Third
+    Wait, duration=0.6
+
+@, label=End
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=False
+    GS5_End

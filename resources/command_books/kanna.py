@@ -39,6 +39,7 @@ class Key:
     YUKIMUSUME = 'end'
     MANA_BALANCE = 'd'
     ROPE = "n"
+    fma = "t"
 
 #########################
 #       Commands        #
@@ -386,11 +387,23 @@ class Yukimusume(Command):
         press(Key.YUKIMUSUME, 2)
 
 class ErdaFountain(Command):
+    def __init__(self, press_top: bool = False, toggled: bool = True):
+        super().__init__(locals())
+        self.press_top = bool(press_top)
+        self.toggled = bool(toggled)
 
     def main(self):
-        key_down("down")
-        press(Key.ERDA_FOUNTAIN, 4)
-        key_up("down")
+        if self.toggled:
+            press(Key.ERDA_FOUNTAIN, 4)
+            time.sleep(0.1)
+        else:
+            if self.press_top:
+                key_down("up")
+            key_down("down")
+            press(Key.ERDA_FOUNTAIN, 4)
+            key_up("down")
+            if self.press_top:
+                key_up("up")
 
 
 class Balance(Command):
@@ -405,3 +418,23 @@ class Charm(Command):
 
     def main(self):
         press(Key.CHARM, 2)
+
+
+class Domain_FMA_Iterator(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.counter = 0
+
+    def main(self):
+        if self.counter % 2 == 0:
+            self.cast_domain()
+        elif self.counter % 2 == 1:
+            self.cast_fma()
+        self.counter = (self.counter + 1) % 2
+
+    def cast_domain(self):
+        press(Key.DOMAIN, 2, 0.2, 0.01)
+
+    def cast_fma(self):
+        press(Key.fma, 2, 0.1, 0.01)
+
