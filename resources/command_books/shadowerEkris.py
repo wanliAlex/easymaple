@@ -28,7 +28,8 @@ class Key:
     ROPE  = "ctrl"
     SHADOW_ASSAULT = "4"
     ShadowVeil = "2"
-
+    WILL = "g"
+    SEREN = "t"
 #########################
 #       Commands        #
 #########################
@@ -45,7 +46,13 @@ def short_jump():
     press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
 
 
+class will(Command):
+    def main(self):
+        press(Key.WILL, 1, up_time=0.3)
 
+class seren(Command):
+    def main(self):
+        press(Key.SEREN, 1, up_time=0.3)
 def step(direction, target):
     """
     Performs one movement step in the given DIRECTION towards TARGET.
@@ -221,7 +228,7 @@ class StraightJumpAttack(Command):
         press(self.direction)
         DoubleJump().main()
         CRUEL_STAB_MESO_EXPLOSION().main()
-        time.sleep(0.05)
+        time.sleep(0.01)
 
 
 class StraightJumpShadowVeil(Command):
