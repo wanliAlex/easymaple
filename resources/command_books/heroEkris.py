@@ -238,7 +238,8 @@ class JumpPuncture(Command):
     def main(self):
         for _ in range(self.repetitions):
             press(self.direction)
-            press(Key.JUMP, n=2, down_time=0.085, up_time=0.01)
+            press(Key.JUMP, n=2, down_time=0.085, up_time=0.115)
+            time.sleep(0.02)
             press(Key.PUNCTURE, n=1, down_time=0.094, up_time=0.046)
             time.sleep(0.315)
 
@@ -312,7 +313,12 @@ class UpJump(Command):
 
 class Rope(Command):
     def main(self):
+        press(Key.ROPE, 1, up_time=0.4)
+
+class RopeShort(Command):
+    def main(self):
         press(Key.ROPE, 1, up_time=0.3)
+        press(Key.JUMP, n=1, down_time=0.5, up_time=0.01)
 
 
 class will(Command):
