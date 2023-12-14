@@ -343,7 +343,7 @@ class DoubleJump(Command):
 
 class Final_Cut(Command):
     def main(self):
-        press(Key.FINAL_CUT, n=1, down_time = 0.05, up_time = 0.01)
+        press(Key.FINAL_CUT, n=2, down_time = 0.1, up_time = 0.01)
 
 class CA4_Starting(Command):
     def main(self):
@@ -509,4 +509,101 @@ class GS5_End(Command):
                 return True
             else:
                 press("up", 1, 0.1)
+
+
+class TOP8_Start(Command):
+    _target_point = (0.882, 0.385)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+
+    def main(self):
+        while True:
+            if self.timer == 0 or time.time() - self.timer > (BOD_COOLDOWN + 0.1):
+                press(Key.BOD, 1, 0.1)
+                for _ in range(30):
+                    if utils.distance(self._target_point, config.player_pos) > 0.01:
+                        press("up", 1, 0.05, 0.05)
+                    else:
+                        break
+                return
+            else:
+                time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
+
+
+class TOP8_Third(Command):
+    def __init__(self, delay: float = 0.0):
+        super().__init__(locals())
+        self.delay = float(delay)
+
+    def main(self):
+        press("left", 1, 0.1, 0)
+        for i in range(5):
+            key_down("left")
+            press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+            press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+            key_up("left")
+            press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
+            time.sleep(self.delay)
+        time.sleep(0.1)
+
+# class TOP8_Fourth(Command):
+#     _target_point_1 = (0.118, 0.385)
+#     _target_point_2 = (0.171, 0.134)
+#
+#     def main(self):
+#         for _ in range(100):
+#             x_distance = config.player_pos[0] - self._target_point_1[0]
+#             if abs(x_distance) < 0.004:
+#                 break
+#             direction = "right" if x_distance < 0 else "left"
+#             key_down(direction)
+#             time.sleep(min(abs(x_distance) * 2, 0.2))
+#             key_up(direction)
+#         for _ in range(5):
+#             if utils.distance(self._target_point_2, config.player_pos) > 0.1:
+#                 press("up", 1, 0.05)
+#             else:
+#                 return
+
+# class TOP8_Fourth(Command):
+#     _target_point_1 = (0.118, 0.385)
+#     _target_point_2 = (0.171, 0.134)
+#
+#     def main(self):
+#         x_distance = config.player_pos[0] - self._target_point_1[0]
+#         direction = "right" if x_distance < 0 else "left"
+#         press(direction, 1, abs(x_distance) * 10)
+#         for _ in range(150):
+#             press("up", 1, 0.01)
+#             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
+#                 break
+#             press(direction, 1, 0.1)
+
+class TOP8_Fourth(Command):
+    _target_point_1 = (0.118, 0.385)
+    _target_point_2 = (0.171, 0.134)
+
+    def main(self):
+        for _ in range(10):
+            x_distance = config.player_pos[0] - self._target_point_1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, max(abs(x_distance) * 15, 0.08))
+            press("up", 1, 0.01)
+            if utils.distance(self._target_point_2, config.player_pos) < 0.1:
+                break
+
+
+class TOP8_Last(Command):
+    _target_point = (0.449, 0.193)
+
+    def main(self):
+        for _ in range(50):
+            if utils.distance(self._target_point, config.player_pos) > 0.1:
+                press("up", 1, 0.01)
+            else:
+                return
+
+
 

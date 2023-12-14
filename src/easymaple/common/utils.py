@@ -98,7 +98,10 @@ def multi_match(frame, template, threshold=0.95):
     """
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+    try:
+        result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+    except cv2.error:
+        pass
     locations = np.where(result >= threshold)
     locations = list(zip(*locations[::-1]))
     results = []
