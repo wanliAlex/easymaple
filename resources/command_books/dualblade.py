@@ -524,7 +524,7 @@ class TOP8_Start(Command):
                 press(Key.BOD, 1, 0.1)
                 for _ in range(30):
                     if utils.distance(self._target_point, config.player_pos) > 0.01:
-                        press("up", 1, 0.05, 0.05)
+                        press("up", 2, 0.05, 0.01)
                     else:
                         break
                 return
