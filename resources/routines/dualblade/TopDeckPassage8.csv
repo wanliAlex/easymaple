@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.04
+
+@, label=start_mid_top
+*, x=0.449, y=0.193, frequency=10, skip=False, adjust=False
+    Wait, duration=0.2
+    Final_Cut
+    Wait, duration=0.1
+*, x=0.449, y=0.193, frequency=1, skip=False, adjust=True
+    TOP8_Start
+
+@, label=third_bot_right
+*, x=0.882, y=0.385, frequency=1, skip=False, adjust=True
+    TOP8_Third, delay=0.28
+
+@, label=fourth_bot_left
+*, x=0.118, y=0.385, frequency=1, skip=False, adjust=False
+    TOP8_Fourth
+
+@, label=last_top_left
+*, x=0.171, y=0.134, frequency=8, skip=False, adjust=False
+    New_ErdaFountain, press_top=False, toggled=True
+*, x=0.171, y=0.134, frequency=1, skip=False, adjust=True
+    TOP8_Last
