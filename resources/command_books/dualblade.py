@@ -343,7 +343,7 @@ class DoubleJump(Command):
 
 class Final_Cut(Command):
     def main(self):
-        press(Key.FINAL_CUT, n=2, down_time = 0.1, up_time = 0.01)
+        press(Key.FINAL_CUT, n=2, down_time = 0.1, up_time = 0.05)
 
 class CA4_Starting(Command):
     def main(self):
@@ -521,10 +521,10 @@ class TOP8_Start(Command):
     def main(self):
         while True:
             if self.timer == 0 or time.time() - self.timer > (BOD_COOLDOWN + 0.1):
-                press(Key.BOD, 1, 0.1)
+                press(Key.BOD, 2, 0.05)
                 for _ in range(30):
                     if utils.distance(self._target_point, config.player_pos) > 0.01:
-                        press("up", 2, 0.05, 0.01)
+                        press("up", 1, 0.05, 0.01)
                     else:
                         break
                 return
