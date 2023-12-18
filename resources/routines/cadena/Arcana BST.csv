@@ -1,0 +1,19 @@
+*, x=0.073, y=0.203, frequency=3, skip=False, adjust=True
+    Crush, direction=Right
+    Wait, duration=0.3
+*, x=0.057, y=0.203, frequency=1, skip=False, adjust=True
+    Dagger, direction=right
+    JumpAttack, direction=right
+    TripleJumpAttack, direction=right
+    TripleJumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    Maelstrom
+*, x=0.792, y=0.203, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Brick, direction=left
+    TripleJumpAttack, direction=left
+    JumpAttack, direction=left
+    Wait, duration=0.1

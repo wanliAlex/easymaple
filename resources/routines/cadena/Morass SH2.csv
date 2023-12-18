@@ -1,0 +1,15 @@
+*, x=0.775, y=0.264, frequency=6, skip=False, adjust=False
+    Crush, direction=right
+    Wait, duration=0.3
+*, x=0.775, y=0.264, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    UpJumpBrick, direction=left
+    TripleJumpAttack, direction=right
+    Maelstrom
+    Wait, duration=0.1
+    TripleJumpAttack, direction=right
+    TripleJumpAttack, direction=right
+    Dagger, direction=right
+    Claw, direction=left
