@@ -10,13 +10,16 @@ $, target=move_tolerance, value=0.04
     JumpRagingBlow, direction=left, repetitions=5
 
 @, label=normal
-*, x=0.176, y=0.312, frequency=1, skip=False, adjust=True
-    JumpRagingBlow, direction=right, repetitions=1
+*, x=0.082, y=0.312, frequency=1, skip=False, adjust=False
+    Wait, duration=0.45
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.1
     DoubleJump
     BeamBlade, direction=up
+    Wait, duration=0.25
+    JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=3
     RisingRage
     Wait, duration=0.6
-    JumpRagingBlow, direction=right, repetitions=3
-    Wait, duration=0.3
-    JumpRagingBlow, direction=left, repetitions=4
+    JumpRagingBlow, direction=left, repetitions=2

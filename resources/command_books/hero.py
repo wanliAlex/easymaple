@@ -29,6 +29,7 @@ class Key:
     BEAM_BLADE = "w"
     SCREEN_CUT = "q"
     RISING_RAGE = "ctrl"
+    SWORD_ILLUSION = "e"
 
     BLITZ_SHEILD = "delete"
     
@@ -219,6 +220,20 @@ class JumpBeamBlade(Command):
         press(Key.JUMP)
         time.sleep(0.1)
         press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
+        time.sleep(0.275)
+
+class AngleBeamBlade(Command):
+    def __init__(self,hori_direction,veti_direction):
+        super().__init__(locals())
+        self.hori_direction = settings.validate_arrows(hori_direction)
+        self.veti_direction = settings.validate_arrows(veti_direction)
+    def main(self):
+        key_down(self.hori_direction)
+        key_down(self.veti_direction)
+        
+        press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
+        key_up(self.hori_direction)
+        key_up(self.veti_direction)
         time.sleep(0.275)
 
 class JumpPuncture (Command):
@@ -420,3 +435,20 @@ class BlitzSheild(Command):
     def main(self):
         
         press(Key.BLITZ_SHEILD,2)
+
+
+class Move_Up(Command):
+    
+    def __init__(self,key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+    def main(self):
+        press(Key.UP_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
+
+class Sword_Illusion(Command):
+    def main(self):
+        
+        press(Key.SWORD_ILLUSION,n= 2,down_time = 0.150, up_time = 0.0)
+
+
+        
