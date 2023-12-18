@@ -1,0 +1,32 @@
+*, x=0.900, y=0.305, frequency=6, skip=False, adjust=True
+    JumpAttack, direction=left
+    ShadowVeil, direction=left
+    Wait, duration=0.5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.289, y=0.305, frequency=6, skip=False, adjust=True
+    ShadowAssault, direction=up, jump=False
+    Wait, duration=0.2
+    DarkFlare, direction=right
+    Wait, duration=0.4
+    JumpAttack, direction=right
+    Wait, duration=0.2
+    ShadowAssault, direction=right, jump=False
+    Wait, duration=0.2
+    DoubleJump
+    Wait, duration=0.2
+    ShadowAssault, direction=right, jump=False
+    Wait, duration=0.2
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    ShadowAssault, direction=down, jump=False
+*, x=0.900, y=0.305, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.057, y=0.305, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right

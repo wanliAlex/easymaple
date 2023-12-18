@@ -1,0 +1,21 @@
+
+@, label=Summoing
+*, x=0.219, y=0.485, frequency=6, skip=False, adjust=True
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.5
+    DarkFlare, direction=right
+    Wait, duration=0.5
+    ShadowAssault, direction=down, jump=True
+
+@, label=mobbing
+*, x=0.107, y=0.485, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    CruelStab, direction=left, attacks=1, repetitions=1
+*, x=0.840, y=0.509, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left

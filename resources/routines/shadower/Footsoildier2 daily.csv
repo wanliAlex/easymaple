@@ -17,12 +17,12 @@
     SuddenRaid
     Wait, duration=0.3
     SlashShadowFormation
-*, x=0.746, y=0.280, frequency=1, skip=False, adjust=True
+*, x=0.746, y=0.280, frequency=1, skip=False, adjust=False
     JumpAttack, direction=left
     StraightJumpAttack, direction=left
     StraightJumpAttack, direction=left
     StraightJumpAttack, direction=left
-*, x=0.263, y=0.280, frequency=1, skip=False, adjust=True
+*, x=0.263, y=0.280, frequency=1, skip=False, adjust=False
     JumpAttack, direction=right
     StraightJumpAttack, direction=right
     StraightJumpAttack, direction=right

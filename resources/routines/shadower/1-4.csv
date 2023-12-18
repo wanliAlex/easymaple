@@ -1,0 +1,33 @@
+*, x=0.811, y=0.340, frequency=6, skip=False, adjust=False
+    Adjust, x=0.811, y=0.34, max_steps=5
+    DarkFlare, direction=right
+    ErdaShower, direction=down, jump=False
+    Wait, duration=2
+*, x=0.824, y=0.233, frequency=6, skip=False, adjust=False
+    Adjust, x=0.824, y=0.233, max_steps=5
+    Wait, duration=2
+*, x=0.403, y=0.289, frequency=6, skip=False, adjust=False
+    Adjust, x=0.403, y=0.289, max_steps=5
+    Wait, duration=2
+*, x=0.459, y=0.377, frequency=6, skip=False, adjust=False
+    Adjust, x=0.459, y=0.377, max_steps=5
+    ShadowVeil, direction=right
+    Arachnid
+    MesoExplosion
+    Wait, duration=2
+*, x=0.849, y=0.440, frequency=1, skip=False, adjust=False
+    Wait, duration=0.5
+    CruelStabRandomDirection
+    MesoExplosion
+*, x=0.642, y=0.440, frequency=1, skip=False, adjust=False
+    Wait, duration=0.5
+    CruelStabRandomDirection
+    MesoExplosion
+*, x=0.459, y=0.440, frequency=1, skip=False, adjust=False
+    Wait, duration=0.5
+    CruelStabRandomDirection
+    MesoExplosion
+*, x=0.195, y=0.440, frequency=1, skip=False, adjust=False
+    Wait, duration=0.5
+    CruelStabRandomDirection
+    MesoExplosion
