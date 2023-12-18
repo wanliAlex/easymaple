@@ -191,11 +191,32 @@ class TripleJump(Command):
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
 
+class Portal(Command):
+    def __init__(self, direction, duration):
+        super().__init__(locals())
+        self.direction = direction
+        self.duration = float(duration)
+
+    def main(self):
+        key_down(self.direction)
+        press("up", int(self.duration // 0.04) + 1, 0.02, 0.02)
+        key_up(self.direction)
+
 class DoubleJump(Command):
     def main(self):
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
 			
+class SingleJump(Command):
+    def main(self):
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        
+class DownJump(Command):
+    def main(self):
+        key_down("down")
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        key_up("down")
+
 class UpJump(Command):
     def main(self):
         key_down("up")
@@ -228,13 +249,14 @@ class ShadowAssault(Command):
             time.sleep(0.05)
         if self.jump:
             if self.direction == 'down':
-                press(Key.JUMP, 3, down_time=0.1)
+                press(Key.JUMP, 2, down_time=0.1)
             else:
                 press(Key.JUMP, 1)
         if self.direction == 'up':
             key_down(self.direction)
             time.sleep(0.05)
         press(Key.SHADOW_ASSAULT, num_presses)
+        press(Key.MESO_EXPLOSION, num_presses)
         key_up(self.direction)
         if settings.record_layout:
 	        config.layout.add(*config.player_pos)
@@ -283,6 +305,19 @@ class CruelStab(Command):
         else:
             time.sleep(0.2)
 
+class JumpCruelStab (Command):
+    def __init__(self, direction,repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            
+            press(Key.CRUEL_STAB,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.3)
+
 class JumpAttack(Command):
     def __init__(self, direction):
         super().__init__(locals())
@@ -290,7 +325,7 @@ class JumpAttack(Command):
     def main(self):
         key_down(self.direction)
         DoubleJump().main()
-        CruelStabRandomDirection().main()
+        CruelStabNoD().main()
         key_up(self.direction)
         MesoExplosion().main()
         time.sleep(0.4)
@@ -302,7 +337,7 @@ class StraightJumpAttack(Command):
     def main(self):
         press(self.direction)
         DoubleJump().main()
-        CruelStabRandomDirection().main()
+        CruelStabNoD().main()
         MesoExplosion().main()
         time.sleep(0.4)
 
@@ -312,7 +347,7 @@ class MesoExplosion(Command):
     def main(self):
         press(Key.MESO_EXPLOSION, 1, up_time=0.05)
 		
-class CruelStabRandomDirection(Command):
+class CruelStabNoD(Command):
     """Uses 'CruelStab' once."""
 
     def main(self):
