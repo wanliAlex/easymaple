@@ -1,0 +1,518 @@
+*, x=0.130, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.4
+    will
+    Wait, duration=0.6
+    BurningBlade
+    Wait, duration=0.4
+    Move_right, key_down_time=0.3
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=4
+*, x=0.168, y=0.447, frequency=1, skip=False, adjust=True
+    Wait, duration=0.4
+    UpJump
+    Wait, duration=0.4
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.3
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.130, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.4
+    seren
+    Wait, duration=0.6
+    BurningBlade
+    Wait, duration=0.4
+    Move_right, key_down_time=0.3
+    JumpRagingBlow, direction=right, repetitions=3
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=4
+*, x=0.168, y=0.447, frequency=1, skip=False, adjust=True
+    Wait, duration=0.4
+    UpJump
+    Wait, duration=0.4
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.3
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
+*, x=0.217, y=0.366, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_right, key_down_time=0.1
+    JumpPuncture, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Move_left, key_down_time=0.3
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Move_left, key_down_time=0.1
+    JumpPuncture, direction=left, repetitions=1
+    Wait, duration=0.2
