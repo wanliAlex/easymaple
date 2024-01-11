@@ -101,7 +101,7 @@ class Move(Command):
                         if d_y < 0:
                             if abs(d_y) < 0.1:
                                 UpJump().main()
-                                time.sleep(0.5)
+                                time.sleep(2)
                             else:
                                 Rope().main()
                                 time.sleep(2)
@@ -163,7 +163,7 @@ class Adjust(Command):
                     if d_y < 0:
                         if abs(d_y) < 0.1:
                             UpJump().main()
-                            time.sleep(0.5)
+                            time.sleep(2)
                         else:
                             Rope().main()
                             time.sleep(2)
@@ -188,7 +188,6 @@ class RagingBlow(Command):
         self.direction = settings.validate_horizontal_arrows(direction)
 
     def main(self):
-        press(self.direction)
         time.sleep(0.05)
         press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
         time.sleep(0.335)
@@ -254,6 +253,34 @@ class JumpRagingBlow(Command):
         for _ in range(self.repetitions):
             press(self.direction)
             press(Key.JUMP, n=2, down_time=0.072, up_time=0.01)
+
+            press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+            time.sleep(0.4)
+
+class JumpRagingBlow1(Command):
+    def __init__(self, direction, repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n=2, down_time=0.072, up_time=0.005)
+
+            press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+            time.sleep(0.4)
+
+class JumpRagingBlow2(Command):
+    def __init__(self, direction, repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n=2, down_time=0.072, up_time=0.11)
 
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
             time.sleep(0.4)
@@ -371,11 +398,11 @@ class ErdaShower(Command):
         press(Key.ERDA_FOUNTAIN, 2)
 
 class up(Command):
-    def __init__(self, key_down_time=1):
+    def __init__(self, key_down_time=0.5):
         super().__init__(locals())
         self.key_down_time = float(key_down_time)
     def main(self):
-        press(Key.UP_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+        press(Key.UP_ARROW, n=1, down_time=self.key_down_time, up_time=0.1)
 
 class DoubleJump(Command):
     def main(self):
