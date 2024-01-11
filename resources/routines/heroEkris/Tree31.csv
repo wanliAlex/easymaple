@@ -1,0 +1,646 @@
+*, x=0.825, y=0.295, frequency=1, skip=False, adjust=True
+    up
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+                
+    Wait, duration=0.4
+    Rush, direction=left
+    Wait, duration=0.8
+*, x=0.131, y=0.381, frequency=1, skip=False, adjust=True
+    up
+
+*, x=0.825, y=0.398, frequency=1, skip=False, adjust=True
+    ErdaShower
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1.5
+*, x=0.825, y=0.295, frequency=1, skip=False, adjust=True
+    up
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.4
+    BurningBlade
+    Wait, duration=0.7
+    DownJump, wait_time=0.1
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.5
+    seren
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.4
+*, x=0.835, y=0.466, frequency=1, skip=False, adjust=True
+    Wait, duration=0.3
+    UpJump
+    Wait, duration=1.5
+    ErdaShower
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1.5
+*, x=0.835, y=0.295, frequency=1, skip=False, adjust=True
+    up
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+                
+    Wait, duration=0.4
+    Rush, direction=left
+    Wait, duration=0.8
+*, x=0.131, y=0.381, frequency=1, skip=False, adjust=True
+    up
+
+*, x=0.825, y=0.398, frequency=1, skip=False, adjust=True
+    ErdaShower
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1.5
+*, x=0.825, y=0.295, frequency=1, skip=False, adjust=True
+    up
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+    
+
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.1
+
+    JumpRagingBlow1, direction=right, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=right
+    Wait, duration=0.15
+*, x=0.642, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.1
+    JumpRagingBlow1, direction=left, repetitions=1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    Wait, duration=0.1
+
+    JumpRagingBlow2, direction=left, repetitions=1
+    Wait, duration=0.1
+    RagingBlow, direction=left
+    
+*, x=0.12, y=0.381, frequency=1, skip=False, adjust=True
+    Wait, duration=0.15
+    JumpRagingBlow2, direction=right, repetitions=1
+    Wait, duration=0.4
+    BurningBlade
+    Wait, duration=0.7
+    DownJump, wait_time=0.1
+    Wait, duration=0.8
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.5
+    will
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=2
+    Wait, duration=0.4
+*, x=0.835, y=0.466, frequency=1, skip=False, adjust=True
+    Wait, duration=0.3
+    UpJump
+    Wait, duration=1.5
+    ErdaShower
+    Wait, duration=0.6
+    UpJump
+    Wait, duration=1.5
