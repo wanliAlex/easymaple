@@ -320,17 +320,17 @@
     Wait, duration=0.5
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.4
-*, x=0.830, y=0.466, frequency=1, skip=False, adjust=True
+*, x=0.835, y=0.466, frequency=1, skip=False, adjust=True
     Wait, duration=0.3
     Rope
     Wait, duration=1.5
 
-*, x=0.830, y=0.398, frequency=1, skip=False, adjust=True
+*, x=0.835, y=0.398, frequency=1, skip=False, adjust=True
     ErdaShower
     Wait, duration=0.6
     UpJump
     Wait, duration=1.5
-*, x=0.830, y=0.295, frequency=1, skip=False, adjust=True
+*, x=0.835, y=0.295, frequency=1, skip=False, adjust=True
     up
 *, x=0.125, y=0.381, frequency=1, skip=False, adjust=True
     Wait, duration=0.15
@@ -647,7 +647,7 @@
     Wait, duration=0.5
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.4
-*, x=0.830, y=0.466, frequency=1, skip=False, adjust=True
+*, x=0.840, y=0.466, frequency=1, skip=False, adjust=True
     Wait, duration=0.3
     Rope
     Wait, duration=1.5
