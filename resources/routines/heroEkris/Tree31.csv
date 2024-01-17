@@ -126,10 +126,7 @@
     JumpRagingBlow2, direction=left, repetitions=1
     Wait, duration=0.1
     RagingBlow, direction=left
-    Wait, duration=0.1
-    JumpRagingBlow2, direction=left, repetitions=1
-    Wait, duration=0.1
-    RagingBlow, direction=left         
+*, x=0.188, y=0.381, frequency=1, skip=False, adjust=True
     Wait, duration=0.4
     Rush, direction=left
     Wait, duration=0.8
@@ -398,10 +395,7 @@
     JumpRagingBlow2, direction=left, repetitions=1
     Wait, duration=0.1
     RagingBlow, direction=left
-    Wait, duration=0.1
-    JumpRagingBlow2, direction=left, repetitions=1
-    Wait, duration=0.1
-    RagingBlow, direction=left
+*, x=0.188, y=0.381, frequency=1, skip=False, adjust=True
     Wait, duration=0.4
     Rush, direction=left
     Wait, duration=0.8
