@@ -435,7 +435,7 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
-BOD_COOLDOWN = 6.95
+BOD_COOLDOWN = 7
 
 class GS5_Start(Command):
 
