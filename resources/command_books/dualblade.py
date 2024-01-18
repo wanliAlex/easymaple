@@ -688,6 +688,6 @@ class BC4_TOP_RIGHT(Command):
                         break
                 return
             else:
-                time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
+                time.sleep(TORNADO_COOLDOWN - (time.time() - self.timer))
 
 
