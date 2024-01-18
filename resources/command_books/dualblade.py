@@ -666,7 +666,7 @@ class BC4_TOP_LEFT(Command):
                 time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
 
 
-TORNADO_COOLDOWN = BOD_COOLDOWN + 1
+TORNADO_COOLDOWN = 8.1
 
 
 class BC4_TOP_RIGHT(Command):
