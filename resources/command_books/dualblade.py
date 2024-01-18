@@ -549,38 +549,6 @@ class TOP8_Third(Command):
             time.sleep(self.delay)
         time.sleep(0.1)
 
-# class TOP8_Fourth(Command):
-#     _target_point_1 = (0.118, 0.385)
-#     _target_point_2 = (0.171, 0.134)
-#
-#     def main(self):
-#         for _ in range(100):
-#             x_distance = config.player_pos[0] - self._target_point_1[0]
-#             if abs(x_distance) < 0.004:
-#                 break
-#             direction = "right" if x_distance < 0 else "left"
-#             key_down(direction)
-#             time.sleep(min(abs(x_distance) * 2, 0.2))
-#             key_up(direction)
-#         for _ in range(5):
-#             if utils.distance(self._target_point_2, config.player_pos) > 0.1:
-#                 press("up", 1, 0.05)
-#             else:
-#                 return
-
-# class TOP8_Fourth(Command):
-#     _target_point_1 = (0.118, 0.385)
-#     _target_point_2 = (0.171, 0.134)
-#
-#     def main(self):
-#         x_distance = config.player_pos[0] - self._target_point_1[0]
-#         direction = "right" if x_distance < 0 else "left"
-#         press(direction, 1, abs(x_distance) * 10)
-#         for _ in range(150):
-#             press("up", 1, 0.01)
-#             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
-#                 break
-#             press(direction, 1, 0.1)
 
 class TOP8_Fourth(Command):
     _target_point_1 = (0.118, 0.385)
@@ -606,5 +574,120 @@ class TOP8_Last(Command):
             else:
                 return
 
+
+class BC4_BOT_RIGHT(Command):
+    def __init__(self, delay: float = 0.0):
+        super().__init__(locals())
+        self.delay = float(delay)
+        self.final_cut_timer = 0
+
+    def main(self):
+        now = time.time()
+        if self.final_cut_timer == 0 or ((now - self.final_cut_timer) > 80):
+            Final_Cut().main()
+            self.final_cut_timer = now
+
+        press("left", 1, 0.1, 0)
+        for i in range(3):
+            key_down("left")
+            press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+            press(Key.JUMP, n=1, down_time=0.101, up_time=0.11)
+            key_up("left")
+            press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
+            time.sleep(self.delay)
+        time.sleep(0.1)
+
+
+class BC4_BOT_MID(Command):
+    def __init__(self, delay: float = 0.0, wait: float = 0.0):
+        super().__init__(locals())
+        self.delay = float(delay)
+        self.wait = float(wait)
+        self.erda_time = 0
+
+    def main(self):
+        now = time.time()
+        if self.erda_time == 0 or ((now - self.erda_time) > 58):
+            New_ErdaFountain().main()
+            self.erda_time = now
+        time.sleep(self.wait)
+        press("left", 1, 0.1, 0)
+        key_down("left")
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.101, up_time=0.11)
+        key_up("left")
+        press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
+        time.sleep(self.delay)
+
+        key_down("left")
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        key_up("left")
+        press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
+        time.sleep(self.delay)
+
+        time.sleep(0.1)
+
+
+class BC4_BOT_LEFT(Command):
+    _target_point_1 = (0.108, 0.286)
+    _target_point_2 = (0.172, 0.148)
+
+    def main(self):
+        for _ in range(10):
+            x_distance = config.player_pos[0] - self._target_point_1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, max(abs(x_distance) * 10, 0.05))
+            press("up", 1, 0.01)
+            if utils.distance(self._target_point_2, config.player_pos) < 0.1:
+                break
+
+
+class BC4_TOP_LEFT(Command):
+    _target_point = (0.901, 0.148)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+
+    def main(self):
+        while True:
+            if self.timer == 0 or ((time.time() - self.timer) > (BOD_COOLDOWN)):
+                press(Key.BOD, 2, 0.05)
+                self.timer = time.time()
+                for _ in range(30):
+                    if utils.distance(self._target_point, config.player_pos) > 0.01:
+                        press("up", 1, 0.05, 0.01)
+                    else:
+                        break
+                return
+            else:
+                time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
+
+
+TORNADO_COOLDOWN = BOD_COOLDOWN + 0.5
+
+
+class BC4_TOP_RIGHT(Command):
+    _target_point = (0.892, 0.286)
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+
+    def main(self):
+        press("left", 1, 0.02)
+        while True:
+            if self.timer == 0 or ((time.time() - self.timer) > (TORNADO_COOLDOWN)):
+                press(Key.BLADE_TORNADO, 3, 0.04)
+                self.timer = time.time()
+                for _ in range(30):
+                    if utils.distance(self._target_point, config.player_pos) > 0.01:
+                        press("up", 1, 0.05, 0.01)
+                    else:
+                        break
+                return
+            else:
+                time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
 
 
