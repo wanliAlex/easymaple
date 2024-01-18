@@ -587,7 +587,7 @@ class BC4_BOT_RIGHT(Command):
             Final_Cut().main()
             self.final_cut_timer = now
 
-        press("left", 1, 0.1, 0)
+        press("left", 1, 0.15, 0)
         for i in range(3):
             key_down("left")
             press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
@@ -595,7 +595,7 @@ class BC4_BOT_RIGHT(Command):
             key_up("left")
             press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
             time.sleep(self.delay)
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 
 class BC4_BOT_MID(Command):
@@ -627,7 +627,7 @@ class BC4_BOT_MID(Command):
         press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
 
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 
 class BC4_BOT_LEFT(Command):
