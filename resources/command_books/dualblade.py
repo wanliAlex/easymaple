@@ -435,7 +435,7 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
-BOD_COOLDOWN = 6.8
+BOD_COOLDOWN = 6.95
 
 class GS5_Start(Command):
 
@@ -666,7 +666,7 @@ class BC4_TOP_LEFT(Command):
                 time.sleep(BOD_COOLDOWN - (time.time() - self.timer))
 
 
-TORNADO_COOLDOWN = BOD_COOLDOWN + 0.5
+TORNADO_COOLDOWN = BOD_COOLDOWN + 1
 
 
 class BC4_TOP_RIGHT(Command):
