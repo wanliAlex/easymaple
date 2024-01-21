@@ -15,7 +15,7 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.25
     JumpPuncture, direction=left, repetitions=1
     Wait, duration=0.2
-*, x=0.158, y=0.311, frequency=1, skip=False, adjust=False
+*, x=0.158, y=0.311, frequency=1, skip=False, adjust=True
     Wait, duration=0.35
     JumpPuncture, direction=right, repetitions=4
     Wait, duration=0.25

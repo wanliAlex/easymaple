@@ -36,7 +36,7 @@ $, target=move_tolerance, value=0.04
     LeapAttack
 
 @, label=normal
-*, x=0.868, y=0.325, frequency=1, skip=False, adjust=False
+*, x=0.868, y=0.325, frequency=1, skip=False, adjust=True
     Wait, duration=0.4
     JumpRagingBlow, direction=left, repetitions=1
     RisingRage
@@ -46,7 +46,7 @@ $, target=move_tolerance, value=0.04
     BeamBlade, direction=up
     Wait, duration=0.28
     JumpRagingBlow, direction=left, repetitions=3
-*, x=0.122, y=0.325, frequency=1, skip=False, adjust=False
+*, x=0.122, y=0.325, frequency=1, skip=False, adjust=True
     Wait, duration=0.4
     JumpRagingBlow, direction=right, repetitions=5
     Move_right, key_down_time=0.25
