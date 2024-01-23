@@ -1,0 +1,16 @@
+*, x=0.172, y=0.148, frequency=1, skip=False, adjust=True
+    RagingBlow, direction=right
+    Wait, duration=0.15
+    up
+*, x=0.512, y=0.123, frequency=1, skip=False, adjust=True
+    RagingBlow, direction=right
+    Wait, duration=0.15
+    up
+*, x=0.901, y=0.148, frequency=1, skip=False, adjust=True
+    RagingBlow, direction=right
+    Wait, duration=0.15
+    up
+*, x=0.892, y=0.286, frequency=1, skip=False, adjust=True
+    JumpRagingBlow, direction=left, repetitions=5
+*, x=0.108, y=0.286, frequency=1, skip=False, adjust=True
+    up
