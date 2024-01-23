@@ -143,14 +143,14 @@ class Adjust(Command):
                 if d_x < 0:
                     key_down('left')
                     while config.enabled and d_x < -1.5 * threshold and walk_counter < 60:
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                         walk_counter += 1
                         d_x = self.target[0] - config.player_pos[0]
                     key_up('left')
                 else:
                     key_down('right')
                     while config.enabled and d_x > 1.5 * threshold and walk_counter < 60:
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                         walk_counter += 1
                         d_x = self.target[0] - config.player_pos[0]
                     key_up('right')
@@ -403,6 +403,16 @@ class up(Command):
         self.key_down_time = float(key_down_time)
     def main(self):
         press(Key.UP_ARROW, n=1, down_time=self.key_down_time, up_time=0.1)
+
+class upF(Command):
+    def main(self):
+        press(Key.UP_ARROW, n=6, down_time=0.02, up_time=0.02)
+
+class upAttack(Command):
+    def main(self):
+        press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+        time.sleep(0.335)
+        press(Key.UP_ARROW, n=6, down_time=0.02, up_time=0.02)
 
 class DoubleJump(Command):
     def main(self):
