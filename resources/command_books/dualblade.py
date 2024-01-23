@@ -638,7 +638,7 @@ class BC4_BOT_LEFT(Command):
         for _ in range(10):
             x_distance = config.player_pos[0] - self._target_point_1[0]
             direction = "right" if x_distance < 0 else "left"
-            press(direction, 1, max(abs(x_distance) * 10, 0.05))
+            press(direction, 1, max(abs(x_distance) * 8, 0.04))
             press("up", 1, 0.01)
             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
                 break
