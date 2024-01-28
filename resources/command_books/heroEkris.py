@@ -283,6 +283,19 @@ class JumpRagingBlowGreen(Command):
             press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
             time.sleep(0.3)
 
+class JumpRagingBlowGreenN(Command):
+    def __init__(self, direction, repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.35)
+
 class JumpRagingBlow1(Command):
     def __init__(self, direction, repetitions=1):
         super().__init__(locals())
