@@ -59,8 +59,6 @@ class Listener(Configurable):
                     Listener.reload_routine4D()
                 elif kb.is_pressed('f5'):
                     Listener.reload_routine5D()
-                elif kb.is_pressed('f6'):
-                    Listener.reload_routine6D()
                 elif self.restricted_pressed('Record position'):
                     Listener.record_position()
             time.sleep(0.01)
