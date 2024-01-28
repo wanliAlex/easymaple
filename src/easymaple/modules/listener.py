@@ -11,9 +11,11 @@ from datetime import datetime
 
 class Listener(Configurable):
     DEFAULT_CONFIG = {
+        'Gate2': 'f4',
         'Start/stop': 'f8',
         'Reload routine': 'f6',
         'Record position': 'f7',
+
     }
     BLOCK_DELAY = 1         # Delay after blocking restricted button press
 
@@ -51,6 +53,14 @@ class Listener(Configurable):
                     Listener.toggle_enabled()
                 elif kb.is_pressed(self.config['Reload routine']):
                     Listener.reload_routine()
+                elif kb.is_pressed('f3'):
+                    Listener.reload_routine3D()
+                elif kb.is_pressed('f4'):
+                    Listener.reload_routine4D()
+                elif kb.is_pressed('f5'):
+                    Listener.reload_routine5D()
+                elif kb.is_pressed('f6'):
+                    Listener.reload_routine6D()
                 elif self.restricted_pressed('Record position'):
                     Listener.record_position()
             time.sleep(0.01)
@@ -88,8 +98,51 @@ class Listener(Configurable):
     @staticmethod
     def reload_routine():
         Listener.recalibrate_minimap()
-
         config.routine.load(config.routine.path)
+
+        winsound.Beep(523, 200)     # C5
+        winsound.Beep(659, 200)     # E5
+        winsound.Beep(784, 200)     # G5
+
+    @staticmethod
+    def reload_routine3D():
+        Listener.recalibrate_minimap()
+        pathPrefix = config.routine.path.rsplit('/',1)
+        path = pathPrefix[0] + "/" + "Gate2.csv"
+        config.routine.load(path)
+
+        winsound.Beep(523, 200)     # C5
+        winsound.Beep(659, 200)     # E5
+        winsound.Beep(784, 200)     # G5
+
+    @staticmethod
+    def reload_routine6D():
+        Listener.recalibrate_minimap()
+        pathPrefix = config.routine.path.rsplit('/',1)
+        path = pathPrefix[0] + "/" + "BC4.csv"
+        config.routine.load(path)
+
+        winsound.Beep(523, 200)     # C5
+        winsound.Beep(659, 200)     # E5
+        winsound.Beep(784, 200)     # G5
+
+    @staticmethod
+    def reload_routine5D():
+        Listener.recalibrate_minimap()
+        pathPrefix = config.routine.path.rsplit('/',1)
+        path = pathPrefix[0] + "/" + "TopDeckPassage1.csv"
+        config.routine.load(path)
+
+        winsound.Beep(523, 200)     # C5
+        winsound.Beep(659, 200)     # E5
+        winsound.Beep(784, 200)     # G5
+
+    @staticmethod
+    def reload_routine4D():
+        Listener.recalibrate_minimap()
+        pathPrefix = config.routine.path.rsplit('/',1)
+        path = pathPrefix[0] + "/" + "Summer5.csv"
+        config.routine.load(path)
 
         winsound.Beep(523, 200)     # C5
         winsound.Beep(659, 200)     # E5

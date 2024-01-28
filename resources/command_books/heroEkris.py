@@ -31,6 +31,9 @@ class Key:
     SEREN = "t"
     RUSH = 'e'
     RISING_RAGE = '3'
+    SCREEN_CUT = "f"
+    BLITZ_SHEILD = "w"
+    LEAP_ATTACK = 'a'
 #########################
 #       Commands        #
 #########################
@@ -122,6 +125,9 @@ class Move(Command):
             if self.prev_direction:
                 key_up(self.prev_direction)
 
+class LeapAttack(Command):
+    def main(self):
+        press(Key.LEAP_ATTACK)
 
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
@@ -192,7 +198,14 @@ class RagingBlow(Command):
         press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
         time.sleep(0.335)
 
+class ScreenCut(Command):
+    def main(self):
+        press(Key.SCREEN_CUT,2)
 
+class BlitzSheild(Command):
+    def main(self):
+        
+        press(Key.BLITZ_SHEILD,2)
 class BeamBlade(Command):
     def __init__(self, direction):
         super().__init__(locals())
@@ -256,6 +269,19 @@ class JumpRagingBlow(Command):
 
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
             time.sleep(0.4)
+
+class JumpRagingBlowGreen(Command):
+    def __init__(self, direction, repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
+            press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+            time.sleep(0.3)
 
 class JumpRagingBlow1(Command):
     def __init__(self, direction, repetitions=1):
@@ -359,9 +385,7 @@ class seren(Command):
 class ErdaFountain(Command):
 
     def main(self):
-        key_down("down")
         press(Key.ERDA_FOUNTAIN, 5)
-        key_up("down")
 
 class Move_Up(Command):
     def __init__(self, key_down_time=1):
