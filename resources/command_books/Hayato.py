@@ -10,33 +10,35 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 # List of key mappings
 class Key:
     # Movement
-    JUMP = 'space'
-    UPWAIRD_CHARGE  = "s"  #up jump skill
-    ROPE = 'alt'
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
     UP_ARROW = 'up'
     DOWN_ARROR = 'down'
+    JUMP = 'space'
+    UPWAIRD_CHARGE  = "s"  #up jump skill
+    ROPE = 'alt'
+
     RUSH = 'd'
-    LEAP_ATTACK = '7'
+    SURGING_BLADE = "w"
+    
     # Skills[Buffs]
     GREEN_POT = "="
     YELLO_POT = "-"
 
     # Skills[Damage:attack]
-    PUNCTURE = "r"
+    PHANTOM_BLADE = "c"
     RAGING_BLOW = "a"
-    BEAM_BLADE = "w"
-    SCREEN_CUT = "q"
-    RISING_RAGE = "ctrl"
-    SWORD_ILLUSION = "e"
+    
+    
+    FALCON_HONOR = "ctrl"
+    INSTANCE_SLICE = "r"
 
-    BLITZ_SHEILD = "delete"
+    
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
-    BURNING_BLADE = "1"
-    WILL ="page down"
+    JIANSHEN = "1"
+    SENGOKU ="3"
 
 #########################
 #       Commands        #
@@ -236,30 +238,9 @@ class AngleBeamBlade(Command):
         key_up(self.veti_direction)
         time.sleep(0.275)
 
-class JumpPuncture (Command):
-    def __init__(self, direction,repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.repetitions = int(repetitions)
-    def main(self):
-        for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
-            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.315)
 
-class JumpPunctures (Command):
-    def __init__(self, direction,repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.repetitions = int(repetitions)
-    def main(self):
-        for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.15, up_time = 0.01)
-            press(Key.JUMP, n = 2, down_time = 0.05, up_time = 0.01)
-            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.315)
+
+
 
 
 class JumpRagingBlow (Command):
@@ -269,32 +250,27 @@ class JumpRagingBlow (Command):
         self.repetitions = int(repetitions)
     def main(self):
         for _ in range(self.repetitions):
-            press(self.direction)
+            press(self.direction,n=1,down_time=0.07)
             press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             
             press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.3)
+            time.sleep(0.375)
             
 
-class BurningBlade(Command):
-    def __init__(self, direction):
+class JianShen(Command):
+    def __init__(self):
         super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
-        key_down("up")
-        key_down("down")
-        press(self.direction,2)
-        press(Key.BURNING_BLADE,4)
-        key_up("up")
-        key_up("down")
+        press(Key.JIANSHEN,4)
+
+
+
 
 class ErdaFountain(Command):
     def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
-
-
         press(self.direction,2)
         press(Key.ERDA_FOUNTAIN,2)
 
@@ -305,21 +281,23 @@ class Buff(Command):
     def __init__(self):
         super().__init__(locals())
         
-        self.monster_park_pot_30mins = 0
-        '''
+        
+        
         self.buff_time_120 = 0
+        '''
+        self.monster_park_pot_30mins = 0
         self.buff_time_180 = 0
         '''
 
     def main(self):
-        '''
-        buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
-        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
+        buffs_120 = [Key.SENGOKU,Key.JIANSHEN]
+        now = time.time()
         '''
         buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
-
-        now = time.time()
-
+        buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
+        '''
+        
+        '''
         if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
             for key in buffs_1800:
                 press(key,1,down_time=0.5,up_time=0.3)
@@ -329,7 +307,7 @@ class Buff(Command):
             for key in buffs_120:
                 press(key, 3, up_time=0.3)
             self.buff_time_120 = now
-
+        '''
         if self.buff_time_180 == 0 or now - self.buff_time_180 > 180:            
             for key in buffs_180:
                 press(key, 3, up_time=0.4)
@@ -341,9 +319,7 @@ class UpJump(Command):
     def main(self):
         press(Key.UPWAIRD_CHARGE)
 
-class LeapAttack(Command):
-    def main(self):
-        press(Key.LEAP_ATTACK)
+
 
 class Rope(Command):
     def main(self):
@@ -380,11 +356,7 @@ class Move_left(Command):
     def main(self):
         press(Key.LEFT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
 
-class ErdaShower(Command):
 
-    def main(self):
-        
-        press(Key.ERDA_FOUNTAIN, 2)
 
 class DoubleJump(Command):
     def main(self):
@@ -414,13 +386,34 @@ class DownJump(Command):
         key_up("down")
         time.sleep(self.wait_time / 2.0)
 
-class ScreenCut(Command):
-    def main(self):
-        press(Key.SCREEN_CUT,2)
 
-class RisingRage(Command):
+
+class FalconHonor(Command):
     def main(self):
-        press(Key.RISING_RAGE,2)
+        press(Key.FALCON_HONOR,2)
+
+class PhantomBlade(Command):
+    def main(self):
+        press(Key.PHANTOM_BLADE,2)
+
+
+
+class SurgingBlade (Command):
+    def __init__(self, direction,repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+    def main(self):
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.SURGING_BLADE,n = 1, down_time = 0.054, up_time = 0.016)
+
+
+class InstanceSlice(Command):
+    def main(self):
+        
+        press(Key.INSTANCE_SLICE,n= 2,down_time = 0.150, up_time = 0.0)
+
         
 class Rush(Command):
     def __init__(self,direction):
@@ -431,10 +424,15 @@ class Rush(Command):
         press(self.direction)
         press(Key.RUSH,2)
 
-class BlitzSheild(Command):
+class RushSurge(Command):
+    def __init__(self,direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    
     def main(self):
-        
-        press(Key.BLITZ_SHEILD,2)
+        press(self.direction)
+        press(Key.RUSH,1)
+        press(Key.SURGING_BLADE,1)
 
 
 class Move_Up(Command):
@@ -445,10 +443,7 @@ class Move_Up(Command):
     def main(self):
         press(Key.UP_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
 
-class Sword_Illusion(Command):
-    def main(self):
-        
-        press(Key.SWORD_ILLUSION,n= 2,down_time = 0.150, up_time = 0.0)
+
 
 
         
