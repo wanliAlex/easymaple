@@ -192,10 +192,10 @@ class RagingBlow(Command):
     def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
-
     def main(self):
+        press(self.direction)
         time.sleep(0.05)
-        press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
         time.sleep(0.335)
 
 class ScreenCut(Command):
