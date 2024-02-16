@@ -12,7 +12,7 @@ $, target=move_tolerance, value=0.03
     Move_left, key_down_time=0.35
     Wait, duration=0.2
     JumpRagingBlow, direction=right, repetitions=1
-    Wait, duration=0.1
+    Wait, duration=0.3
     AngleBeamBlade, hori_direction=right, veti_direction=up
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.15
@@ -21,11 +21,8 @@ $, target=move_tolerance, value=0.03
     DoubleJump
     Sword_Illusion
     Wait, duration=0.5
-*, x=0.810, y=0.240, frequency=5, skip=False, adjust=True
-    Wait, duration=0.5
     ErdaFountain, direction=right
-    Move_right, key_down_time=1.2
-    Wait, duration=0.5
+    Move_right, key_down_time=0.75
 
 @, label=burningblade
 *, x=0.895, y=0.13, frequency=10, skip=False, adjust=True
@@ -39,12 +36,10 @@ $, target=move_tolerance, value=0.03
     BurningBlade, direction=right
     Wait, duration=0.65
     Rush, direction=right
-    DownJump, wait_time=0.1
-    DownJump, wait_time=0.1
-    DownJump, wait_time=0.1
-    DownJump, wait_time=0.1
-    DownJump, wait_time=0.1
-    Wait, duration=0.7
+    DownJump, wait_time=0.3
+    DownJump, wait_time=0.5
+    DownJump, wait_time=0.5
+    Wait, duration=1
 
 @, label=RisingRage-Normal
 *, x=0.895, y=0.130, frequency=1, skip=False, adjust=False
@@ -59,4 +54,4 @@ $, target=move_tolerance, value=0.03
     Wait, duration=0.1
     AngleBeamBlade, hori_direction=right, veti_direction=up
     JumpRagingBlow, direction=right, repetitions=5
-    Wait, duration=0.2
+    Wait, duration=0.6

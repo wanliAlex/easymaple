@@ -1,4 +1,4 @@
-$, target=move_tolerance, value=0.04
+$, target=move_tolerance, value=0.02
 
 @, label=erda
 *, x=0.585, y=0.219, frequency=3, skip=False, adjust=True
@@ -28,7 +28,7 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.5
     FalconHonor
     Wait, duration=0.5
-*, x=0.270, y=0.219, frequency=1, skip=False, adjust=True
+*, x=0.285, y=0.219, frequency=1, skip=False, adjust=True
     Wait, duration=0.2
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.2
@@ -43,11 +43,12 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.5
     FalconHonor
     Wait, duration=1
-*, x=0.270, y=0.219, frequency=1, skip=False, adjust=True
+*, x=0.285, y=0.219, frequency=1, skip=False, adjust=True
     Wait, duration=0.2
     JumpRagingBlow, direction=right, repetitions=2
     Wait, duration=0.15
     SurgingBlade, direction=right, repetitions=3
-    Wait, duration=0.25
+    Wait, duration=1
+    PhantomBlade
     PhantomBlade
     Wait, duration=1

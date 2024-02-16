@@ -222,6 +222,17 @@ class JumpBeamBlade(Command):
         press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
         time.sleep(0.275)
 
+class DoubleJumpBeamBlade (Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+    def main(self):
+        press(self.direction)
+        press(Key.JUMP, n = 3, down_time = 0.072, up_time = 0.01)
+        time.sleep(0.1)
+        press(Key.BEAM_BLADE,n = 2, down_time = 0.094, up_time = 0.046)
+        time.sleep(0.175)
+
 class AngleBeamBlade(Command):
     def __init__(self,hori_direction,veti_direction):
         super().__init__(locals())
@@ -235,6 +246,8 @@ class AngleBeamBlade(Command):
         key_up(self.hori_direction)
         key_up(self.veti_direction)
         time.sleep(0.275)
+
+
 
 class JumpPuncture (Command):
     def __init__(self, direction,repetitions=1):
@@ -276,6 +289,7 @@ class JumpRagingBlow (Command):
             time.sleep(0.3)
             
 
+
 class BurningBlade(Command):
     def __init__(self, direction):
         super().__init__(locals())
@@ -297,7 +311,7 @@ class ErdaFountain(Command):
 
         press(self.direction,2)
         press(Key.ERDA_FOUNTAIN,2)
-
+        time.sleep(0.15)
 
 
 class Buff(Command):
@@ -343,7 +357,7 @@ class UpJump(Command):
 
 class LeapAttack(Command):
     def main(self):
-        press(Key.LEAP_ATTACK)
+        press(Key.LEAP_ATTACK,3,down_time=0.2, up_time = 0.1)
 
 class Rope(Command):
     def main(self):
