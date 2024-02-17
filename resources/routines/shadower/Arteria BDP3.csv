@@ -99,9 +99,7 @@
     Wait, duration=0.1
     ErdaShower, direction=down, jump=False
     Wait, duration=0.5
-    DoubleJump
-    Wait, duration=0.2
-    ShadowAssault, direction=left, jump=False
+    ShadowAssault, direction=left, jump=True
     Wait, duration=0.2
     DarkFlare, direction=left
     Wait, duration=0.4
@@ -109,7 +107,7 @@
     Wait, duration=0.1
     ShadowAssault, direction=down, jump=True
     Wait, duration=0.1
-*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=False
     JumpAttack, direction=right
     JumpAttack, direction=right
     JumpAttack, direction=right
@@ -179,9 +177,7 @@
     Wait, duration=0.1
     ErdaShower, direction=down, jump=False
     Wait, duration=0.5
-    DoubleJump
-    Wait, duration=0.2
-    ShadowAssault, direction=left, jump=False
+    ShadowAssault, direction=left, jump=True
     Wait, duration=0.2
     DarkFlare, direction=left
     Wait, duration=0.4
@@ -189,7 +185,7 @@
     Wait, duration=0.1
     ShadowAssault, direction=down, jump=True
     Wait, duration=0.1
-*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=False
     JumpAttack, direction=right
     JumpAttack, direction=right
     JumpAttack, direction=right
@@ -260,9 +256,7 @@
     Wait, duration=0.1
     ErdaShower, direction=down, jump=False
     Wait, duration=0.5
-    DoubleJump
-    Wait, duration=0.2
-    ShadowAssault, direction=left, jump=False
+    ShadowAssault, direction=left, jump=True
     Wait, duration=0.2
     DarkFlare, direction=left
     Wait, duration=0.4
@@ -270,7 +264,7 @@
     Wait, duration=0.1
     ShadowAssault, direction=down, jump=True
     Wait, duration=0.1
-*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=False
     JumpAttack, direction=right
     JumpAttack, direction=right
     JumpAttack, direction=right
