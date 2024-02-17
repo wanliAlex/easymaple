@@ -10,6 +10,10 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 # List of key mappings
 class Key:
     # Movement
+    RIGHT_ARROW = 'right'
+    LEFT_ARROW = 'left'
+    DOWN_ARROW = 'down'
+    UP_ARROW = 'up'
     JUMP = 'space' 
     DOUBLE_JUMP = "0"
     SHADOW_ASSAULT = 'e' 
@@ -33,9 +37,11 @@ class Key:
     ARACHNID = 'insert' 
     ERDA_SHOWER = 'r' 
     TRICKBLADE = 'a'
+    DASH = "t"
     SLASH_SHADOW_FORMATION = 'end'
     SONIC_BLOW = 'v'
-
+    WILL = ";"
+    SEREN = "'"
 #########################
 #       Commands        #
 #########################
@@ -59,6 +65,13 @@ def step(direction, target):
     """
     pass
 
+class will(Command):
+    def main(self):
+        press(Key.WILL, 1, up_time=0.3)
+
+class seren(Command):
+    def main(self):
+        press(Key.SEREN, 1, up_time=0.3)
 
 class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
@@ -184,6 +197,33 @@ class Adjust(Command):
                         time.sleep(0.5)
                 counter -= 1
             error = utils.distance(config.player_pos, self.target)		
+class DashShort(Command):
+    def main(self):
+        press(Key.DASH, 3, 0.15, 0.05)
+
+class JumpShadowAssaultBot(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
+        press(Key.JUMP, n=1, down_time=0.3, up_time=0.09)
+        key_down(Key.LEFT_ARROW)
+        key_down(Key.DOWN_ARROW)
+        press(Key.SHADOW_ASSAULT, n=1, down_time=0.094, up_time=0.046)
+        key_up(Key.LEFT_ARROW)
+        key_up(Key.DOWN_ARROW)
+        time.sleep(0.275)
+
+class Dash(Command):
+    def __init__(self, direction, jump: bool = False):
+        super().__init__(locals())
+        self.direction = str(direction)
+        self.jump = bool(jump)
+
+    def main(self):
+        if self.jump:
+            press(Key.JUMP, 1, 0.05, 0.1)
+        key_down(self.direction)
+        press(Key.DASH, 1, 0.1, 0.4)
+        key_up(self.direction)
 
 class TripleJump(Command):
     def main(self):
