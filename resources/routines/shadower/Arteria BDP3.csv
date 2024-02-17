@@ -1,0 +1,320 @@
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    ShadowVeil, direction=right
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.904, y=0.396, max_steps=5
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.2
+    DashShort
+    Wait, duration=0.1
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    will
+    Wait, duration=0.5
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    ShadowAssault, direction=left, jump=True
+    Wait, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.4
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.1
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    ShadowVeil, direction=right
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    SlashShadowFormation
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    Adjust, x=0.904, y=0.396, max_steps=5
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.2
+    DashShort
+    Wait, duration=0.1
+    JumpAttack, direction=left
+    Wait, duration=0.2
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    DoubleJump
+    Wait, duration=0.2
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.4
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.1
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    ShadowVeil, direction=right
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.904, y=0.396, max_steps=5
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.2
+    DashShort
+    Wait, duration=0.1
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    seren
+    Wait, duration=0.5
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    DoubleJump
+    Wait, duration=0.2
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.4
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.1
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    ShadowVeil, direction=right
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    DoubleJump
+    Wait, duration=0.2
+    SlashShadowFormation
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    Adjust, x=0.904, y=0.396, max_steps=5
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.2
+    DashShort
+    Wait, duration=0.1
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    DoubleJump
+    Wait, duration=0.2
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.4
+    JumpAttack, direction=left
+    Wait, duration=0.1
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.1
+*, x=0.080, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    Adjust, x=0.060, y=0.396, max_steps=5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Adjust, x=0.940, y=0.396, max_steps=5
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left

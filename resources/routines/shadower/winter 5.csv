@@ -1,0 +1,304 @@
+*, x=0.790, y=0.167, frequency=5, skip=False, adjust=True
+    will
+    Wait, duration=0.2
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.6
+    JumpAttack, direction=left
+    DoubleJump
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.1
+    DashShort
+    Walk, direction=right, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.3
+    JumpAttack, direction=left
+    JumpShadowAssaultBot
+    Wait, duration=0.1
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    Walk, direction=right, duration=0.2
+    DoubleJump
+    Wait, duration=0.4
+    ShadowVeil, direction=right
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    DoubleJump
+    SlashShadowFormation
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Wait, duration=1
+*, x=0.790, y=0.167, frequency=5, skip=False, adjust=True
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.6
+    JumpAttack, direction=left
+    DoubleJump
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.1
+    DashShort
+    Walk, direction=right, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.3
+    JumpAttack, direction=left
+    JumpShadowAssaultBot
+    Wait, duration=0.1
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    Walk, direction=right, duration=0.2
+    DoubleJump
+    Wait, duration=0.4
+    ShadowVeil, direction=right
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Wait, duration=1
+*, x=0.790, y=0.167, frequency=5, skip=False, adjust=True
+    seren
+    Wait, duration=0.2
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.6
+    JumpAttack, direction=left
+    DoubleJump
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.1
+    DashShort
+    Walk, direction=right, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.3
+    JumpAttack, direction=left
+    JumpShadowAssaultBot
+    Wait, duration=0.1
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    Walk, direction=right, duration=0.2
+    DoubleJump
+    Wait, duration=0.4
+    ShadowVeil, direction=right
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    DoubleJump
+    SlashShadowFormation
+    Wait, duration=0.4
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Wait, duration=1
+*, x=0.790, y=0.167, frequency=5, skip=False, adjust=True
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.6
+    JumpAttack, direction=left
+    DoubleJump
+    ShadowAssault, direction=left, jump=False
+    Wait, duration=0.1
+    DashShort
+    Walk, direction=right, duration=0.2
+    DarkFlare, direction=left
+    Wait, duration=0.3
+    JumpAttack, direction=left
+    JumpShadowAssaultBot
+    Wait, duration=0.1
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    TripleJump
+    CruelStabNoD
+    Wait, duration=0.6
+    Walk, direction=right, duration=0.2
+    DoubleJump
+    Wait, duration=0.4
+    ShadowVeil, direction=right
+    Wait, duration=0.6
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    Wait, duration=1
