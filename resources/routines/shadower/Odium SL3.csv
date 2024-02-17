@@ -3,6 +3,8 @@
     JumpAttack, direction=left
     JumpAttack, direction=left
     JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=right
 *, x=0.185, y=0.452, frequency=6, skip=False, adjust=True
     SlashShadowFormation
     Wait, duration=0.3
@@ -10,7 +12,7 @@
     Wait, duration=0.3
     ShadowAssault, direction=up, jump=True
     MesoExplosion
-    DarkFlare, direction=right
+    DarkFlare, direction=left
     Wait, duration=0.3
     JumpAttack, direction=right
     Wait, duration=0.1
