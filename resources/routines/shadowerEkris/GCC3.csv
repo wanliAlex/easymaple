@@ -1,0 +1,70 @@
+*, x=0.062, y=0.384, frequency=1, skip=False, adjust=True
+    JumpShadowAssaultUpRight
+    Wait, duration=0.5
+*, x=0.305, y=0.153, frequency=1, skip=False, adjust=True
+    DarkFlare, direction=right
+    Wait, duration=0.35
+    JumpAttack, direction=right
+    Wait, duration=0.2
+    ShadowAssault, direction=right, jump=True
+    Wait, duration=0.2
+*, x=0.655, y=0.186, frequency=1, skip=False, adjust=True
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.6
+    Move_right, key_down_time=0.3
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.1
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.062, y=0.384, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.062, y=0.384, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.062, y=0.384, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.062, y=0.384, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=left
+    DoubleJump
+    Wait, duration=0.4
+    ShadowVeil, direction=left
+    Wait, duration=0.6
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left

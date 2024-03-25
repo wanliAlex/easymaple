@@ -20,7 +20,7 @@ class Key:
 
     PUNCTURE = "d"
     RAGING_BLOW = "q"
-    BEAM_BLADE = "5"
+    BEAM_BLADE = "2"
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
     UP_ARROW = 'up'
@@ -31,8 +31,8 @@ class Key:
     SEREN = "t"
     RUSH = 'e'
     RISING_RAGE = '3'
-    SCREEN_CUT = "f"
-    BLITZ_SHEILD = "w"
+    SCREEN_CUT = "d"
+    BLITZ_SHEILD = "1"
     LEAP_ATTACK = 'a'
 #########################
 #       Commands        #
@@ -204,19 +204,11 @@ class ScreenCut(Command):
 
 class BlitzSheild(Command):
     def main(self):
-        
         press(Key.BLITZ_SHEILD,2)
+
 class BeamBlade(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
-
     def main(self):
-        key_down(self.direction)
-
         press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
-        key_up(self.direction)
-
 
 class JumpBeamBlade(Command):
     def __init__(self, direction):
@@ -463,6 +455,12 @@ class DoubleJump(Command):
     def main(self):
         press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
         press(Key.JUMP, n=1, down_time=0.064, up_time=0.01)
+
+class FarJump(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
+        press(Key.JUMP, n=1, down_time=0.14, up_time=0.09)
+        press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
 
 
 class HighDoubleJump(Command):
