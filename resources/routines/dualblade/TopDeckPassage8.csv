@@ -10,7 +10,7 @@ $, target=move_tolerance, value=0.04
 
 @, label=third_bot_right
 *, x=0.882, y=0.385, frequency=1, skip=False, adjust=True
-    TOP8_Third, delay=0.28
+    TOP8_Third, delay=0.31
 
 @, label=fourth_bot_left
 *, x=0.118, y=0.385, frequency=1, skip=False, adjust=False

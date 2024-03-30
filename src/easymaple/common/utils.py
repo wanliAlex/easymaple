@@ -81,7 +81,7 @@ def single_match(frame, template):
     """
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF)
+    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
     _, _, _, top_left = cv2.minMaxLoc(result)
     w, h = template.shape[::-1]
     bottom_right = (top_left[0] + w, top_left[1] + h)
@@ -101,6 +101,7 @@ def multi_match(frame, template, threshold=0.95):
     try:
         result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
     except cv2.error:
+        result = np.zeros(2)
         pass
     locations = np.where(result >= threshold)
     locations = list(zip(*locations[::-1]))

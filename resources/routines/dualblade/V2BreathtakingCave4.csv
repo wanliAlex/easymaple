@@ -2,20 +2,20 @@ $, target=move_tolerance, value=0.04
 
 @, label=start_bot_right
 *, x=0.892, y=0.286, frequency=1, skip=False, adjust=False
-    BC4_BOT_RIGHT, delay=0.27
+    V2_BC4_BOT_RIGHT, delay=0.32
 
 @, label=bot_mid
 *, x=0.493, y=0.286, frequency=1, skip=False, adjust=False
-    BC4_BOT_MID, delay=0.27, wait=0.0
+    V2_BC4_BOT_MID, delay=0.32
 
 @, label=bot_left_port
 *, x=0.108, y=0.286, frequency=1, skip=False, adjust=False
-    BC4_BOT_LEFT
+    V2_BC4_BOT_LEFT
 
 @, label=top_left
 *, x=0.172, y=0.148, frequency=1, skip=False, adjust=False
-    BC4_TOP_LEFT
+    V2_BC4_TOP_LEFT
 
-@, label=top_right
-*, x=0.901, y=0.148, frequency=1, skip=False, adjust=False
-    BC4_TOP_RIGHT
+@, label=top_mid
+*, x=0.512, y=0.123, frequency=1, skip=False, adjust=False
+    V2_BC4_TOP_MID
