@@ -1,0 +1,32 @@
+$, target=move_tolerance, value=0.04
+*, x=0.275, y=0.312, frequency=6, skip=False, adjust=True
+    SlashShadowFormation
+    Wait, duration=0.3
+    ShadowVeil, direction=left
+    Wait, duration=0.3
+    ShadowAssault, direction=up, jump=True
+    Wait, duration=0.3
+    JumpAttack, direction=right
+    Walk, direction=left, duration=0.1
+    ErdaShower, direction=down, jump=False
+    Wait, duration=0.5
+    JumpAttack, direction=right
+    DarkFlare, direction=right
+    Wait, duration=0.3
+    ShadowAssault, direction=right, jump=True
+    Wait, duration=0.1
+    ShadowAssault, direction=down, jump=True
+    Wait, duration=0.2
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+*, x=0.156, y=0.312, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+    JumpAttack, direction=right
+*, x=0.824, y=0.312, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left
+    JumpAttack, direction=left

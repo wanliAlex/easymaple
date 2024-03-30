@@ -222,6 +222,14 @@ class JumpBeamBlade(Command):
         press(Key.BEAM_BLADE,n = 3, down_time = 0.094, up_time = 0.046)
         time.sleep(0.275)
 
+class upAttackGreen(Command):
+    def main(self):
+        press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+        time.sleep(0.27)
+        press(Key.UP_ARROW, n=6, down_time=0.02, up_time=0.02)
+        time.sleep(0.035)
+
+
 class DoubleJumpBeamBlade (Command):
     def __init__(self, direction):
         super().__init__(locals())
@@ -302,16 +310,24 @@ class BurningBlade(Command):
         key_up("up")
         key_up("down")
 
+class New_BurningBlade(Command):
+
+    def main(self):
+        key_down("up")
+        key_down("down")
+        press(Key.BURNING_BLADE,4)
+        key_up("up")
+        key_up("down")
+
 class ErdaFountain(Command):
     def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
-
-
         press(self.direction,2)
         press(Key.ERDA_FOUNTAIN,2)
         time.sleep(0.15)
+
 
 
 class Buff(Command):
@@ -394,6 +410,15 @@ class Move_left(Command):
     def main(self):
         press(Key.LEFT_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
 
+class Move_Up(Command):
+    
+    def __init__(self,key_down_time=1):
+        super().__init__(locals())
+        self.key_down_time = float(key_down_time)
+    def main(self):
+        press(Key.UP_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
+
+
 class ErdaShower(Command):
 
     def main(self):
@@ -450,19 +475,89 @@ class BlitzSheild(Command):
         
         press(Key.BLITZ_SHEILD,2)
 
-
-class Move_Up(Command):
-    
-    def __init__(self,key_down_time=1):
-        super().__init__(locals())
-        self.key_down_time = float(key_down_time)
-    def main(self):
-        press(Key.UP_ARROW,n=1,down_time=self.key_down_time,up_time=0.01)
-
 class Sword_Illusion(Command):
     def main(self):
         
         press(Key.SWORD_ILLUSION,n= 2,down_time = 0.150, up_time = 0.0)
 
 
-        
+################################## 
+
+class TDP8_bot_left(Command):
+    target_point1 = (0.118, 0.385)      #左下点位
+    target_point2 = (0.171, 0.134)       #左上点位
+
+    def main(self):
+        for _ in range(10):
+            x_distance = config.player_pos[0] - self.target_point1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, self._calculate_move_time(abs(x_distance)))
+            press("up", 1, 0.01)
+            if utils.distance(self.target_point2, config.player_pos) < 0.1:
+                break
+
+    def _calculate_move_time(self, distance):
+            if distance < 0.005:
+                return max(distance * 2, 0.01)
+            else:
+                return max(distance * 8, 0.04)
+           
+
+class TDP8_top_left(Command):
+    target_point1 = (0.444, 0.193)  #中间点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.timer = 0
+        self.erda_time = 0
+        self.wait = float(wait)
+
+    def main(self):
+        now = time.time()
+        if self.erda_time == 0 or ((now - self.erda_time) > 58):
+            press(Key.ERDA_FOUNTAIN,2)
+            self.erda_time = now
+            time.sleep(self.wait)
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return
+
+class TDP8_top_mid(Command):
+    target_point1 = (0.813, 0.128)  #右上点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+
+
+    def main(self):
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return
+
+class TDP8_top_right(Command):
+    target_point1 = (0.882, 0.385)      #右下点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.timer = 0
+        self.bsb_time = 0
+        self.wait = float(wait)
+
+    def main(self):
+        now = time.time()
+        if self.bsb_time == 0 or ((now - self.bsb_time) > 120):
+            New_BurningBlade().main()
+            self.bsb_time = now
+            time.sleep(self.wait)
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return

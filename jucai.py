@@ -82,7 +82,7 @@ preset_actions = {
     '2': [
         {"type": "1", "input": None, "delay": 2, "hold": 0},  
         {"type": "2", "input": Key.enter, "delay": 4, "hold": 0},  
-        {"type": "1", "input": None, "delay": 310, "hold": 0},  
+        {"type": "1", "input": None, "delay": 300, "hold": 0},  
     ]
 }
 

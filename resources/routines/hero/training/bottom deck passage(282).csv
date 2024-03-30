@@ -1,7 +1,7 @@
 $, target=move_tolerance, value=0.04
 
 @, label=erda
-*, x=0.901, y=0.409, frequency=6, skip=False, adjust=True
+*, x=0.892, y=0.400, frequency=6, skip=False, adjust=True
     Wait, duration=0.2
     JumpRagingBlow, direction=left, repetitions=3
     DoubleJumpBeamBlade, direction=left
@@ -15,7 +15,7 @@ $, target=move_tolerance, value=0.04
     LeapAttack
 
 @, label=BSBrotaiton
-*, x=0.901, y=0.409, frequency=12, skip=False, adjust=True
+*, x=0.892, y=0.400, frequency=12, skip=False, adjust=True
     Wait, duration=0.2
     JumpRagingBlow, direction=left, repetitions=3
     DoubleJumpBeamBlade, direction=left
@@ -28,11 +28,12 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.2
     ScreenCut
     Wait, duration=0.8
+    Move_right, key_down_time=0.5
     JumpRagingBlow, direction=right, repetitions=1
     LeapAttack
 
 @, label=normal
-*, x=0.901, y=0.409, frequency=1, skip=False, adjust=False
+*, x=0.892, y=0.400, frequency=1, skip=False, adjust=False
     Wait, duration=0.25
     JumpRagingBlow, direction=left, repetitions=2
     DoubleJumpBeamBlade, direction=left

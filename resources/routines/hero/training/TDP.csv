@@ -1,0 +1,21 @@
+$, target=move_tolerance, value=0.04
+
+@, label=bot_right
+*, x=0.882, y=0.385, frequency=1, skip=False, adjust=False
+    JumpRagingBlow, direction=left, repetitions=5
+
+@, label=bot_left
+*, x=0.118, y=0.385, frequency=1, skip=False, adjust=False
+    TDP8_bot_left
+
+@, label=top_left
+*, x=0.171, y=0.134, frequency=1, skip=False, adjust=False
+    TDP8_top_left, wait=0.4
+
+@, label=top_mid
+*, x=0.444, y=0.193, frequency=1, skip=False, adjust=False
+    TDP8_top_mid, wait=0
+
+@, label=top_right
+*, x=0.813, y=0.128, frequency=1, skip=False, adjust=False
+    TDP8_top_right, wait=0.4
