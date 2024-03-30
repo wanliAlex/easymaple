@@ -637,8 +637,8 @@ class BC4_BOT_LEFT(Command):
     _target_point_2 = (0.172, 0.148)
 
     def main(self):
-        for _ in range(10):
-            press("up", 1, 0.01)
+        for _ in range(100):
+            press("up", 1, 0.005)
             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
                 break
             x_distance = config.player_pos[0] - self._target_point_1[0]
