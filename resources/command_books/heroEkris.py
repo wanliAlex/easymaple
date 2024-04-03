@@ -265,10 +265,11 @@ class JumpRagingBlow(Command):
     def main(self):
         for _ in range(self.repetitions):
             press(self.direction)
-            press(Key.JUMP, n=2, down_time=0.072, up_time=0.01)
-
+            press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
+            time.sleep(0.08)
+            press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
-            time.sleep(0.4)
+            time.sleep(0.33)
 
 class JumpRagingBlowGreen(Command):
     def __init__(self, direction, repetitions=1):
@@ -450,7 +451,7 @@ class upAttack(Command):
         press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
         time.sleep(0.3)
         press(Key.UP_ARROW, n=6, down_time=0.02, up_time=0.02)
-        time.sleep(0.035)
+        time.sleep(0.065)
 
 class upAttackGreen(Command):
     def main(self):
