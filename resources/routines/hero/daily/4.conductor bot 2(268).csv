@@ -1,5 +1,5 @@
 $, target=move_tolerance, value=0.04
-*, x=0.189, y=0.296, frequency=6, skip=False, adjust=True
+*, x=0.179, y=0.311, frequency=6, skip=False, adjust=True
     Wait, duration=0.35
     JumpPuncture, direction=right, repetitions=4
     ErdaFountain, direction=left
@@ -15,7 +15,7 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.25
     JumpPuncture, direction=left, repetitions=1
     Wait, duration=0.2
-*, x=0.189, y=0.296, frequency=1, skip=False, adjust=True
+*, x=0.179, y=0.311, frequency=1, skip=False, adjust=True
     Wait, duration=0.35
     JumpPuncture, direction=right, repetitions=4
     Wait, duration=0.25

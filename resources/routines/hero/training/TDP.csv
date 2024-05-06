@@ -19,3 +19,4 @@ $, target=move_tolerance, value=0.04
 @, label=top_right
 *, x=0.813, y=0.128, frequency=1, skip=False, adjust=False
     TDP8_top_right, wait=0.4
+    Move_left, key_down_time=0.178

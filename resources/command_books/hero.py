@@ -22,6 +22,7 @@ class Key:
     # Skills[Buffs]
     GREEN_POT = "="
     YELLO_POT = "-"
+    
 
     # Skills[Damage:attack]
     PUNCTURE = "r"
@@ -289,13 +290,14 @@ class JumpRagingBlow (Command):
         self.direction = settings.validate_horizontal_arrows(direction)
         self.repetitions = int(repetitions)
     def main(self):
+        
         for _ in range(self.repetitions):
             press(self.direction)
             press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
             
-            press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+            press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
             time.sleep(0.3)
-            
+
 
 
 class BurningBlade(Command):
