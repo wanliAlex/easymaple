@@ -483,7 +483,7 @@ class Sword_Illusion(Command):
         press(Key.SWORD_ILLUSION,n= 2,down_time = 0.150, up_time = 0.0)
 
 
-################################## 
+################################## TDP8
 
 class TDP8_bot_left(Command):
     target_point1 = (0.118, 0.385)      #左下点位
@@ -563,3 +563,100 @@ class TDP8_top_right(Command):
                 press("up", 1, 0.05, 0.01)
             else:
                 return
+
+
+################################## BC4
+
+
+class BC4_bot_left(Command):
+    target_point1 = (0.113, 0.286)      #左下点位
+    target_point2 = (0.172, 0.148)       #左上点位
+
+    def main(self):
+        for _ in range(10):
+            x_distance = config.player_pos[0] - self.target_point1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, self._calculate_move_time(abs(x_distance)))
+            press("up", 1, 0.01)
+            if utils.distance(self.target_point2, config.player_pos) < 0.1:
+                break
+
+    def _calculate_move_time(self, distance):
+            if distance < 0.005:
+                return max(distance * 2, 0.01)
+            else:
+                return max(distance * 8, 0.04)
+           
+
+class BC4_top_left(Command):
+    target_point1 = (0.512, 0.123)  #中间点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.timer = 0
+        self.erda_time = 0
+        self.wait = float(wait)
+
+    def main(self):
+        now = time.time()
+        if self.erda_time == 0 or ((now - self.erda_time) > 58):
+            press(Key.ERDA_FOUNTAIN,2)
+            self.erda_time = now
+            time.sleep(self.wait)
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return
+
+class BC4_top_mid(Command):
+    target_point1 = (0.901, 0.148)  #右上点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+
+
+    def main(self):
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return
+
+class BC4_top_right(Command):
+    target_point1 = (0.892, 0.286)      #右下点位
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.timer = 0
+        self.bsb_time = 0
+        self.wait = float(wait)
+
+    def main(self):
+        now = time.time()
+        if self.bsb_time == 0 or ((now - self.bsb_time) > 120):
+            New_BurningBlade().main()
+            self.bsb_time = now
+            time.sleep(self.wait)
+        press(Key.RAGING_BLOW,2)
+        for _ in range(30):
+            if utils.distance(self.target_point1, config.player_pos) > 0.01:
+                press("up", 1, 0.05, 0.01)
+            else:
+                return
+
+class JumpRagingBlowBC4 (Command):
+    def __init__(self, direction,repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+    def main(self):
+        
+        for _ in range(self.repetitions):
+            press(self.direction)
+            press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.1)
+            press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
+            press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
+            time.sleep(0.35)
