@@ -438,7 +438,7 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
-BOD_COOLDOWN = 7.12
+BOD_COOLDOWN = 6.95
 
 class GS5_Start(Command):
 
@@ -593,7 +593,7 @@ class BC4_BOT_RIGHT(Command):
         press("left", 1, 0.15, 0)
         for i in range(3):
             key_down("left")
-            press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+            press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
             press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
             key_up("left")
             press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
@@ -615,7 +615,7 @@ class BC4_BOT_MID(Command):
         # time.sleep(self.wait)
         # press("left", 1, 0.01, 0)
         key_down("left")
-        press(Key.JUMP, n=1, down_time=0.094, up_time=0.076)
+        press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
         press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
         key_up("left")
         press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.206)
