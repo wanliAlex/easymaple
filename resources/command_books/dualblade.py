@@ -438,7 +438,7 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
-BOD_COOLDOWN = 6.99
+BOD_COOLDOWN = 7.12
 
 class GS5_Start(Command):
 
@@ -637,19 +637,26 @@ class BC4_BOT_LEFT(Command):
     _target_point_2 = (0.172, 0.148)
 
     def main(self):
+
+        original_direction = "left"
+
         for _ in range(100):
-            press("up", 1, 0.005)
+            press("up", 1, 0.005, 0.005)
             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
                 break
+            if utils.distance(self._target_point_1, config.player_pos) < 0.002:
+                continue
             x_distance = config.player_pos[0] - self._target_point_1[0]
             direction = "right" if x_distance < 0 else "left"
+            # if direction == original_direction:
+            #     pass
+            # else:
+            #     press(direction, 1, 0.2)
+            #     original_direction = direction
             press(direction, 1, abs(self._calculate_move_time(x_distance)))
 
     def _calculate_move_time(self, distance):
-            if distance < 0.005:
-                return max(distance * 2, 0.01)
-            else:
-                return max(distance * 4, 0.02)
+        return max(distance * 6, 0.03)
 
 
 class BC4_TOP_LEFT(Command):
@@ -662,7 +669,7 @@ class BC4_TOP_LEFT(Command):
     def main(self):
         while True:
             if self.timer == 0 or ((time.time() - self.timer) > (BOD_COOLDOWN)):
-                press(Key.BOD, 4, 0.02)
+                press(Key.BOD, 5, 0.02)
                 self.timer = time.time()
                 for _ in range(30):
                     if utils.distance(self._target_point, config.player_pos) > 0.01:
@@ -789,9 +796,9 @@ class V2_BC4_BOT_LEFT(Command):
 
     def _calculate_move_time(self, distance):
             if distance < 0.005:
-                return max(distance * 2, 0.01)
+                return 0.03
             else:
-                return max(distance * 8, 0.04)
+                return max(distance * 8, 0.03)
 
 
 class V2_BC4_TOP_LEFT(Command):
