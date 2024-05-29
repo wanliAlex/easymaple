@@ -1,0 +1,21 @@
+$, target=move_tolerance, value=0.04
+
+@, label=bot_right
+*, x=0.892, y=0.286, frequency=1, skip=False, adjust=False
+    JumpRagingBlowBC4, direction=left, repetitions=5
+
+@, label=bot_left
+*, x=0.113, y=0.286, frequency=1, skip=False, adjust=False
+    BC4_bot_left
+
+@, label=top_left
+*, x=0.172, y=0.148, frequency=1, skip=False, adjust=False
+    BC4_top_left, wait=0.4
+
+@, label=top_mid
+*, x=0.512, y=0.123, frequency=1, skip=False, adjust=False
+    BC4_top_mid, wait=0
+
+@, label=top_right
+*, x=0.901, y=0.148, frequency=1, skip=False, adjust=False
+    BC4_top_right, wait=0.4

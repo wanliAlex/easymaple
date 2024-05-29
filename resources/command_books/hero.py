@@ -344,18 +344,19 @@ class Buff(Command):
         '''
 
     def main(self):
+        pass
         '''
         buffs_120 = [Key.SPIRIT_FLOW, Key.SPIRIT_BOND]
         buffs_180 = [Key.DICE, Key.SHAPR_EYE, Key.COMBAT_ORDER]
         '''
-        buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
+        # buffs_1800 = [Key.GREEN_POT, Key.YELLO_POT]
 
-        now = time.time()
+        # now = time.time()
 
-        if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
-            for key in buffs_1800:
-                press(key,1,down_time=0.5,up_time=0.3)
-            self.monster_park_pot_30mins = now
+        # if self.monster_park_pot_30mins == 0 or now - self.monster_park_pot_30mins > 1800:
+        #     for key in buffs_1800:
+        #         press(key,1,down_time=0.5,up_time=0.3)
+        #     self.monster_park_pot_30mins = now
         '''
         if self.buff_time_120 == 0 or now - self.buff_time_120 > 120:            
             for key in buffs_120:
@@ -578,7 +579,10 @@ class BC4_bot_left(Command):
             direction = "right" if x_distance < 0 else "left"
             press(direction, 1, self._calculate_move_time(abs(x_distance)))
             press("up", 1, 0.01)
-            if utils.distance(self.target_point2, config.player_pos) < 0.1:
+            if utils.distance(self.target_point2, config.player_pos) < 0.1 :
+                if direction == "right":
+                    press("left",n=1,down_time = 0.05, up_time = 0.05)
+                    
                 break
 
     def _calculate_move_time(self, distance):
@@ -599,10 +603,11 @@ class BC4_top_left(Command):
 
     def main(self):
         now = time.time()
-        if self.erda_time == 0 or ((now - self.erda_time) > 58):
+        if self.erda_time == 0 or ((now - self.erda_time) > 56):
             press(Key.ERDA_FOUNTAIN,2)
             self.erda_time = now
             time.sleep(self.wait)
+        
         press(Key.RAGING_BLOW,2)
         for _ in range(30):
             if utils.distance(self.target_point1, config.player_pos) > 0.01:
@@ -653,10 +658,10 @@ class JumpRagingBlowBC4 (Command):
         self.direction = settings.validate_horizontal_arrows(direction)
         self.repetitions = int(repetitions)
     def main(self):
-        
+        press(self.direction,n=1,down_time = 0.05, up_time = 0.01)
         for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.1)
+            press(self.direction,n=1,down_time = 0.1, up_time = 0.04)
+            press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.095)
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
             time.sleep(0.35)
