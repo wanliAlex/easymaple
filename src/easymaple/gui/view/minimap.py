@@ -17,6 +17,7 @@ class Minimap(LabelFrame):
                                 borderwidth=0, highlightthickness=0)
         self.canvas.pack(expand=True, fill='both', padx=5, pady=5)
         self.container = None
+        self._image=None
 
     def display_minimap(self):
         """Updates the Main page with the current minimap."""
