@@ -1,5 +1,5 @@
 """A module for tracking useful in-game information."""
-
+import pytesseract
 import time
 import cv2
 import threading
@@ -27,6 +27,9 @@ WINDOWED_OFFSET_LEFT = 10
 # The top-left and bottom-right corners of the minimap
 MM_TL_TEMPLATE = cv2.imread('assets/minimap_tl_template.png', 0)
 MM_BR_TEMPLATE = cv2.imread('assets/minimap_br_template.png', 0)
+
+template_tl = cv2.imread('assets/tl_hayato.png', 0)
+template_br = cv2.imread('assets/br_hayato.png', 0)
 
 MMT_HEIGHT = max(MM_TL_TEMPLATE.shape[0], MM_BR_TEMPLATE.shape[0])
 MMT_WIDTH = max(MM_TL_TEMPLATE.shape[1], MM_BR_TEMPLATE.shape[1])
@@ -139,9 +142,14 @@ class Capture:
                     time.sleep(0.001)
 
     def screenshot(self, delay=1):
+        if not self.sct:
+            self.sct = mss.mss()  # Ensure sct is initialized
         try:
             return np.array(self.sct.grab(self.window))
-        except mss.exception.ScreenShotError:
-            print(f'\n[!] Error while taking screenshot, retrying in {delay} second'
-)
+        except Exception as e:
+            print(f'\n[!] Error while taking screenshot: {str(e)}, retrying in {delay} second')
             time.sleep(delay)
+            return None
+    
+    
+    

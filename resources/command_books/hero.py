@@ -268,7 +268,7 @@ class JumpPuncture (Command):
             press(self.direction)
             press(Key.JUMP, n = 2, down_time = 0.085, up_time = 0.01)
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.315)
+            time.sleep(0.42)
 
 class JumpPunctures (Command):
     def __init__(self, direction,repetitions=1):
@@ -574,7 +574,7 @@ class BC4_bot_left(Command):
     target_point2 = (0.172, 0.148)       #左上点位
 
     def main(self):
-        for _ in range(10):
+        for _ in range(20):
             x_distance = config.player_pos[0] - self.target_point1[0]
             direction = "right" if x_distance < 0 else "left"
             press(direction, 1, self._calculate_move_time(abs(x_distance)))

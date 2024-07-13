@@ -1,7 +1,7 @@
 $, target=move_tolerance, value=0.04
 
 @, label=bot_right
-*, x=0.882, y=0.385, frequency=1, skip=False, adjust=False
+*, x=0.882, y=0.385, frequency=1, skip=False, adjust=True
     JumpRagingBlow, direction=left, repetitions=5
 
 @, label=bot_left

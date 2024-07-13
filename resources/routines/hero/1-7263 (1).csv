@@ -5,7 +5,7 @@ $, target=move_tolerance, value=0.04
     Wait, duration=0.15
     UpJump
     Wait, duration=1.15
-    ErdaFountain
+    ErdaFountain, direction=right
     Wait, duration=0.15
     JumpPuncture, direction=right, repetitions=1
     Wait, duration=0.25
