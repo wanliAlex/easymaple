@@ -510,11 +510,31 @@ class Pick_Up_Money(Command):
             
 
 
+class Find_portal_ECRB1(Command):
+    target_point1 = (0.294,0.130) 
+    target_point2 = (0.701, 0.130)
+
+    def main(self):
+        for _ in range(10):
+            x_distance = config.player_pos[0] - self.target_point1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, self._calculate_move_time(abs(x_distance)))
+            press("up", 1, 0.01)
+            if utils.distance(self.target_point2, config.player_pos) < 0.1:
+                break
+
+    def _calculate_move_time(self, distance):
+            if distance < 0.005:
+                return max(distance * 2, 0.01)
+            else:
+                return max(distance * 8, 0.04)
 
 
 
 
-
+ 
 
 
            
+
+
