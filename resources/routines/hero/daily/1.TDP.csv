@@ -3,6 +3,7 @@ $, target=move_tolerance, value=0.04
 @, label=bot_right
 *, x=0.882, y=0.385, frequency=1, skip=False, adjust=True
     JumpRagingBlow, direction=left, repetitions=5
+    Move_right, key_down_time=0.8
 
 @, label=bot_left
 *, x=0.118, y=0.385, frequency=1, skip=False, adjust=False
@@ -19,4 +20,4 @@ $, target=move_tolerance, value=0.04
 @, label=top_right
 *, x=0.813, y=0.128, frequency=1, skip=False, adjust=False
     TDP8_top_right, wait=0.4
-    Move_left, key_down_time=0.178
+    Move_left, key_down_time=0.05
