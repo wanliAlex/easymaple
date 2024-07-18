@@ -579,9 +579,10 @@ class TOP8_Last(Command):
 
 
 class BC4_BOT_RIGHT(Command):
-    def __init__(self, delay: float = 0.0):
+    def __init__(self, delay: float = 0.0, attack: int = 1):
         super().__init__(locals())
         self.delay = float(delay)
+        self.attack = Key.BLADE_FURY if int(attack) == 1 else Key.PHANTOM_BLOW
         self.final_cut_timer = 0
 
     def main(self):
@@ -596,15 +597,16 @@ class BC4_BOT_RIGHT(Command):
             press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
             press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
             key_up("left")
-            press(Key.BLADE_FURY, n=1, down_time=0.109, up_time=0.206)
+            press(self.attack, n=1, down_time=0.109, up_time=0.206)
             time.sleep(self.delay)
 
 
 class BC4_BOT_MID(Command):
-    def __init__(self, delay: float = 0.0, wait: float = 0.0):
+    def __init__(self, delay: float = 0.0, wait: float = 0.0, attack: int=1):
         super().__init__(locals())
         self.delay = float(delay)
         self.wait = float(wait)
+        self.attack = Key.BLADE_FURY if int(attack) == 1 else Key.PHANTOM_BLOW
         self.erda_time = 0
 
     def main(self):
@@ -612,7 +614,7 @@ class BC4_BOT_MID(Command):
         press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
         press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
         key_up("left")
-        press(Key.BLADE_FURY, n=1, down_time=0.109, up_time=0.206)
+        press(self.attack, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
 
         key_down("left")
@@ -620,7 +622,7 @@ class BC4_BOT_MID(Command):
         press(Key.JUMP, n = 1, down_time=0.101, up_time=0.15)
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.01)
         key_up("left")
-        press(Key.BLADE_FURY, n=1, down_time=0.109, up_time=0.206)
+        press(self.attack, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
 
 
