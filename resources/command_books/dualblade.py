@@ -595,7 +595,7 @@ class BC4_BOT_RIGHT(Command):
         for i in range(3):
             key_down("left")
             press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
-            press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
+            press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
             key_up("left")
             press(self.attack, n=1, down_time=0.109, up_time=0.206)
             time.sleep(self.delay)
@@ -612,7 +612,7 @@ class BC4_BOT_MID(Command):
     def main(self):
         key_down("left")
         press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
-        press(Key.JUMP, n=1, down_time=0.101, up_time=0.01)
+        press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
         key_up("left")
         press(self.attack, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
@@ -636,7 +636,7 @@ class BC4_BOT_LEFT(Command):
 
         for _ in range(100):
             if utils.distance(self._target_point_1, config.player_pos) < 0.03:
-                press("up", 1, 0.005, 0.005)
+                press("up", 1, 0.05, 0.01)
             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
                 break
             if utils.distance(self._target_point_1, config.player_pos) < 0.002:
@@ -647,7 +647,7 @@ class BC4_BOT_LEFT(Command):
 
     def _calculate_move_time(self, direction: str, distance) -> float:
         base_value = max(distance * 6, 0.03)
-        return base_value if direction == "left" else 1.5 * base_value
+        return base_value if direction == "left" else 1.8 * base_value
 
 
 class BC4_TOP_LEFT(Command):

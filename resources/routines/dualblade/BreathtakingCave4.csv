@@ -2,11 +2,11 @@ $, target=move_tolerance, value=0.04
 
 @, label=start_bot_right
 *, x=0.892, y=0.286, frequency=1, skip=False, adjust=False
-    BC4_BOT_RIGHT, delay=0.27
+    BC4_BOT_RIGHT, delay=0.27, attack=1
 
 @, label=bot_mid
 *, x=0.493, y=0.286, frequency=1, skip=False, adjust=False
-    BC4_BOT_MID, delay=0.27, wait=0.0
+    BC4_BOT_MID, delay=0.27, wait=0.0, attack=1
 
 @, label=bot_left_port
 *, x=0.108, y=0.286, frequency=1, skip=False, adjust=False
