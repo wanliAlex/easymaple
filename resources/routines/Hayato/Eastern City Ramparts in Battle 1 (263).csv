@@ -1,43 +1,40 @@
 $, target=move_tolerance, value=0.04
 
 @, label=erda
-*, x=0.403, y=0.186, frequency=8, skip=False, adjust=False
-    Wait, duration=0.3
-    SurgingBlade, direction=right, repetitions=4
-    Wait, duration=0.3
-    Trinity_Attack, wait=0.5
-    Wait, duration=0.7
-    Pick_Up_Money
 *, x=0.502, y=0.186, frequency=8, skip=False, adjust=False
+    Wait, duration=0.5
     Wait, duration=0.3
-    Trinity_Attack, wait=0.5
+    Trinity_Attack, wait=0.7
+    Pick_Up_Money
     Wait, duration=0.3
-    SurgingBlade, direction=left, repetitions=4
-    Wait, duration=0.3
-    Rush, direction=left
+    SurgingBlade, direction=left, repetitions=1
+    Wait, duration=1
+    RushToFront
     Wait, duration=0.7
     Trinity_Attack, wait=0.5
     UpJump
+    Move_left, key_down_time=0.1
     Find_portal_ECRB1
     Wait, duration=0.2
+    Trinity_Attack, wait=0.5
     SurgingBlade, direction=left, repetitions=1
     Wait, duration=0.2
     ErdaFountain, direction=left
     Wait, duration=0.35
     DownJump, wait_time=0.3
-    Trinity_Attack, wait=0.7
-    SurgingBlade, direction=left, repetitions=3
+    Trinity_Attack, wait=1.5
+    SurgingBlade, direction=left, repetitions=2
     Wait, duration=0.3
     Rush, direction=left
 
 @, label=normal
-*, x=0.403, y=0.186, frequency=1, skip=False, adjust=False
-    Wait, duration=0.3
-    Trinity_Attack, wait=0.5
-    Wait, duration=0.3
-    SurgingBlade, direction=right, repetitions=4
 *, x=0.502, y=0.186, frequency=1, skip=False, adjust=False
-    Wait, duration=0.3
+    Wait, duration=0.7
     Trinity_Attack, wait=0.5
-    Wait, duration=0.3
-    SurgingBlade, direction=left, repetitions=4
+    Wait, duration=0.7
+    SurgingBlade, direction=left, repetitions=3
+*, x=0.403, y=0.186, frequency=1, skip=False, adjust=False
+    Wait, duration=0.7
+    Trinity_Attack, wait=0.5
+    Wait, duration=0.7
+    SurgingBlade, direction=right, repetitions=3

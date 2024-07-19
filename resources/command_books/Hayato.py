@@ -92,7 +92,7 @@ class Key:
 
     # Skills[Damage:attack]
     PHANTOM_BLADE = "c"
-    RAGING_BLOW = "a"
+    SANRENZAN = "a"
     ZANKOU = '2'
     
     
@@ -267,7 +267,13 @@ class SenGoKu(Command):
     def main(self):
         press(Key.SENGOKU)
 
-
+class Sanrenzan(Command):
+    def __init__(self,repetitions=1):
+        super().__init__(locals())
+        self.repetitions = int(repetitions)
+    def main(self):
+        for _ in range (self.repetitions):
+            press(Key.SANRENZAN,1,0.1,0.1)
 
 
 class ErdaFountain(Command):
@@ -425,6 +431,15 @@ class Rush(Command):
         press(self.direction)
         press(Key.RUSH,2)
 
+class RushToFront(Command):
+    def __init__(self):
+        super().__init__(locals())
+
+    
+    def main(self):
+
+        press(Key.RUSH,2)
+
 class RushSurge(Command):
     def __init__(self,direction):
         super().__init__(locals())
@@ -515,7 +530,7 @@ class Find_portal_ECRB1(Command):
     target_point2 = (0.701, 0.130)
 
     def main(self):
-        for _ in range(10):
+        for _ in range(15):
             x_distance = config.player_pos[0] - self.target_point1[0]
             direction = "right" if x_distance < 0 else "left"
             press(direction, 1, self._calculate_move_time(abs(x_distance)))
@@ -525,7 +540,7 @@ class Find_portal_ECRB1(Command):
 
     def _calculate_move_time(self, distance):
             if distance < 0.005:
-                return max(distance * 2, 0.01)
+                return max(distance * 3.5, 0.01)
             else:
                 return max(distance * 8, 0.04)
 
