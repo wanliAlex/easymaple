@@ -1,0 +1,37 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.110, y=0.287, frequency=4, skip=False, adjust=True
+    Wait, duration=0.3
+    JumpRagingBlow, direction=right, repetitions=5
+*, x=0.884, y=0.287, frequency=4, skip=False, adjust=False
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=1
+    Wait, duration=0.3
+    Rush, direction=up
+    Wait, duration=0.3
+    ErdaFountain, direction=left
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=4
+
+@, label=Earth
+*, x=0.110, y=0.287, frequency=2, skip=False, adjust=False
+    Move_right, key_down_time=0.5
+    Rush, direction=up
+    Wait, duration=0.5
+    JumpEarth
+    Wait, duration=0.5
+    Rush, direction=down
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=4
+*, x=0.884, y=0.287, frequency=2, skip=False, adjust=False
+    Wait, duration=0.3
+    JumpRagingBlow, direction=left, repetitions=5
+
+@, label=normal
+*, x=0.110, y=0.287, frequency=1, skip=False, adjust=False
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=5
+*, x=0.884, y=0.287, frequency=1, skip=False, adjust=False
+    Wait, duration=0.35
+    JumpRagingBlow, direction=left, repetitions=5

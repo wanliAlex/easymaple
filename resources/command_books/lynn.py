@@ -28,7 +28,7 @@ class Key:
     PUNCTURE = "r"
     RAGING_BLOW = "a"
     BEAM_BLADE = "w"
-    SCREEN_CUT = "q"
+    
     RISING_RAGE = "ctrl"
     SWORD_ILLUSION = "e"
 
@@ -36,7 +36,7 @@ class Key:
     
     # Skills [Placement]
     ERDA_FOUNTAIN = "end"
-    BURNING_BLADE = "1"
+    EARTH_P = "q"
     WILL ="page down"
 
 #########################
@@ -270,18 +270,7 @@ class JumpPuncture (Command):
             press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
             time.sleep(0.42)
 
-class JumpPunctures (Command):
-    def __init__(self, direction,repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.repetitions = int(repetitions)
-    def main(self):
-        for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.15, up_time = 0.01)
-            press(Key.JUMP, n = 2, down_time = 0.05, up_time = 0.01)
-            press(Key.PUNCTURE,n = 1, down_time = 0.094, up_time = 0.046)
-            time.sleep(0.315)
+
 
 
 class JumpRagingBlow (Command):
@@ -298,19 +287,7 @@ class JumpRagingBlow (Command):
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
             time.sleep(0.38)
 
-class JumpRagingBlowGreen (Command):
-    def __init__(self, direction,repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.repetitions = int(repetitions)
-    def main(self):
-        
-        for _ in range(self.repetitions):
-            press(self.direction)
-            press(Key.JUMP, n = 2, down_time = 0.072, up_time = 0.01)
-            
-            press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
-            time.sleep(0.3)
+
 
 class BurningBlade(Command):
     def __init__(self, direction):
@@ -468,22 +445,27 @@ class DownJump(Command):
         key_up("down")
         time.sleep(self.wait_time / 2.0)
 
-class ScreenCut(Command):
+class JumpEarth(Command):
     def main(self):
-        press(Key.SCREEN_CUT,2)
+        press(Key.JUMP, n = 1, down_time=0.049, up_time=0.085)
 
-class RisingRage(Command):
-    def main(self):
-        press(Key.RISING_RAGE,2)
+        press(Key.EARTH_P,n=1,down_time=0.064,up_time=0.01)
+
+
+
+
         
+
+
 class Rush(Command):
-    def __init__(self,direction):
+    def __init__(self, direction):
         super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    
+        self.direction = settings.validate_arrows(direction)
     def main(self):
-        press(self.direction)
-        press(Key.RUSH,2)
+        key_down(self.direction)
+        
+        press(Key.RUSH)
+        key_up(self.direction)
 
 class BlitzSheild(Command):
     def main(self):
@@ -599,7 +581,7 @@ class BC4_bot_left(Command):
 
     def _calculate_move_time(self, distance):
             if distance < 0.005:
-                return max(distance * 3.5, 0.01)
+                return max(distance * 2, 0.01)
             else:
                 return max(distance * 8, 0.04)
            
