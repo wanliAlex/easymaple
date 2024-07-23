@@ -16,5 +16,5 @@ $, target=move_tolerance, value=0.03
     JumpRagingBlowGreen, direction=right, repetitions=1
     Wait, duration=0.3
     AngleBeamBlade, hori_direction=right, veti_direction=up
-    JumpRagingBlow, direction=right, repetitions=4
+    JumpRagingBlow, direction=right, repetitions=3
     Wait, duration=0.7

@@ -1,5 +1,5 @@
 """A collection of all commands that a Hero can use to interact with the game."""
-
+import random
 from src.easymaple.common import config, settings, utils
 import time
 import math
@@ -296,7 +296,7 @@ class JumpRagingBlow (Command):
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.095)
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
-            time.sleep(0.38)
+            time.sleep(0.5)
 
 class JumpRagingBlowGreen (Command):
     def __init__(self, direction,repetitions=1):
@@ -590,7 +590,7 @@ class BC4_bot_left(Command):
             x_distance = config.player_pos[0] - self.target_point1[0]
             direction = "right" if x_distance < 0 else "left"
             press(direction, 1, self._calculate_move_time(abs(x_distance)))
-            press("up", 1, 0.01)
+            press("up", 1, 0.1)
             if utils.distance(self.target_point2, config.player_pos) < 0.1 :
                 if direction == "right":
                     press("left",n=1,down_time = 0.05, up_time = 0.05)
@@ -599,9 +599,9 @@ class BC4_bot_left(Command):
 
     def _calculate_move_time(self, distance):
             if distance < 0.005:
-                return max(distance * 3.5, 0.01)
+                return max(distance * 3.5, 0.05)
             else:
-                return max(distance * 8, 0.04)
+                return max(distance * 8, 0.1)
            
 
 class BC4_top_left(Command):
@@ -636,6 +636,7 @@ class BC4_top_mid(Command):
 
     def main(self):
         press(Key.RAGING_BLOW,2)
+        
         for _ in range(30):
             if utils.distance(self.target_point1, config.player_pos) > 0.01:
                 press("up", 1, 0.05, 0.01)
@@ -676,4 +677,4 @@ class JumpRagingBlowBC4 (Command):
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.095)
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
-            time.sleep(0.35)
+            time.sleep(0.5)
