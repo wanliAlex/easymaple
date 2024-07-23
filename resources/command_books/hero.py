@@ -599,7 +599,7 @@ class BC4_bot_left(Command):
 
     def _calculate_move_time(self, distance):
             if distance < 0.005:
-                return max(distance * 3.5, 0.05)
+                return max(distance * 4, 0.05)
             else:
                 return max(distance * 8, 0.1)
            
@@ -623,7 +623,7 @@ class BC4_top_left(Command):
         press(Key.RAGING_BLOW,2)
         for _ in range(30):
             if utils.distance(self.target_point1, config.player_pos) > 0.01:
-                press("up", 1, 0.05, 0.01)
+                press("up", 1, 0.1,0.001)
             else:
                 return
 
@@ -639,7 +639,7 @@ class BC4_top_mid(Command):
         
         for _ in range(30):
             if utils.distance(self.target_point1, config.player_pos) > 0.01:
-                press("up", 1, 0.05, 0.01)
+                press("up", 1, 0.1,0.001)
             else:
                 return
 
@@ -661,7 +661,7 @@ class BC4_top_right(Command):
         press(Key.RAGING_BLOW,2)
         for _ in range(30):
             if utils.distance(self.target_point1, config.player_pos) > 0.01:
-                press("up", 1, 0.05, 0.01)
+                press("up", 1, 0.1,0.001) 
             else:
                 return
 
@@ -671,10 +671,11 @@ class JumpRagingBlowBC4 (Command):
         self.direction = settings.validate_horizontal_arrows(direction)
         self.repetitions = int(repetitions)
     def main(self):
-        press(self.direction,n=1,down_time = 0.05, up_time = 0.01)
+        key_down("left")
         for _ in range(self.repetitions):
-            press(self.direction,n=1,down_time = 0.1, up_time = 0.04)
+        
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.095)
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
             time.sleep(0.5)
+        key_up("left")
