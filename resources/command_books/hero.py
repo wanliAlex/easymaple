@@ -677,5 +677,5 @@ class JumpRagingBlowBC4 (Command):
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.095)
             press(Key.JUMP, n = 1, down_time = 0.072, up_time = 0.01)
             press(Key.RAGING_BLOW,n = 1, down_time = 0.074, up_time = 0.046)
-            time.sleep(0.5)
+            time.sleep(0.59)
         key_up("left")

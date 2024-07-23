@@ -2,6 +2,7 @@ $, target=move_tolerance, value=0.04
 
 @, label=bot_right
 *, x=0.892, y=0.286, frequency=1, skip=False, adjust=True
+    Wait, duration=0.2
     JumpRagingBlowBC4, direction=left, repetitions=5
 
 @, label=bot_left
