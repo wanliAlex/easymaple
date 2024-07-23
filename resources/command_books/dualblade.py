@@ -6,6 +6,9 @@ import math
 from src.easymaple.routine.components import Command
 from src.easymaple.common.vkeys import press, key_down, key_up
 
+BALL_LAST_TIME = 62
+PLACE_SOL_BALL = False
+
 
 # List of key mappings
 class Key:
@@ -28,7 +31,8 @@ class Key:
     WILL = "5"
     SEREN = "6"
 
-    ROPE  = "s"
+    ROPE = "s"
+    SOL_BALL = "n"
 
 
 #########################
@@ -36,16 +40,14 @@ class Key:
 #########################
 
 def long_jump():
-
-    press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.1)
+    press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
     press(Key.JUMP, n=1, down_time=0.14, up_time=0.09)
     press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
 
-def short_jump():
 
+def short_jump():
     press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
     press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
-
 
 
 def step(direction, target):
@@ -130,7 +132,6 @@ class Move(Command):
                 key_up(self.prev_direction)
 
 
-
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
 
@@ -185,8 +186,6 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
-
-
 class Buff(Command):
     """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
 
@@ -196,31 +195,30 @@ class Buff(Command):
         self.buff_time = 0
 
     def main(self):
-        buffs = [ ]
+        buffs = []
         now = time.time()
-       #if self.haku_time == 0 or now - self.haku_time > 490:
-       #     press(Key.HAKU, 2)
-       #     press(Key.AKATSUKI_WARRIOR, 2)
-       #     self.haku_time = now
+        # if self.haku_time == 0 or now - self.haku_time > 490:
+        #     press(Key.HAKU, 2)
+        #     press(Key.AKATSUKI_WARRIOR, 2)
+        #     self.haku_time = now
         if self.buff_time == 0 or now - self.buff_time > settings.buff_cooldown:
             pass
             for key in buffs:
                 press(key, 3, up_time=0.3)
             self.buff_time = now
 
+
 class UpJump(Command):
     def main(self):
         key_down("up")
-        press(Key.JUMP, 1, down_time = 0.1, up_time = 0.05)
-        press(Key.BLADE_ASCENSION, 1, down_time = 0.1, up_time = 0.3)
+        press(Key.JUMP, 1, down_time=0.1, up_time=0.05)
+        press(Key.BLADE_ASCENSION, 1, down_time=0.1, up_time=0.3)
         key_up("up")
-
 
 
 class Rope(Command):
     def main(self):
-        press(Key.ROPE, 1, up_time = 0.3)
-
+        press(Key.ROPE, 1, up_time=0.3)
 
 
 class Phantom_Blow(Command):
@@ -246,7 +244,6 @@ class Phantom_Blow(Command):
             time.sleep(0.2)
 
 
-
 class Blade_Fury(Command):
     """Uses 'Tengu Strike' once."""
 
@@ -258,7 +255,6 @@ class BOD(Command):
 
     def main(self):
         press(Key.BOD, 2)
-
 
 
 class Blade_Tornado(Command):
@@ -298,30 +294,33 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 4)
         key_up("down")
 
+
 class ErdaShower(Command):
 
     def main(self):
         press(Key.ERDA_FOUNTAIN, 2)
 
+
 class Theater6_Point1_JUMP(Command):
 
     def main(self):
         key_down("right")
-        press(Key.JUMP, n = 1, down_time = 0.109, up_time = 0.109)
+        press(Key.JUMP, n=1, down_time=0.109, up_time=0.109)
         key_up("right")
-        press(Key.JUMP, n = 1, down_time = 0.109, up_time = 0.203)
-        press(Key.BOD, n = 2, down_time = 0.47, up_time = 0.01)
+        press(Key.JUMP, n=1, down_time=0.109, up_time=0.203)
+        press(Key.BOD, n=2, down_time=0.47, up_time=0.01)
 
 
 class Theater6_Point2_JUMP(Command):
     def main(self):
         key_down("left")
         time.sleep(0.073)
-        press(Key.JUMP, n =1 , down_time = 0.094, up_time = 0.359)
-        press(Key.JUMP, n =1, down_time = 0.125, up_time = 0.16)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.359)
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.16)
         key_up("left")
         time.sleep(0.134)
-        press(Key.BLADE_FURY, n = 1, down_time = 0.11, up_time = 0.328)
+        press(Key.BLADE_FURY, n=1, down_time=0.11, up_time=0.328)
+
 
 class Theater6_Point3_JUMP(Command):
     def main(self):
@@ -332,45 +331,48 @@ class Theater6_Point3_JUMP(Command):
         press(Key.BLADE_TORNADO, n=1, down_time=0.109, up_time=0.250)
         key_up("left")
 
+
 class TripleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+
 
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
 
 
 class Final_Cut(Command):
     def main(self):
-        press(Key.FINAL_CUT, n=2, down_time = 0.1, up_time = 0.05)
+        press(Key.FINAL_CUT, n=2, down_time=0.1, up_time=0.05)
+
 
 class CA4_Starting(Command):
     def main(self):
         key_down("right")
         time.sleep(0.156)
-        press(Key.JUMP,n = 1, down_time = 0.125, up_time = 0.078)
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.078)
         press(Key.JUMP, n=1, down_time=0.079, up_time=0.155)
         key_up("right")
-        press(Key.BOD, n = 1, down_time = 0.078, up_time = 0.828)
+        press(Key.BOD, n=1, down_time=0.078, up_time=0.828)
         time.sleep(0.5)
 
         key_down("right")
         time.sleep(0.154)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
         key_up("right")
-        press(Key.PHANTOM_BLOW, n = 1, down_time=0.109, up_time=0.406)
+        press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.406)
 
         key_down("right")
         time.sleep(0.154)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
         press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
         key_up("right")
-        press(Key.PHANTOM_BLOW, n = 1,down_time=0.109, up_time=0.406)
+        press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.406)
 
         # key_down("right")
         # time.sleep(0.154)
@@ -379,42 +381,44 @@ class CA4_Starting(Command):
         # key_up("right")
         # press(Key.PHANTOM_BLOW, n = 1,down_time=0.109, up_time=0.406)
 
+
 class CA4_Door(Command):
     def main(self):
         time.sleep(0.05)
         key_down("right")
-        press("up", n=7, down_time = 0.02, up_time = 0.02)
+        press("up", n=7, down_time=0.02, up_time=0.02)
         key_up("right")
         time.sleep(0.05)
 
 
 class CA4_Erda(Command):
     def main(self):
-        press(Key.ERDA_FOUNTAIN, n = 1, down_time = 0.1, up_time = 1)
+        press(Key.ERDA_FOUNTAIN, n=1, down_time=0.1, up_time=1)
         time.sleep(0.18)
         key_down("down")
         time.sleep(0.078)
-        press(Key.JUMP, n = 1, down_time = 0.156, up_time = 0.063)
+        press(Key.JUMP, n=1, down_time=0.156, up_time=0.063)
         key_up("down")
         time.sleep(0.156)
-        press(Key.DOUBLE_JUMP, n = 1, down_time = 0.01, up_time = 0.01)
-        press(Key.BOD, n = 1, down_time = 0.094, up_time = 1.2)
+        press(Key.DOUBLE_JUMP, n=1, down_time=0.01, up_time=0.01)
+        press(Key.BOD, n=1, down_time=0.094, up_time=1.2)
 
         key_down("left")
         time.sleep(0.094)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.046)
         press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
         key_up("left")
-        press(Key.PHANTOM_BLOW, n = 1,down_time=0.109, up_time=0.406)
+        press(Key.PHANTOM_BLOW, n=1, down_time=0.109, up_time=0.406)
+
 
 class CA4_Tornado(Command):
     def main(self):
         time.sleep(0.5)
-        press(Key.ROPE, n = 1, down_time = 0.094, up_time = 0.630)
-        press(Key.ROPE, n = 1, down_time=0.078, up_time=0.266)
+        press(Key.ROPE, n=1, down_time=0.094, up_time=0.630)
+        press(Key.ROPE, n=1, down_time=0.078, up_time=0.266)
         key_down("left")
         press(Key.DOUBLE_JUMP, n=1, down_time=0.01, up_time=0.01)
-        press(Key.BLADE_TORNADO, n =1, down_time = 0.01, up_time = 0.3)
+        press(Key.BLADE_TORNADO, n=1, down_time=0.01, up_time=0.3)
         time.sleep(0.5)
         key_up("left")
 
@@ -438,7 +442,9 @@ class New_ErdaFountain(Command):
             if self.press_top:
                 key_up("up")
 
+
 BOD_COOLDOWN = 6.95
+
 
 class GS5_Start(Command):
 
@@ -451,7 +457,7 @@ class GS5_Start(Command):
             if self.timer == 0 or time.time() - self.timer > BOD_COOLDOWN:
                 key_down("right")
                 time.sleep(0.1)
-                press(Key.JUMP, 1, 0.1,0.2)
+                press(Key.JUMP, 1, 0.1, 0.2)
                 press(Key.JUMP, 1, 0.1)
                 press(Key.BOD, 1, 0.1, 0.1)
                 self.timer = time.time()
@@ -465,11 +471,12 @@ class GS5_Start(Command):
 class GS5_First(Command):
     def main(self):
         key_down("right")
-        press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.109)
-        press(Key.JUMP, n = 1, down_time=0.125, up_time=0.156)
-        press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.206)
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.109)
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.156)
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.206)
         key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
+
 
 class GS5_Second(Command):
     def main(self):
@@ -485,8 +492,8 @@ class GS5_Third(Command):
 
     def main(self):
         key_down("right")
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.096)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.096)
+        press(Key.JUMP, n=1, down_time=0.141, up_time=0.11)
         key_up("right")
         press(Key.BLADE_FURY, 1, 0.1, 0.05)
         for _ in range(3):
@@ -584,46 +591,82 @@ class BC4_BOT_RIGHT(Command):
         self.delay = float(delay)
         self.attack = Key.BLADE_FURY if int(attack) == 1 else Key.PHANTOM_BLOW
         self.final_cut_timer = 0
+        self.timer = 0
 
     def main(self):
+        global PLACE_SOL_BALL
         now = time.time()
         if self.final_cut_timer == 0 or ((now - self.final_cut_timer) > 80):
             Final_Cut().main()
             self.final_cut_timer = now
 
         press("left", 1, 0.15, 0)
-        for i in range(3):
-            key_down("left")
-            press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
-            press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
-            key_up("left")
-            press(self.attack, n=1, down_time=0.109, up_time=0.206)
-            time.sleep(self.delay)
-
-
-class BC4_BOT_MID(Command):
-    def __init__(self, delay: float = 0.0, wait: float = 0.0, attack: int=1):
-        super().__init__(locals())
-        self.delay = float(delay)
-        self.wait = float(wait)
-        self.attack = Key.BLADE_FURY if int(attack) == 1 else Key.PHANTOM_BLOW
-        self.erda_time = 0
-
-    def main(self):
         key_down("left")
         press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
         press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
         key_up("left")
         press(self.attack, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
+        if self.timer == 0 or time.time() - self.timer > BALL_LAST_TIME:
+            press(Key.SOL_BALL, 1, 0.02, 0.54)
+            PLACE_SOL_BALL = True
+            self.timer = time.time()
+            for i in range(2):
+                key_down("left")
+                press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
+                press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
+                key_up("left")
+                press(self.attack, n=1, down_time=0.109, up_time=0.206)
+                time.sleep(self.delay)
+            # original_pos = config.player_pos
+            # for i in range(100):
+            #     press("left", 1, 0.05, 0.001)
+            #     if original_pos[0] - config.player_pos[0] > 0.03:
+            #         break
+            # key_down("left")
+            # press(Key.JUMP, n=1, down_time=0.054, up_time=0.186)
+            # press(Key.JUMP, n=1, down_time=0.101, up_time=0.18)
+            # press(Key.JUMP, n=1, down_time=0.094, up_time=0.01)
+            # key_up("left")
+            # press(Key.BLADE_TORNADO, n=1, down_time=0.109, up_time=0.556)
+        else:
+            for i in range(2):
+                key_down("left")
+                press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
+                press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
+                key_up("left")
+                press(self.attack, n=1, down_time=0.109, up_time=0.206)
+                time.sleep(self.delay)
+
+
+class BC4_BOT_MID(Command):
+    def __init__(self, delay: float = 0.0, wait: float = 0.0, attack: int = 1):
+        super().__init__(locals())
+        self.delay = float(delay)
+        self.wait = float(wait)
+        self.attack = Key.BLADE_FURY if int(attack) == 1 else Key.PHANTOM_BLOW
+        self.erda_time = 0
+        self.timer = 0
+
+    def main(self):
+        global PLACE_SOL_BALL
+        key_down("left")
+        press(Key.JUMP, n=1, down_time=0.054, up_time=0.006)
+        press(Key.JUMP, n=1, down_time=0.081, up_time=0.01)
+        key_up("left")
+        press(Key.BLADE_FURY, n=1, down_time=0.109, up_time=0.206)
+        time.sleep(self.delay)
 
         key_down("left")
-        press(Key.JUMP, n = 1, down_time = 0.054, up_time = 0.186)
-        press(Key.JUMP, n = 1, down_time=0.101, up_time=0.15)
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.01)
+        press(Key.JUMP, n=1, down_time=0.054, up_time=0.186)
+        press(Key.JUMP, n=1, down_time=0.101, up_time=0.15)
+        press(Key.JUMP, n=1, down_time=0.094, up_time=0.01)
         key_up("left")
-        press(self.attack, n=1, down_time=0.109, up_time=0.206)
+        press(Key.BLADE_FURY, n=1, down_time=0.109, up_time=0.206)
         time.sleep(self.delay)
+        if PLACE_SOL_BALL:
+            press(Key.SOL_BALL, 2, 0.1, 0.01)
+            PLACE_SOL_BALL = False
 
 
 class BC4_BOT_LEFT(Command):
@@ -660,11 +703,11 @@ class BC4_TOP_LEFT(Command):
     def main(self):
         while True:
             if self.timer == 0 or ((time.time() - self.timer) > (BOD_COOLDOWN)):
-                press(Key.BOD, 5, 0.02)
+                press(Key.BOD, 3, 0.03)
                 self.timer = time.time()
                 for _ in range(30):
                     if utils.distance(self._target_point, config.player_pos) > 0.01:
-                        press("up", 1, 0.05, 0.01)
+                        press("up", 1, 0.1, 0.001)
                     else:
                         break
                 return
@@ -676,8 +719,10 @@ TORNADO_COOLDOWN = 7.99
 SUDDEN_RAID_COOLDOWN = 24
 AOE_COOLDOWN = 230
 
+
 class BC4_TOP_RIGHT(Command):
     _target_point = (0.892, 0.286)
+
     def __init__(self):
         super().__init__(locals())
         self.tornado_timer = 0
@@ -688,7 +733,7 @@ class BC4_TOP_RIGHT(Command):
         self.wait = 0.1
 
     def main(self):
-        #press("left", 1, 0.015)
+        # press("left", 1, 0.015)
         now = time.time()
         if self.erda_time == 0 or ((now - self.erda_time) > 58):
             New_ErdaFountain().main()
