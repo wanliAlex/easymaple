@@ -6,10 +6,8 @@ from src.easymaple.modules.capture import Capture
 from src.easymaple.modules.notifier import Notifier
 from src.easymaple.modules.listener import Listener
 from src.easymaple.modules.gui import GUI
-import pdb
 
 def main():
-    pdb.set_trace()
 
     bot = Bot()
     capture = Capture()
@@ -36,8 +34,6 @@ def main():
     
     gui = GUI()
     gui.start()
-
-    pdb.set_trace()
 
 if __name__== "__main__":
     main()

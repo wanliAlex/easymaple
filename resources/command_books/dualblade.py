@@ -6,7 +6,7 @@ import math
 from src.easymaple.routine.components import Command
 from src.easymaple.common.vkeys import press, key_down, key_up
 
-BALL_LAST_TIME = 62
+BALL_LAST_TIME = 72
 PLACE_SOL_BALL = False
 
 
@@ -666,7 +666,6 @@ class BC4_BOT_MID(Command):
         time.sleep(self.delay)
         if PLACE_SOL_BALL:
             press(Key.SOL_BALL, 2, 0.1, 0.01)
-            PLACE_SOL_BALL = False
 
 
 class BC4_BOT_LEFT(Command):
@@ -734,11 +733,16 @@ class BC4_TOP_RIGHT(Command):
 
     def main(self):
         # press("left", 1, 0.015)
-        now = time.time()
-        if self.erda_time == 0 or ((now - self.erda_time) > 58):
-            New_ErdaFountain().main()
-            self.erda_time = now
-        time.sleep(self.wait)
+        # now = time.time()
+        # if self.erda_time == 0 or ((now - self.erda_time) > 58):
+        #     New_ErdaFountain().main()
+        #     self.erda_time = now
+        # time.sleep(self.wait)
+        global PLACE_SOL_BALL
+
+        if PLACE_SOL_BALL:
+            press(Key.SOL_BALL, 2, 0.1, 0.01)
+            PLACE_SOL_BALL=False
 
         for _ in range(30):
             if utils.distance(self._target_point, config.player_pos) > 0.01:
