@@ -136,7 +136,7 @@ class Capture:
 
                     if not self.ready:
                         self.ready = True
-                    time.sleep(0.001)
+                    time.sleep(0.01)
 
     def screenshot(self, delay=1):
         try:

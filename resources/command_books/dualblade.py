@@ -569,7 +569,7 @@ class TOP8_Fourth(Command):
             x_distance = config.player_pos[0] - self._target_point_1[0]
             direction = "right" if x_distance < 0 else "left"
             press(direction, 1, max(abs(x_distance) * 15, 0.08))
-            press("up", 1, 0.01)
+            press("up", 1, 0.05, 0.01)
             if utils.distance(self._target_point_2, config.player_pos) < 0.1:
                 break
 
@@ -580,7 +580,7 @@ class TOP8_Last(Command):
     def main(self):
         for _ in range(50):
             if utils.distance(self._target_point, config.player_pos) > 0.1:
-                press("up", 1, 0.01)
+                press("up", 1, 0.05, 0.01)
             else:
                 return
 
