@@ -13,9 +13,9 @@ from src.easymaple.detection import detection
 from src.easymaple.routine import components
 from src.easymaple.routine.routine import Routine
 from src.easymaple.routine.components import Point
-from src.easymaple.common.vkeys import press, click
+from src.easymaple.common.old_vkeys import press, click
 from src.easymaple.common.interfaces import Configurable
-from src.easymaple.common.vkeys import press, key_down, key_up
+from src.easymaple.common.old_vkeys import press, key_down, key_up
 
 
 # The rune's buff icon

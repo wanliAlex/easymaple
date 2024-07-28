@@ -101,4 +101,6 @@ buff_cooldown = 180
 # The threshold to jump
 jump_threshold = 0.1
 
+driver_key = True
+
 reset()

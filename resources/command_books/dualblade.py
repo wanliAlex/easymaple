@@ -706,7 +706,7 @@ class BC4_TOP_LEFT(Command):
                 self.timer = time.time()
                 for _ in range(30):
                     if utils.distance(self._target_point, config.player_pos) > 0.01:
-                        press("up", 1, 0.1, 0.001)
+                        press("up", 1, 0.1, 0.05)
                     else:
                         break
                 return
@@ -746,7 +746,7 @@ class BC4_TOP_RIGHT(Command):
 
         for _ in range(30):
             if utils.distance(self._target_point, config.player_pos) > 0.01:
-                press("up", 1, 0.05, 0.01)
+                press("up", 1, 0.1, 0.05)
             else:
                 break
         return

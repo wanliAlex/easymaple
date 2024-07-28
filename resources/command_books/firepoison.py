@@ -4,7 +4,7 @@ from src.easymaple.common import config, settings, utils
 import time
 import math
 from src.easymaple.routine.components import Command
-from src.easymaple.common.vkeys import press, key_down, key_up
+from src.easymaple.common.old_vkeys import press, key_down, key_up
 
 
 # List of key mappings

@@ -2,15 +2,10 @@
 
 import ctypes
 import time
-from cv2 import split
 import win32con
 import win32api
-from src.easymaple.common import utils, driver_key, settings
+from src.easymaple.common import utils
 from ctypes import wintypes
-from random import random
-from pynput.keyboard import Key, Controller
-import win32gui, win32ui, win32con, win32api
-import win32process
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 
@@ -25,17 +20,14 @@ KEYEVENTF_SCANCODE = 0x0008
 
 MAPVK_VK_TO_VSC = 0
 
-# record unreleased key for stopping script
-unreleased_key = []
-
 # https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN
 KEY_MAP = {
-    'left': 0x25,  # Arrow keys
+    'left': 0x25,   # Arrow keys
     'up': 0x26,
     'right': 0x27,
     'down': 0x28,
 
-    'backspace': 0x08,  # Special keys
+    'backspace': 0x08,      # Special keys
     'tab': 0x09,
     'enter': 0x0D,
     'shift': 0x10,
@@ -44,14 +36,14 @@ KEY_MAP = {
     'caps lock': 0x14,
     'esc': 0x1B,
     'space': 0x20,
-    'pageup': 0x21,
-    'pagedown': 0x22,
+    'page up': 0x21,
+    'page down': 0x22,
     'end': 0x23,
     'home': 0x24,
     'insert': 0x2D,
     'delete': 0x2E,
 
-    '0': 0x30,  # Numbers
+    '0': 0x30,      # Numbers
     '1': 0x31,
     '2': 0x32,
     '3': 0x33,
@@ -62,7 +54,7 @@ KEY_MAP = {
     '8': 0x38,
     '9': 0x39,
 
-    'a': 0x41,  # Letters
+    'a': 0x41,      # Letters
     'b': 0x42,
     'c': 0x43,
     'd': 0x44,
@@ -89,7 +81,7 @@ KEY_MAP = {
     'y': 0x59,
     'z': 0x5A,
 
-    'f1': 0x70,  # Functional keys
+    'f1': 0x70,     # Functional keys
     'f2': 0x71,
     'f3': 0x72,
     'f4': 0x73,
@@ -104,7 +96,7 @@ KEY_MAP = {
     'num lock': 0x90,
     'scroll lock': 0x91,
 
-    ';': 0xBA,  # Special characters
+    ';': 0xBA,      # Special characters
     '=': 0xBB,
     ',': 0xBC,
     '-': 0xBD,
@@ -117,13 +109,11 @@ KEY_MAP = {
     "'": 0xDE
 }
 
+
 #################################
 #     C Struct Definitions      #
 #################################
 wintypes.ULONG_PTR = wintypes.WPARAM
-d_key = None
-if settings.driver_key == True:
-    d_key = driver_key.DriverKey()
 
 
 class KeyboardInput(ctypes.Structure):
@@ -178,123 +168,50 @@ def err_check(result, _, args):
 user32.SendInput.errcheck = err_check
 user32.SendInput.argtypes = (wintypes.UINT, LPINPUT, ctypes.c_int)
 
-nput_keyboard = Controller()
-
 
 #################################
 #           Functions           #
 #################################
 @utils.run_if_enabled
-def key_down(key, down_time=0.05):
+def key_down(key):
     """
     Simulates a key-down action. Can be cancelled by Bot.toggle_enabled.
     :param key:     The key to press.
     :return:        None
     """
-
-    key = key.lower()
-    key_combination = []
-    # print('key down : ', key)
-    if "+" in key:
-        key_combination = key.split("+")
-        # print('key_combination')
-    else:
-        key_combination.append(key)
-
     if key == '':
-        pass
+        return
+    key = key.lower()
+    if key not in KEY_MAP.keys():
+        print(f"Invalid keyboard input: `{key}`.")
     else:
-        for k in key_combination:
-            if k not in KEY_MAP.keys():
-                print(f"Invalid keyboard input: '{key}'.")
-            elif not k in unreleased_key:
-                unreleased_key.append(k)
-                if settings.driver_key == True:
-                    # try new input method
-                    global d_key
-                    if d_key == None:
-                        d_key = driver_key.DriverKey()
-                    d_key.user_key_down(KEY_MAP[k])
-                else:
-                    # default input method
-                    x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[k]))
-                    user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
-
-                if len(key_combination) > 1:
-                    time.sleep(0.02 * (0.9 + 0.7 * random()))
-    time.sleep(down_time * (0.8 + 0.7 * random()))
+        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key]))
+        #x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wScan=user32.MapVirtualKeyExW(KEY_MAP[key], MAPVK_VK_TO_VSC, 0),
+        #p                                                dwFlags=KEYEVENTF_SCANCODE))
+        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 
-def pynput_key_down(key):
-    if len(key) > 1:
-        nput_keyboard.press(Key[key])
-    else:
-        nput_keyboard.press(key)
-
-
-def key_up(key, up_time=0.05):
+def key_up(key):
     """
     Simulates a key-up action. Cannot be cancelled by Bot.toggle_enabled.
     This is to ensure no keys are left in the 'down' state when the program pauses.
     :param key:     The key to press.
     :return:        None
     """
-
-    key = key.lower()
-    key_combination = []
-    if "+" in key:
-        key_combination = key.split("+")
-    else:
-        key_combination.append(key)
-
     if key == '':
-        pass
+        return
+    key = key.lower()
+    if key not in KEY_MAP.keys():
+        print(f"Invalid keyboard input: `{key}`.")
     else:
-        for k in key_combination:
-            if k not in KEY_MAP.keys():
-                print(f"Invalid keyboard input: '{key}'.")
-            elif k in unreleased_key:
-                unreleased_key.remove(k)
-                if settings.driver_key == True:
-                    # try new input method
-                    global d_key
-                    if d_key == None:
-                        d_key = driver_key.DriverKey()
-                    d_key.user_key_up(KEY_MAP[k])
-                else:
-                    # default input method
-                    x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[k], dwFlags=KEYEVENTF_KEYUP))
-                    user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
-                if len(key_combination) > 1:
-                    time.sleep(0.04 * (0.9 + 0.7 * random()))
-    time.sleep(up_time * (0.9 + 0.6 * random()))
-
-    # if key == '':
-    #     return
-    # elif key not in KEY_MAP.keys() :
-    #     print(f"Invalid keyboard input: '{key}'.")
-    # elif key in unreleased_key:
-    #     x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
-    #     user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
-    #     unreleased_key.remove(key)
-    #     time.sleep(up_time * (0.7 + 0.8 * random()))
-
-
-def pynput_key_up(key):
-    if len(key) > 1:
-        nput_keyboard.release(Key[key])
-    else:
-        nput_keyboard.release(key)
-
-
-def release_unreleased_key():
-    print("release ", unreleased_key)
-    for key in unreleased_key:
-        key_up(key)
+        #x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wScan=user32.MapVirtualKeyExW(KEY_MAP[key], MAPVK_VK_TO_VSC, 0),
+        #                                                dwFlags=KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP))
+        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
+        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 
 @utils.run_if_enabled
-def press(key, n=1, down_time=0.1, up_time=0.08):
+def press(key, n=1, down_time=0.05, up_time=0.1):
     """
     Presses KEY N times, holding it for DOWN_TIME seconds, and releasing for UP_TIME seconds.
     :param key:         The keyboard input to press.
@@ -305,17 +222,14 @@ def press(key, n=1, down_time=0.1, up_time=0.08):
     """
 
     for _ in range(n):
-        if key == '':
-            break
-        key_down(key, down_time)
-        key_up(key, up_time)
+        key_down(key)
+        time.sleep(down_time)
+        key_up(key)
+        time.sleep(up_time)
 
 
-def type(word):
-    nput_keyboard.type(word)
-
-
-def click(position, button='left', click_time=1):
+@utils.run_if_enabled
+def click(position, button='left'):
     """
     Simulate a mouse click with BUTTON at POSITION.
     :param position:    The (x, y) position at which to click.
@@ -326,14 +240,12 @@ def click(position, button='left', click_time=1):
     if button not in ['left', 'right']:
         print(f"'{button}' is not a valid mouse button.")
     else:
-        for _ in range(click_time):
-            time.sleep(0.2 * (0.9 + 0.7 * random()))
-            if button == 'left':
-                down_event = win32con.MOUSEEVENTF_LEFTDOWN
-                up_event = win32con.MOUSEEVENTF_LEFTUP
-            else:
-                down_event = win32con.MOUSEEVENTF_RIGHTDOWN
-                up_event = win32con.MOUSEEVENTF_RIGHTUP
-            win32api.SetCursorPos(position)
-            win32api.mouse_event(down_event, position[0], position[1], 0, 0)
-            win32api.mouse_event(up_event, position[0], position[1], 0, 0)
+        if button == 'left':
+            down_event = win32con.MOUSEEVENTF_LEFTDOWN
+            up_event = win32con.MOUSEEVENTF_LEFTUP
+        else:
+            down_event = win32con.MOUSEEVENTF_RIGHTDOWN
+            up_event = win32con.MOUSEEVENTF_RIGHTUP
+        win32api.SetCursorPos(position)
+        win32api.mouse_event(down_event, position[0], position[1], 0, 0)
+        win32api.mouse_event(up_event, position[0], position[1], 0, 0)

@@ -9,7 +9,7 @@ import mss.windows
 import numpy as np
 from src.easymaple.common import config, utils
 from ctypes import wintypes
-from src.easymaple.common.vkeys import press, key_down, key_up
+from src.easymaple.common.old_vkeys import press, key_down, key_up
 import pygetwindow as gw
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
@@ -74,36 +74,26 @@ class Capture:
 
     def _main(self):
         """Constantly monitors the player's position and in-game events."""
-        
+
         mss.windows.CAPTUREBLT = 0
         while True:
             # Calibrate screen capture
-            # handle = user32.FindWindowW(None, 'MapleStory')
-            # rect = wintypes.RECT()
-            # user32.GetWindowRect(handle, ctypes.pointer(rect))
-            # rect = (rect.left, rect.top, rect.right, rect.bottom)
-            # rect = tuple(max(0, x) for x in rect)
-            #
-            # self.window['left'] = rect[0]
-            # self.window['top'] = rect[1]
-            # self.window['width'] = max(rect[2] - rect[0], MMT_WIDTH)
-            # self.window['height'] = max(rect[3] - rect[1], MMT_HEIGHT)
-            #
-            # # Calibrate by finding the bottom right corner of the minimap
+            handle = user32.FindWindowW(None, 'MapleStory')
+            rect = wintypes.RECT()
+            user32.GetWindowRect(handle, ctypes.pointer(rect))
+            rect = (rect.left, rect.top, rect.right, rect.bottom)
+            rect = tuple(max(0, x) for x in rect)
 
-            window = gw.getWindowsWithTitle('Maplestory')[0]
-            rect = {
-                "top": window.top,
-                "left": window.left,
-                "width": window.width,
-                "height": window.height
-            }
+            self.window['left'] = rect[0]
+            self.window['top'] = rect[1]
+            self.window['width'] = max(rect[2] - rect[0], MMT_WIDTH)
+            self.window['height'] = max(rect[3] - rect[1], MMT_HEIGHT)
 
+            # Calibrate by finding the bottom right corner of the minimap
             with mss.mss() as self.sct:
-                self.frame = self.screenshot(rect)
+                self.frame = self.screenshot()
             if self.frame is None:
                 continue
-
             tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
             _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
             mm_tl = (
@@ -124,7 +114,7 @@ class Capture:
                         break
 
                     # Take screenshot
-                    self.frame = self.screenshot(rect)
+                    self.frame = self.screenshot()
                     if self.frame is None:
                         continue
 
@@ -147,13 +137,12 @@ class Capture:
 
                     if not self.ready:
                         self.ready = True
-                    time.sleep(0.01)
+                    time.sleep(0.001)
 
-    def screenshot(self, rect, delay=1):
+    def screenshot(self, delay=1):
         try:
-            return np.array(self.sct.grab(rect))
+            return np.array(self.sct.grab(self.window))
         except mss.exception.ScreenShotError:
             print(f'\n[!] Error while taking screenshot, retrying in {delay} second'
-)
+                  )
             time.sleep(delay)
-        time.sleep(0.01)

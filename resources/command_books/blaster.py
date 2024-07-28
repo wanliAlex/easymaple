@@ -3,7 +3,7 @@
 import time
 from src.easymaple.common import settings
 from src.easymaple.routine.components import Command
-from src.easymaple.common.vkeys import press, key_down, key_up
+from src.easymaple.common.old_vkeys import press, key_down, key_up
 
 #
 # class Move(Command):
