@@ -2,11 +2,13 @@
 
 import math
 import queue
-import cv2
 import threading
-import numpy as np
-from src.easymaple.common import config, settings
 from random import random
+
+import cv2
+import numpy as np
+
+from src.easymaple.common import config, settings
 
 
 def run_if_enabled(function):

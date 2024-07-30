@@ -1,22 +1,22 @@
 """An interpreter that reads and executes user-created routines."""
 
+import importlib
+import inspect
 import threading
 import time
-import git
-import cv2
-import inspect
-import importlib
 import traceback
 from os.path import splitext, basename
-from src.easymaple.common import config, utils
-from src.easymaple.detection import detection
-from src.easymaple.routine import components
-from src.easymaple.routine.routine import Routine
-from src.easymaple.routine.components import Point
-from src.easymaple.common.vkeys import press, click
-from src.easymaple.common.interfaces import Configurable
-from src.easymaple.common.vkeys import press, key_down, key_up
 
+import cv2
+import git
+
+from src.easymaple.common import config, utils
+from src.easymaple.common.interfaces import Configurable
+from src.easymaple.common.vkeys import click
+from src.easymaple.common.vkeys import press, key_up
+from src.easymaple.routine import components
+from src.easymaple.routine.components import Point
+from src.easymaple.routine.routine import Routine
 
 # The rune's buff icon
 RUNE_BUFF_TEMPLATE = cv2.imread('assets/rune_buff_template.jpg', 0)
@@ -102,65 +102,10 @@ class Bot(Configurable):
 
                 # Execute next Point in the routine
                 element = config.routine[config.routine.index]
-                rune_settings = config.gui.settings.rune
-                solve_rune = rune_settings.solve_rune.get()
-                if self.rune_active:
-                    if solve_rune and isinstance(element, Point) and element.location == self.rune_closest_pos:
-                        if self.model == None:
-                            model = detection.load_model()
-                        self._solve_rune(model)
-                    elif solve_rune == False:
-                        self.rune_active = False
                 element.execute()
                 config.routine.step()
             else:
                 time.sleep(0.01)
-
-    @utils.run_if_enabled
-    def _solve_rune(self, model):
-        """
-        Moves to the position of the rune and solves the arrow-key puzzle.
-        :param model:   The TensorFlow model to classify with.
-        :param sct:     The mss instance object with which to take screenshots.
-        :return:        None
-        """
-
-        move = self.command_book['move']
-        move(*self.rune_pos).execute()
-        adjust = self.command_book['adjust']
-        adjust(*self.rune_pos).execute()
-        time.sleep(1)
-        press(self.config['Interact'], 1, down_time=0.2)        # Inherited from Configurable
-
-        print('\nSolving rune:')
-        inferences = []
-        for _ in range(15):
-            frame = config.capture.frame
-            solution = detection.merge_detection(model, frame)
-            if solution:
-                print(', '.join(solution))
-                if solution in inferences:
-                    print('Solution found, entering result')
-                    for arrow in solution:
-                        press(arrow, 1, down_time=0.1)
-                    time.sleep(1)
-                    for _ in range(3):
-                        time.sleep(0.3)
-                        frame = config.capture.frame
-                        rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                                      RUNE_BUFF_TEMPLATE,
-                                                      threshold=0.9)
-                        if rune_buff:
-                            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-                            target = (
-                                round(rune_buff_pos[0] + config.capture.window['left']),
-                                round(rune_buff_pos[1] + config.capture.window['top'])
-                            )
-                            click(target, button='right')
-                    self.rune_active = False
-                    break
-                elif len(solution) == 4:
-                    inferences.append(solution)
 
     def load_commands(self, file):
         """Prompts the user to select a command module to import. Updates config's command book."""

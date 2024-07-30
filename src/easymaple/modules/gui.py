@@ -1,9 +1,10 @@
 """User friendly GUI to interact with Auto Maple."""
 
-import time
 import threading
+import time
 import tkinter as tk
 from tkinter import ttk
+
 from src.easymaple.common import config, settings
 from src.easymaple.gui import Menu, View, Edit, Settings
 

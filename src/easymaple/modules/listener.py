@@ -1,12 +1,14 @@
 """A keyboard listener to track user inputs."""
 
-import time
 import threading
-import winsound
-import keyboard as kb
-from src.easymaple.common.interfaces import Configurable
-from src.easymaple.common import config, utils
+import time
 from datetime import datetime
+
+import keyboard as kb
+import winsound
+
+from src.easymaple.common import config, utils
+from src.easymaple.common.interfaces import Configurable
 
 
 class Listener(Configurable):

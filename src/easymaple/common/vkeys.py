@@ -2,10 +2,12 @@
 
 import ctypes
 import time
-import win32con
-import win32api
-from src.easymaple.common import utils
 from ctypes import wintypes
+
+import win32api
+import win32con
+
+from src.easymaple.common import utils
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 

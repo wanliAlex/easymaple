@@ -1,16 +1,16 @@
 """A module for tracking useful in-game information."""
 
-import time
-import cv2
-import threading
 import ctypes
-import mss
-import mss.windows
-import numpy as np
-from src.easymaple.common import config, utils
+import threading
+import time
 from ctypes import wintypes
-from src.easymaple.common.vkeys import press, key_down, key_up
+
+import cv2
+import numpy as np
+
+from src.easymaple.common import config, utils
 from src.easymaple.modules.PyWindowsScreenCapture import PyWindowsScreenCapture
+
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
 
@@ -139,7 +139,7 @@ class Capture:
         data, width, height = screen_capture.capture_monitor(0)
         image_shape = (height, width, 3)
         image_array = np.ctypeslib.as_array(data, shape=image_shape)
-        array = np.copy(image_array[:, :, ::-1])
+        array = np.copy(image_array)
         game = array[self.window["top"]:self.window["top"] + self.window["height"],
                self.window["left"]:self.window["left"] + self.window["width"], :]
         screen_capture.free_all_captures()
