@@ -10,6 +10,7 @@ BALL_LAST_TIME = 72
 PLACE_SOL_BALL = False
 
 
+
 # List of key mappings
 class Key:
     # Movement
