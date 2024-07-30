@@ -68,20 +68,9 @@ class Bot(Configurable):
         The main body of Bot that executes the user's routine.
         :return:    None
         """
-
-        # rune_settings = config.gui.settings.rune
-        # solve_rune = rune_settings.solve_rune.get()
-        # if solve_rune is True:
-        #     print('\n[~] Initializing detection algorithm:\n')
-        #     model = detection.load_model()
-        #     print('\n[~] Initialized detection algorithm')
-        # else:
-        #     print('\n[~] Skip model detection as `solve_rune = False`')
-
         self.ready = True
         config.listener.enabled = True
         last_fed = time.time()
-        key_up("left"); key_up("right")
         while True:
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets

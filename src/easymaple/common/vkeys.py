@@ -1,16 +1,21 @@
+from ctypes import CDLL
 import time
+from src.easymaple.common.key_map import KEY_MAP
 
-from src.easymaple.common.driver_key import DriverKey
+dll_path = r"D:\easymaple\src\easymaple\common\kmclassdll.dll"
+driver_path = b"D:\\easymaple\\src\\easymaple\\common\kmclass.sys"
 
-d_key = DriverKey()
-
+driver = CDLL(dll_path)
+driver.LoadNTDriver("easymaple-input", driver_path)
+driver.SetHandle()
 
 def key_down(key):
-    d_key.user_key_down(key)
+    print(key)
+    driver.KeyDown(KEY_MAP[key])
 
 
 def key_up(key):
-    d_key.user_key_up(key)
+    driver.KeyUp(KEY_MAP[key])
 
 
 def press(key, n=1, down_time=0.1, up_time=0.01):
