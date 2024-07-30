@@ -1,8 +1,6 @@
 """A module for simulating low-level keyboard and mouse key presses."""
 
 import ctypes
-import time
-from cv2 import split
 import win32con
 import win32api
 from src.easymaple.common import utils, driver_key, settings
