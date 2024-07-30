@@ -12,10 +12,8 @@ import git
 
 from src.easymaple.common import config, utils
 from src.easymaple.common.interfaces import Configurable
-from src.easymaple.common.vkeys import click
 from src.easymaple.common.vkeys import press, key_up
 from src.easymaple.routine import components
-from src.easymaple.routine.components import Point
 from src.easymaple.routine.routine import Routine
 
 # The rune's buff icon
