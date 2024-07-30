@@ -6,6 +6,7 @@ import win32con
 import win32api
 from src.easymaple.common import utils
 from ctypes import wintypes
+import pydirectinput
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 
@@ -185,8 +186,7 @@ def key_down(key):
     if key not in KEY_MAP.keys():
         print(f"Invalid keyboard input: `{key}`.")
     else:
-        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key]))
-        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+        pydirectinput.keyDown(key)
 
 
 def key_up(key):
@@ -202,8 +202,7 @@ def key_up(key):
     if key not in KEY_MAP.keys():
         print(f"Invalid keyboard input: `{key}`.")
     else:
-        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
-        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+        pydirectinput.keyUp(key)
 
 
 @utils.run_if_enabled
