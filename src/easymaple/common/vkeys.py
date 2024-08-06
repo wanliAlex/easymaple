@@ -6,6 +6,7 @@ import win32con
 import win32api
 from src.easymaple.common import utils
 from ctypes import wintypes
+import numpy as np
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 
@@ -207,7 +208,7 @@ def key_up(key):
 
 
 @utils.run_if_enabled
-def press(key, n=1, down_time=0.05, up_time=0.1):
+def press(key, n=1, down_time=0.05, up_time=0.1, random=False):
     """
     Presses KEY N times, holding it for DOWN_TIME seconds, and releasing for UP_TIME seconds.
     :param key:         The keyboard input to press.
@@ -218,10 +219,16 @@ def press(key, n=1, down_time=0.05, up_time=0.1):
     """
 
     for _ in range(n):
-        key_down(key)
-        time.sleep(down_time)
-        key_up(key)
-        time.sleep(up_time)
+        if random==True:
+            key_down(key)
+            time.sleep(down_time * np.random.uniform(low=0.95, high=1.05))
+            key_up(key)
+            time.sleep(up_time * np.random.uniform(low=0.95, high=1.05))
+        else:
+            key_down(key)
+            time.sleep(down_time)
+            key_up(key)
+            time.sleep(up_time)
 
 
 @utils.run_if_enabled

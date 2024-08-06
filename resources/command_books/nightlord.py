@@ -5,6 +5,7 @@ import time
 import math
 from src.easymaple.routine.components import Command
 from src.easymaple.common.vkeys import press, key_down, key_up
+import numpy as np
 
 
 # List of key mappings
@@ -19,6 +20,8 @@ class Key:
     SUDDEN_RAID = "w"
     DEATH_STAR = "a"
     WARRIOR = "f5"
+    OMEN = "d"
+    DASH="4"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -356,3 +359,88 @@ class SH2_POINT_7(Command):
         press("space", 1, 0.141, 0.109)
         press(Key.LEAP, 1, 0.235, 0.094)
         key_up("left")
+
+
+class CB1_POINT_1(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer =0
+    def main(self):
+        while True:
+            if self.timer == 0 or time.time() - self.timer > 58:
+                break
+            press("right", 1, 0.094, 0.0123, random=True)
+            press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
+            time.sleep(np.random.uniform(1, 1.5))
+            press("left", 1, 0.084, 0.0123, random=True)
+            press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
+            time.sleep(np.random.uniform(1,1.5))
+        press(Key.OMEN, 1, 0.1, 0.2, random=True)
+        self.timer = time.time()
+        press("left", 1, 0.084, 0.0123)
+        TripleJumpAttack("left").main()
+
+        for _ in range(10):
+            if abs(config.player_pos[1]  - 0.190) < 0.005:
+                break
+            time.sleep(0.05)
+
+
+class CB1_POINT_2(Command):
+    def main(self):
+        key_down("down")
+        time.sleep(0.1)
+        press(Key.JUMP, 1, 0.120, 0.24)
+        key_down("left")
+        press(Key.DASH)
+        time.sleep(0.1)
+        key_up("down")
+        key_up("left")
+        for _ in range(30):
+            if abs(config.player_pos[1] - 0.265) < 0.001:
+                break
+            time.sleep(0.1)
+
+
+
+class CB1_POINT_3(Command):
+    def main(self):
+        press(Key.DARK_FLARE, 2, 0.1, 0.1, random=True)
+        key_down("down")
+        press(Key.JUMP, 2, 0.120, 0.094)
+        key_up("down")
+        for _ in range(30):
+            if abs(config.player_pos[1] - 0.344) < 0.001:
+                break
+            time.sleep(0.1)
+        time.sleep(0.2)
+
+
+class CB1_POINT_4(Command):
+    def main(self):
+        for _ in range(3):
+            TripleJumpAttack("right").main()
+        for _ in range(30):
+            if abs(config.player_pos[1] - 0.344) < 0.001:
+                break
+            time.sleep(0.05)
+        time.sleep(0.1)
+
+
+class CB1_POINT_5(Command):
+    def main(self):
+        key_down("left")
+        time.sleep(0.3)
+        press(Key.JUMP, 1, 0.120, 0.094)
+        press(Key.LEAP, 1, 0.1, 0.2)
+        key_up("left")
+        time.sleep(1)
+        press(Key.ERDA_FOUNTAIN, 1, 0.1, 0.65, random=True)
+        press(Key.JUMP, 1, down_time = 0.140, up_time = 0.100)
+        press(Key.LEAP, 1, down_time = 0.225, up_time = 0.5)
+        time.sleep(0.1)
+
+class CB1_POINT_6(Command):
+    def main(self):
+        press(Key.SUDDEN_RAID, 1, 0.1, 0.6)
+        TripleJumpAttack("left").main()

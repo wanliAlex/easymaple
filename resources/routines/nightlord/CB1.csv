@@ -1,0 +1,25 @@
+$, target=move_tolerance, value=0.03
+
+@, label=mide
+*, x=0.481, y=0.164, frequency=1, skip=False, adjust=True
+    CB1_POINT_1
+
+@, label=left_mid
+*, x=0.201, y=0.190, frequency=1, skip=False, adjust=True
+    CB1_POINT_2
+
+@, label=dark_flaer
+*, x=0.143, y=0.265, frequency=1, skip=False, adjust=False
+    CB1_POINT_3
+
+@, label=bot_left
+*, x=0.143, y=0.344, frequency=1, skip=False, adjust=False
+    CB1_POINT_4
+
+@, label=bot_right
+*, x=0.836, y=0.344, frequency=1, skip=False, adjust=False
+    CB1_POINT_5
+
+@, label=erda
+*, x=0.741, y=0.175, frequency=1, skip=False, adjust=False
+    CB1_POINT_6
