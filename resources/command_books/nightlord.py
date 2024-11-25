@@ -22,6 +22,8 @@ class Key:
     WARRIOR = "f5"
     OMEN = "d"
     DASH="4"
+    SHURI="t"
+    BALL="page up"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -56,7 +58,7 @@ class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
     This is a general implementation and can be overriden by the Move class in your command books"""
 
-    def __init__(self, x, y, max_steps=10):
+    def __init__(self, x, y, max_steps=100):
         super().__init__(locals())
         self.target = (float(x), float(y))
         self.max_steps = settings.validate_nonnegative_int(max_steps)
@@ -86,18 +88,21 @@ class Move(Command):
                     else:
                         key = 'right'
                     self._new_direction(key)
-                    if abs(d_x) > settings.move_tolerance * 10:
+                    if abs(d_x) >= settings.move_tolerance * 20:
                         TripleJump().main()
-                    elif settings.move_tolerance * 5 < abs(d_x) < settings.move_tolerance * 10:
+                        counter -= 10
+                    elif settings.move_tolerance * 10 <= abs(d_x) < settings.move_tolerance * 20:
                         DoubleJump().main()
-                    elif abs(d_x) < settings.move_tolerance * 5:
-                        time.sleep(0.05)
+                        counter -= 10
+                    elif abs(d_x) < settings.move_tolerance * 10:
+                        time.sleep(0.1)
+                        counter -= 1
                     if settings.record_layout:
                         config.layout.add(*config.player_pos)
-                    counter -= 1
                 else:
                     key_up("left")
                     key_up("right")
+                    time.sleep(0.2)
                     d_y = point[1] - config.player_pos[1]
                     if abs(d_y) > settings.move_tolerance:
                         if d_y < 0:
@@ -229,8 +234,8 @@ class Buff(Command):
 
     def main(self):
         now = time.time()
-        if self.buff_time == 0 or now - self.buff_time > 1140:
-            press(Key.WARRIOR, 3, 0.1, 0.001)
+        if self.buff_time == 0 or now - self.buff_time > 1200:
+            press(Key.WARRIOR, 1, 0.1, 0.5)
             self.buff_time = now
 
 
@@ -367,16 +372,35 @@ class CB1_POINT_1(Command):
         self.timer =0
     def main(self):
         while True:
-            if self.timer == 0 or time.time() - self.timer > 58:
+            if self.timer == 0 or time.time() - self.timer > 59:
+                self.timer = time.time()
                 break
             press("right", 1, 0.094, 0.0123, random=True)
             press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
-            time.sleep(np.random.uniform(1, 1.5))
+            time.sleep(np.random.uniform(0.5, 1))
             press("left", 1, 0.084, 0.0123, random=True)
             press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
-            time.sleep(np.random.uniform(1,1.5))
+            time.sleep(np.random.uniform(0.5, 1))
+
+            press(Key.JUMP, 1, 0.1, 0.1)
+            press("right", 1, 0.05)
+            press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
+            time.sleep(np.random.uniform(0.5, 1))
+            press(Key.JUMP, 1, 0.1, 0.1)
+            press("left", 1, 0.05)
+            press(Key.SHOW_DOWN, 1, 0.120, 0.24, random=True)
+            time.sleep(np.random.uniform(0.5, 1))
+
+
+
+
+
+
+class CB1_POINT_11(Command):
+    def __init__(self):
+        super().__init__(locals())
+    def main(self):
         press(Key.OMEN, 1, 0.1, 0.2, random=True)
-        self.timer = time.time()
         press("left", 1, 0.084, 0.0123)
         TripleJumpAttack("left").main()
 
@@ -392,6 +416,7 @@ class CB1_POINT_2(Command):
         time.sleep(0.1)
         press(Key.JUMP, 1, 0.120, 0.24)
         key_down("left")
+        time.sleep(0.1)
         press(Key.DASH)
         time.sleep(0.1)
         key_up("down")
@@ -430,17 +455,129 @@ class CB1_POINT_4(Command):
 class CB1_POINT_5(Command):
     def main(self):
         key_down("left")
-        time.sleep(0.3)
+        time.sleep(0.4)
         press(Key.JUMP, 1, 0.120, 0.094)
         press(Key.LEAP, 1, 0.1, 0.2)
         key_up("left")
-        time.sleep(1)
+        press("right", 1, 0.1, 0.01)
+        time.sleep(0.8)
+        press("right", 1, 0.1, 0.01)
         press(Key.ERDA_FOUNTAIN, 1, 0.1, 0.65, random=True)
         press(Key.JUMP, 1, down_time = 0.140, up_time = 0.100)
         press(Key.LEAP, 1, down_time = 0.225, up_time = 0.5)
         time.sleep(0.1)
 
 class CB1_POINT_6(Command):
+
     def main(self):
         press(Key.SUDDEN_RAID, 1, 0.1, 0.6)
-        TripleJumpAttack("left").main()
+        key_down("left")
+        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.096)
+        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.36)
+        key_up("left")
+        press(Key.DASH, 1, 0.1, 0.1)
+        time.sleep(0.2)
+        time.sleep(0.5)
+        press(Key.SHURI,1, 0.1, 0.4)
+
+
+def small_jump(direction: str, delay=0.4):
+    press(direction, 1, 0.01)
+    press(Key.JUMP, 1, 0.1, delay)
+    press(Key.JUMP, 1, 0.1, 0.2)
+
+class BC4_ATTACK_POINT(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        while True:
+            if self.timer == 0 or time.time() - self.timer > 61:
+                self.timer = time.time()
+                break
+            else:
+                press(Key.SHOW_DOWN, 2, 0.2, 0.50)
+                time.sleep(np.random.uniform(2, 2.5))
+        press(Key.OMEN, 1, 0.1, 0.4)
+        small_jump("left", 0.38)
+        time.sleep(0.5)
+        small_jump("left", 0.32)
+        time.sleep(0.1)
+
+class BC4_BALL_1(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        if time.time() - self.timer < 60 or self.timer != 0:
+            difference = 60 - (time.time() - self.timer)
+            for _ in range(int(difference // 1) + 1):
+                press(Key.SHOW_DOWN, 1, 0.1, 0.9)
+
+        press(Key.BALL, 1, 0.2, 0.4)
+        self.timer = time.time()
+        press("right", 1, 0.20)
+        small_jump("right", 0.32)
+        time.sleep(0.5)
+
+
+class BC4_DARK_FLARE(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        if time.time() - self.timer < 58 or self.timer != 0:
+            difference = 58 - (time.time() - self.timer)
+            for _ in range(int(difference // 1) + 1):
+                press(Key.SHOW_DOWN, 1, 0.1, 0.9)
+
+        press(Key.DARK_FLARE, 1, 0.1, 0.7)
+        self.timer = time.time()
+        small_jump("right", 0.3)
+        time.sleep(0.5)
+
+class BC4_BALL_2(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        press(Key.BALL, 1, 0.2, 0.4)
+        self.timer = time.time()
+        press("right", 1, 0.15)
+        small_jump("right", 0.35)
+        time.sleep(0.5)
+
+class BC4_ERDA(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        if time.time() - self.timer < 58 or self.timer != 0:
+            difference = 58 - (time.time() - self.timer)
+            for _ in range(int(difference // 1) + 1):
+                press(Key.SHOW_DOWN, 1, 0.1, 0.9)
+
+        press(Key.SUDDEN_RAID, 1, 0.1, 0.7)
+        press(Key.ERDA_FOUNTAIN, 1, 0.1, 0.7)
+        self.timer = time.time()
+        press("right", 1, 0.45)
+        small_jump("right")
+        time.sleep(0.5)
+
+class BC4_BALL_3(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+
+        press(Key.DEATH_STAR,1,0.1,0.7)
+        press(Key.BALL, 1, 0.2, 0.4)
+        self.timer = time.time()
+        press("left", 1, 0.2)
+        small_jump("left", 0.3)
+        time.sleep(0.5)
+        press("left", 1, 0.2)
+        small_jump("left", 0.3)
+        time.sleep(0.5)
+        press("left", 1, 0.5)
+        press(Key.SHURI, 1, 0.1, 0.7)

@@ -1,14 +1,9 @@
 $, target=move_tolerance, value=0.04
 
 @, label=loot
-*, x=0.681, y=0.374, frequency=62, skip=False, adjust=True
-    Wait, duration=0.5
-*, x=0.337, y=0.374, frequency=62, skip=False, adjust=True
-    Wait, duration=0.3
-*, x=0.337, y=0.209, frequency=62, skip=False, adjust=True
 
 @, label=erda_fountain
-*, x=0.558, y=0.092, frequency=31, skip=False, adjust=True
+*, x=0.558, y=0.092, frequency=45, skip=False, adjust=True
     ErdaFountain
 
 @, label=hit

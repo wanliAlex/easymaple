@@ -6,11 +6,12 @@ import time
 from ctypes import wintypes
 
 import cv2
+import mss
+import mss.windows
 import numpy as np
+import pygetwindow as gw
 
 from src.easymaple.common import config, utils
-from src.easymaple.modules.PyWindowsScreenCapture import PyWindowsScreenCapture
-from PIL import Image
 
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
@@ -36,9 +37,6 @@ MMT_WIDTH = max(MM_TL_TEMPLATE.shape[1], MM_BR_TEMPLATE.shape[1])
 # The player's symbol on the minimap
 PLAYER_TEMPLATE = cv2.imread('assets/player_template.png', 0)
 PT_HEIGHT, PT_WIDTH = PLAYER_TEMPLATE.shape
-
-
-screen_capture = PyWindowsScreenCapture("src/easymaple/modules/WindowsScreenCapture.dll")
 
 
 class Capture:
@@ -80,19 +78,26 @@ class Capture:
         """Constantly monitors the player's position and in-game events."""
         while True:
             # Calibrate screen capture
-            handle = user32.FindWindowW(None, 'DESKTOP-Q6IJ88D - 远程桌面连接')
-            rect = wintypes.RECT()
-            user32.GetWindowRect(handle, ctypes.pointer(rect))
-            rect = (rect.left, rect.top, rect.right, rect.bottom)
-            rect = tuple(max(0, x) for x in rect)
+            all_titles = gw.getAllTitles()
+            window_name = None
+            for title in all_titles:
+                if "Remote Desktop Connection" in title or "远程桌面协议" in title:
+                    window_name = title
+            if window_name is None:
+                continue
 
-            self.window['left'] = rect[0]
-            self.window['top'] = rect[1]
-            self.window['width'] = max(rect[2] - rect[0], MMT_WIDTH)
-            self.window['height'] = max(rect[3] - rect[1], MMT_HEIGHT)
+            window_obj = gw.getWindowsWithTitle(window_name)[0]
+
+            self.window['left'] = window_obj.left
+            self.window['top'] = window_obj.top
+            self.window['width'] = window_obj.width
+            self.window['height'] = window_obj.height
 
             # Calibrate by finding the bottom right corner of the minimap
-            self.frame = self.get_game_image()
+            with mss.mss() as self.sct:
+                self.frame = self.screenshot()
+            if self.frame is None:
+                continue
 
             tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
             _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
@@ -106,42 +111,55 @@ class Capture:
             )
             self.minimap_ratio = (mm_br[0] - mm_tl[0]) / (mm_br[1] - mm_tl[1])
             self.minimap_sample = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
+
+            is_valid_mm_map = self._mini_map_sanity_check(mm_tl, mm_br)
+            if not is_valid_mm_map:
+                continue
             self.calibrated = True
 
-            while True:
-                if not self.calibrated:
-                    break
+            with mss.mss() as self.sct:
+                while True:
+                    if not self.calibrated:
+                        break
 
-                # Take screenshot
-                self.frame = self.get_game_image()
+                    # Take screenshot
+                    self.frame = self.screenshot()
+                    if self.frame is None:
+                        continue
 
-                # Crop the frame to only show the minimap
-                minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
+                    # Crop the frame to only show the minimap
+                    minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
 
-                # Determine the player's position
-                player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
-                if player:
-                    config.player_pos = utils.convert_to_relative(player[0], minimap)
+                    # Determine the player's position
+                    player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
+                    if player:
+                        config.player_pos = utils.convert_to_relative(player[0], minimap)
 
-                # Package display information to be polled by GUI
-                self.minimap = {
-                    'minimap': minimap,
-                    'rune_active': config.bot.rune_active,
-                    'rune_pos': config.bot.rune_pos,
-                    'path': config.path,
-                    'player_pos': config.player_pos
-                }
+                    # Package display information to be polled by GUI
+                    self.minimap = {
+                        'minimap': minimap,
+                        'rune_active': config.bot.rune_active,
+                        'rune_pos': config.bot.rune_pos,
+                        'path': config.path,
+                        'player_pos': config.player_pos
+                    }
 
-                if not self.ready:
-                    self.ready = True
-                time.sleep(1/20)
+                    if not self.ready:
+                        self.ready = True
+                    time.sleep(1/30)
 
-    def get_game_image(self, delay=1):
-        data, width, height = screen_capture.capture_monitor(0)
-        image_shape = (height, width, 3)
-        image_array = np.ctypeslib.as_array(data, shape=image_shape)
-        array = np.copy(image_array)
-        game = array[self.window["top"]:self.window["top"] + self.window["height"],
-               self.window["left"]:self.window["left"] + self.window["width"], :]
-        screen_capture.free_all_captures()
-        return game
+    def _mini_map_sanity_check(self, mm_tl, mm_br):
+        width = abs(mm_tl[0] - mm_br[0])
+        height = abs(mm_tl[1] - mm_br[1])
+        if width < 100 or width > 500:
+            return False
+        if height < 50 or height > 500:
+            return False
+        return True
+
+    def screenshot(self, delay=1):
+        try:
+            return np.array(self.sct.grab(self.window))
+        except mss.exception.ScreenShotError:
+            print(f'\n[!] Error while taking screenshot, retrying in {delay} second')
+            time.sleep(delay)

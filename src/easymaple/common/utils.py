@@ -88,6 +88,27 @@ def single_match(frame, template):
     return top_left, bottom_right
 
 
+def single_match_minimap(frame, template, use_top_left_region=False):
+    """
+    Finds the best match within FRAME.
+    :param frame:                The image in which to search for TEMPLATE.
+    :param template:             The template to match with.
+    :param use_top_left_region:  If True, restricts matching to the top-left region; otherwise, uses the whole frame.
+    :return:                     The top-left and bottom-right positions of the best match.
+    """
+
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+
+    # Perform template matching on the whole frame
+    result = cv2.matchTemplate(gray_frame, template, cv2.TM_CCOEFF)
+    _, _, _, top_left = cv2.minMaxLoc(result)
+    w, h = template.shape[::-1]
+    bottom_right = (top_left[0] + w, top_left[1] + h)
+
+    return top_left, bottom_right
+
+
 def multi_match(frame, template, threshold=0.95):
     """
     Finds all matches in FRAME that are similar to TEMPLATE by at least THRESHOLD.

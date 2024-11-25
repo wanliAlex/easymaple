@@ -50,7 +50,7 @@ class Notifier:
         self.thread = threading.Thread(target=self._main)
         self.thread.daemon = True
 
-        self.room_change_threshold = 0.9
+        self.room_change_threshold = 0.85
         self.rune_alert_delay = 270         # 4.5 minutes
 
         self.counter = 0
