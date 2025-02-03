@@ -11,48 +11,50 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 class Key:
     # Movement
     JUMP = 'space'
-    UPWAIRD_CHARGE  = "s"  #up jump skill
-    ROPE = 'alt'
-    
-    # Skills[Buffs]
-    
-    
-    
-    # Skills[Damage:attack]
-    
-    PUNCTURE = "r"
-    RAGING_BLOW = "a"
-    BEAM_BLADE = "w"
-    
-    # Skills [Placement]
-    ERDA_FOUNTAIN = "end"
-    BURNING_BLADE = "1"
-    WILL ="page down"
+    DASH = '4'
+    ROPE = "s"
 
-#########################
-#       Commands        #
-#########################
+    ERDA_FOUNTAIN = "c"
 
-def long_jump():
-
-    press(Key.JUMP, n = 1, down_time = 0.125, up_time = 0.1)
-    press(Key.JUMP, n=1, down_time=0.14, up_time=0.09)
-    press(Key.JUMP, n=1, down_time=0.18, up_time=0.01)
-
-def short_jump():
-
-    press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
-    press(Key.JUMP, n=1, down_time=0.14, up_time=0.01)
+    PUNCTURE = "1"
+    RAGING_BELOW = "2"
+    UPWARD_CHARGE = "z"
+    RISING_RAGE = "w"
+    WORLD_DREAVER = "3"
 
 
+    RIGHT="right"
+    LEFT="left"
+    UP="up"
 
-def step(direction, target):
-    """
-    Performs one movement step in the given DIRECTION towards TARGET.
-    Should not press any arrow keys, as those are handled by Auto Maple.
-    """
-    pass
 
+class UpJump(Command):
+
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.wait = float(wait)
+    def main(self):
+        press(Key.UPWARD_CHARGE, 1, 0.1, 0.4)
+        time.sleep(self.wait)
+
+
+class DoubleJump(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.1, up_time=0.25)
+        press(Key.JUMP, n=1, down_time=0.14, up_time=0.1)
+
+
+class DownJump(Command):
+    def __init__(self, wait: float = 0):
+        super().__init__(locals())
+        self.wait = float(wait)
+    def main(self):
+        key_down("down")
+        key_down("down")
+        press(Key.JUMP, n=1, down_time=0.1, up_time=0.3)
+        key_up("down")
+        key_up("down")
+        time.sleep(self.wait)
 
 class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
@@ -178,103 +180,65 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
-class Puncture(Command):
-    def main(self):
-        press(Key.PUNCTURE)
 
-class RagingBlow(Command):
-    def main(self):
-        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+class Buff(Command):
+    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
 
-class BeamBlade(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
-    def main(self):
-        key_down(self.direction)
-        press(Key.BEAM_BLADE,n = 1, down_time = 0.094, up_time = 0.046)
-        key_up(self.direction)
-
-class JumpBeamBlade(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    def main(self):
-        press(self.direction)
-        press(Key.JUMP)
-        BeamBlade().main()
-        time.sleep(0.35)
-
-class JumpPuncture (Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    
-    def main(self):
-        press(self.direction)
-        DoubleJump().main()
-        Puncture().main()
-        time.sleep(0.7)
-
-
-class JumpRagingBlow (Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    
-    def main(self):
-        press(self.direction)
-        DoubleJump().main()
-        RagingBlow().main()
-        time.sleep(0.335)
-
-class BurningBlade(Command):
-    def main(self):
-        press(Key.BURNING_BLADE,4)
-        time.sleep(1)
-        press(Key.BURNING_BLADE,4)
-
-class Buff(Command):    
     pass
-
-class UpJump(Command):
-    def main(self):
-        press(Key.UPWAIRD_CHARGE)
 
 class Rope(Command):
     def main(self):
         press(Key.ROPE, 1, up_time = 0.3)
 
-class will(Command):
-    def main(self):
-        press(Key.WILL, 1, up_time = 0.3)
-
 class ErdaFountain(Command):
-
     def main(self):
-        key_down("down")
-        press(Key.ERDA_FOUNTAIN, 4)
-        key_up("down")
+        press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.3)
 
-class ErdaShower(Command):
 
-    def main(self):
-        press(Key.ERDA_FOUNTAIN, 2)
+def ms_sleep(time_ms: int):
+    time.sleep(time_ms / 1000)
+    return None
 
-class DoubleJump(Command):
-    def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
 
-class DownJump(Command):
-    def __init__(self, wait_time = 0.3):
+class JumpAttack(Command):
+    def __init__(self, direction):
         super().__init__(locals())
-        self.wait_time = float(wait_time)
-
+        self.direction = settings.validate_horizontal_arrows(direction)
     def main(self):
-        key_down("down")
-        time.sleep(0.1)
-        press(Key.JUMP, 3, 0.01, up_time =0.01)
-        time.sleep(self.wait_time / 2.0)
-        key_up("down")
-        time.sleep(self.wait_time / 2.0)
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.RAGING_BELOW, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.4)
+
+
+class JumpPuncture(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.PUNCTURE, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.7)
+
+class Dash(Command):
+    def __init__(self, direction, wait = 0):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        press(Key.DASH, 1, 0.1, 0.6)
+        key_up(self.direction)
+        time.sleep(self.wait)
+
+class RisingRage(Command):
+    def main(self):
+        press(Key.RISING_RAGE, 1, 0.1, 0.8)
+
+
+class WorldDreaver(Command):
+    def main(self):
+        press(Key.WORLD_DREAVER, 1, 0.1, 0.8)

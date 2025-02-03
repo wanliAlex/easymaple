@@ -81,16 +81,15 @@ class Capture:
             all_titles = gw.getAllTitles()
             window_name = None
             for title in all_titles:
-                if "Remote Desktop Connection" in title or "远程桌面协议" or "Maplestory" in title:
+                if "Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title:
                     window_name = title
             if window_name is None:
                 continue
-
             window_obj = gw.getWindowsWithTitle(window_name)[0]
 
             self.window['left'] = window_obj.left
             self.window['top'] = window_obj.top
-            self.window['width'] = window_obj.widthg
+            self.window['width'] = window_obj.width
             self.window['height'] = window_obj.height
 
             # Calibrate by finding the bottom right corner of the minimap

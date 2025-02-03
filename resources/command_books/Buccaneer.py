@@ -249,20 +249,7 @@ class LibrarySimple(Command):
         key_up(Key.RIGHT)
 
         ms_sleep(500)
-        key_down(Key.RIGHT)
-        ms_sleep(50)
-        key_up(Key.RIGHT)
-        key_down(Key.RIGHT)
-        ms_sleep(50)
-        key_up(Key.RIGHT)
-        key_down(Key.RIGHT)
-        ms_sleep(47)
-        key_up(Key.RIGHT)
-        key_down(Key.RIGHT)
-        ms_sleep(47)
-        key_up(Key.RIGHT)
-
-        ms_sleep(497)
+        ms_sleep(700)
 
         key_down(Key.DASH)
         key_down(Key.JUMP)
@@ -271,7 +258,7 @@ class LibrarySimple(Command):
         ms_sleep(31)
         key_up(Key.JUMP)
 
-        ms_sleep(1047)
+        ms_sleep(1000)
 
         key_down(Key.DASH)
         key_down(Key.JUMP)
@@ -280,15 +267,18 @@ class LibrarySimple(Command):
         ms_sleep(32)
         key_up(Key.JUMP)
 
-        ms_sleep(437)
+        ms_sleep(387)
         key_down(Key.LEFT)
         ms_sleep(47)
         key_up(Key.LEFT)
         key_down(Key.LEFT)
-        ms_sleep(47)
+        ms_sleep(50)
         key_up(Key.LEFT)
 
-        ms_sleep(609)
+        ms_sleep(509)
+        key_down(Key.LEFT)
+        ms_sleep(47)
+        key_up(Key.LEFT)
         key_down(Key.ROPE)
         ms_sleep(110)
         key_up(Key.ROPE)
@@ -322,16 +312,17 @@ class LibSimple2(Command):
         ms_sleep(25)
         key_up(Key.LEFT)
         key_up(Key.VORTEX)
-        ms_sleep(710)
+        ms_sleep(810)
 
         key_down(Key.UP)
         key_down(Key.UP)
         ms_sleep(25)
         key_down(Key.VORTEX)
+        key_down(Key.VORTEX)
         ms_sleep(25)
         key_up(Key.UP)
         key_up(Key.VORTEX)
-        ms_sleep(1200)
+        ms_sleep(1500)
 
         key_down(Key.DASH)
         key_down(Key.JUMP)
@@ -340,7 +331,7 @@ class LibSimple2(Command):
         ms_sleep(31)
         key_up(Key.JUMP)
 
-        ms_sleep(1300)
+        ms_sleep(1200)
         key_down(Key.RIGHT)
         ms_sleep(47)
         key_up(Key.RIGHT)
@@ -348,7 +339,7 @@ class LibSimple2(Command):
         ms_sleep(47)
         key_up(Key.RIGHT)
 
-        ms_sleep(297)
+        ms_sleep(600)
 
         key_down(Key.DASH)
         key_down(Key.JUMP)
@@ -374,7 +365,10 @@ class LibSimple2(Command):
         ms_sleep(47)
         key_up(Key.LEFT)
 
-        ms_sleep(609)
+        ms_sleep(309)
+        key_down(Key.LEFT)
+        ms_sleep(157)
+        key_up(Key.LEFT)
         key_down(Key.ROPE)
         ms_sleep(110)
         key_up(Key.ROPE)
