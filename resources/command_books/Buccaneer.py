@@ -279,15 +279,7 @@ class LibrarySimple(Command):
         key_down(Key.LEFT)
         ms_sleep(47)
         key_up(Key.LEFT)
-        key_down(Key.ROPE)
-        ms_sleep(110)
-        key_up(Key.ROPE)
 
-        ms_sleep(1700)
-        key_down(Key.LEFT)
-        ms_sleep(47)
-        key_up(Key.LEFT)
-        ms_sleep(150)
 
 
 class LibSimple2(Command):
@@ -374,6 +366,20 @@ class LibSimple2(Command):
         key_up(Key.ROPE)
 
         ms_sleep(1700)
+        key_down(Key.LEFT)
+        ms_sleep(47)
+        key_up(Key.LEFT)
+        ms_sleep(150)
+
+class LibrarySimple2(Command):
+
+    def main(self):
+        key_down(Key.ROPE)
+        ms_sleep(110)
+        key_up(Key.ROPE)
+
+        press(Key.LEFT, 3, 0.1, 0.1) # 600ms in total
+        ms_sleep(1000)
         key_down(Key.LEFT)
         ms_sleep(47)
         key_up(Key.LEFT)
