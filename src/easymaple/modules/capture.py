@@ -78,16 +78,15 @@ class Capture:
         """Constantly monitors the player's position and in-game events."""
         while True:
             # Calibrate screen capture
-            # all_titles = gw.getAllTitles()
-            # window_name = None
-            # print(all_titles)
-            # for title in all_titles:
-            #     if ("Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title
-            #             or "DESKTOP" in title):
-            #         window_name = title
-            # if window_name is None:
-            #     continue
-            window_obj = gw.getWindowsWithTitle("DESKTOP-OSPDPJ4 - Moonlight")[0]
+            all_titles = gw.getAllTitles()
+            window_name = None
+            for title in all_titles:
+                if ("Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title
+                        or " - Moonlight" in title):
+                    window_name = title
+            if window_name is None:
+                continue
+            window_obj = gw.getWindowsWithTitle(window_name)[0]
 
             self.window['left'] = window_obj.left
             self.window['top'] = window_obj.top

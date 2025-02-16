@@ -312,8 +312,6 @@ def press(key, n=1, down_time=0.05, up_time=0.1, random=False):
     :param up_time:     Duration of release (in seconds).
     :return:            None
     """
-    print(key)
-
     for _ in range(n):
         if random==True:
             key_down(key)

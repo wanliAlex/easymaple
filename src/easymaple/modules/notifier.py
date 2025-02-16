@@ -117,7 +117,7 @@ class Notifier:
                 if self.counter >= RUNE_DETECT_FREQUENCY or self.counter == 0:
                     self.counter = 1
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
-                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.45)
+                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.25)
                     if matches:
                         config.bot.rune_active=True
                         if time.time() - report_time > 10 or report_time == 0:
