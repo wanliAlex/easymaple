@@ -35,7 +35,7 @@ def get_window_position():
     all_titles = gw.getAllTitles()
     window_name = None
     for title in all_titles:
-        if "Remote Desktop Connection" in title or "远程桌面协议" in title or "Moonlight" in title:
+        if "Remote Desktop Connection" in title or "远程桌面协议" in title or " - Moonlight" in title:
             window_name = title
     window_obj = gw.getWindowsWithTitle(window_name)[0]
     window = dict()

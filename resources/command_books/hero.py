@@ -53,7 +53,7 @@ class DownJump(Command):
     def main(self):
         key_down("down")
         key_down("down")
-        press(Key.JUMP, n=3, down_time=0.01, up_time=0.001)
+        press(Key.JUMP, n=3, down_time=0.01, up_time=0.1)
         key_up("down")
         key_up("down")
         time.sleep(self.wait)
