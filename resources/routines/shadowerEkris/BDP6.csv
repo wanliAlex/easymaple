@@ -1,0 +1,156 @@
+$, target=move_tolerance, value=0.03
+
+*, x=0.140, y=0.396, frequency=1, skip=False, adjust=True
+    JumpAttack, direction=right
+*, x=0.273, y=0.396, frequency=1, skip=False, adjust=False
+    DarkFlare, direction=right    
+    Wait, duration=0.45
+    JumpShadowVeil, direction=right
+    Wait, duration=0.4
+    JumpAttack, direction=right
+*, x=0.650,y=0.396, frequency=1, skip=False, adjust=False
+    ErdaFountain
+    Wait, duration=0.4
+    JumpAttack, direction=right
+*, x=0.810, y=0.396, frequency=1, skip=False, adjust=True
+    ShadowAssault, direction=up, jump=False
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+*, x=0.140, y=0.241, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+
+*, x=0.267, y=0.230, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right
+    Wait, duration=0.3
+
+*, x=0.781, y=0.241, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=left
+*, x=0.631, y=0.235, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.2
+*, x=0.433, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+*, x=0.267, y=0.241, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left
+    Wait, duration=0.3
+
+*, x=0.120, y=0.241, frequency=1, skip=False, adjust=True
+    ShadowAssault, direction=down, jump=true

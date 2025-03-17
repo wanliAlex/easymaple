@@ -1,0 +1,278 @@
+$, target=move_tolerance, value=0.1
+
+*, x=0.820, y=0.240, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.4
+    SingleJumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1.5
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+    
+    
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+    
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+    
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+    
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    Wait, duration=0.6
+    Rush, direction=left
+    Wait, duration=0.5
+    DownJumpLeapRight
+    Wait, duration=0.3
+
+*, x=0.820, y=0.240, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.4
+    SingleJumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=1.5
+
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    up
+    Wait, duration=0.3
+
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+*, x=0.155, y=0.160, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+*, x=0.155, y=0.240, frequency=1, skip=False, adjust=True
+    RagingBlowNoMove
+    Wait, duration=0.35
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.25
+    JumpBeamBladeOrRaging, direction=right, wait=0.3
+    RandomRagingOrPunc, direction=right, wait=0.2
+    Wait, duration=0.2
+    DownJump, wait_time=0.4
+    Wait, duration=0.8
+
+
+*, x=0.895, y=0.130, frequency=1, skip=False, adjust=True
+    up
+    Wait, duration=0.3
+    Move_right, key_down_time=0.3
+    Wait, duration=0.4
+    will
+    Wait, duration=0.6
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.8
+    BurningBlade
+    Wait, duration=0.6
+    SingleJumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.3
+    DownJump, wait_time=0.6
+    DownJump, wait_time=0.6
+    Wait, duration=1
+    Rush, direction=left
+    Wait, duration=0.5
+    DownJumpLeapRight
+    Wait, duration=0.3

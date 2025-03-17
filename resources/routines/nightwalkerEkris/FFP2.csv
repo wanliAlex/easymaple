@@ -1,0 +1,32 @@
+$, target=move_tolerance, value=0.04
+
+@, label=erda
+*, x=0.249, y=0.244, frequency=4, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.4
+    GDSCancel
+    Wait, duration=0.1
+    BIRD
+    Wait, duration=0.5
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.2
+*, x=0.400, y=0.244, frequency=4, skip=False, adjust=False
+    DAWN
+    JumpRagingBlow, direction=right, repetitions=1
+    BITE
+    Wait, duration=0.3
+*, x=0.570, y=0.234, frequency=4, skip=False, adjust=True
+    DAWN
+    JumpRagingBlow, direction=right, repetitions=1
+    Wait, duration=0.2
+*, x=0.750, y=0.234, frequency=4, skip=False, adjust=True
+    DAWN
+    Wait, duration=0.2
+    Move_left, key_down_time=0.2
+    GDSCancel
+    Wait, duration=0.2
+*, x=0.249, y=0.244, frequency=4, skip=False, adjust=True
+    TimedIteration
+    ErdaFountain
+*, x=0.249, y=0.244, frequency=4, skip=False, adjust=True
+    TimedIteration2

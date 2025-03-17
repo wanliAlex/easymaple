@@ -4,29 +4,23 @@ $, target=move_tolerance, value=0.04
     ShadowVeil
     Wait, duration=0.5
     ShadowAssault, direction=up, jump=True
-    Wait, duration=0.3
 *, x=0.791, y=0.251, frequency=1, skip=False, adjust=True
     DAWN
     Move_left, key_down_time=0.1
     JumpShadowAssaultLeftFast
-    Wait, duration=0.3
-*, x=0.510, y=0.241, frequency=1, skip=False, adjust=True
-    DAWN
-    Move_LeftRandomBig
+*, x=0.520, y=0.241, frequency=1, skip=False, adjust=True
+    ErdaFountain
+    Wait, duration=0.35
     JumpShadowAssaultLeftFast
-    Wait, duration=0.3
 *, x=0.210, y=0.241, frequency=1, skip=False, adjust=True
-    DAWN
-    Wait, duration=0.4
-    ShadowAssault, direction=down, jump=True
-    Wait, duration=0.3
-*, x=0.200, y=0.396, frequency=1, skip=False, adjust=True
     DarkFlare, direction=right
-    Wait, duration=0.4
+    Wait, duration=0.35
+    ShadowAssault, direction=down, jump=True
+*, x=0.200, y=0.396, frequency=1, skip=False, adjust=True
+    DAWN
     JumpAttack, direction=right
 *, x=0.439, y=0.396, frequency=1, skip=False, adjust=True
-    ErdaFountain
-    Wait, duration=0.4
+    DAWN
     JumpAttack, direction=right
     JumpAttack, direction=right
 *, x=0.791, y=0.396, frequency=1, skip=False, adjust=True

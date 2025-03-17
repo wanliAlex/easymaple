@@ -1,15 +1,18 @@
 """A module for tracking useful in-game information."""
 
-import time
-import cv2
-import threading
 import ctypes
+import threading
+import time
+from ctypes import wintypes
+
+import cv2
 import mss
 import mss.windows
 import numpy as np
+import pygetwindow as gw
+
 from src.easymaple.common import config, utils
-from ctypes import wintypes
-from src.easymaple.common.vkeys import press, key_down, key_up
+
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
 
@@ -73,26 +76,30 @@ class Capture:
 
     def _main(self):
         """Constantly monitors the player's position and in-game events."""
-        
-        mss.windows.CAPTUREBLT = 0
         while True:
             # Calibrate screen capture
-            handle = user32.FindWindowW(None, 'MapleStory')
-            rect = wintypes.RECT()
-            user32.GetWindowRect(handle, ctypes.pointer(rect))
-            rect = (rect.left, rect.top, rect.right, rect.bottom)
-            rect = tuple(max(0, x) for x in rect)
+            all_titles = gw.getAllTitles()
+            window_name = None
+            for title in all_titles:
+                if ("Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title
+                        or " - Moonlight" in title):
+                    window_name = title
+            if window_name is None:
+                continue
+            window_obj = gw.getWindowsWithTitle(window_name)[0]
+            #window_obj = gw.getWindowsWithTitle("Ekris-Desktop - Moonlight")[0]
 
-            self.window['left'] = rect[0]
-            self.window['top'] = rect[1]
-            self.window['width'] = max(rect[2] - rect[0], MMT_WIDTH)
-            self.window['height'] = max(rect[3] - rect[1], MMT_HEIGHT)
+            self.window['left'] = window_obj.left
+            self.window['top'] = window_obj.top
+            self.window['width'] = window_obj.width
+            self.window['height'] = window_obj.height
 
             # Calibrate by finding the bottom right corner of the minimap
             with mss.mss() as self.sct:
                 self.frame = self.screenshot()
             if self.frame is None:
                 continue
+
             tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
             _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
             mm_tl = (
@@ -105,6 +112,10 @@ class Capture:
             )
             self.minimap_ratio = (mm_br[0] - mm_tl[0]) / (mm_br[1] - mm_tl[1])
             self.minimap_sample = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
+
+            is_valid_mm_map = self._mini_map_sanity_check(mm_tl, mm_br)
+            if not is_valid_mm_map:
+                continue
             self.calibrated = True
 
             with mss.mss() as self.sct:
@@ -121,7 +132,7 @@ class Capture:
                     minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
 
                     # Determine the player's position
-                    player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
+                    player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.9)
                     if player:
                         config.player_pos = utils.convert_to_relative(player[0], minimap)
 
@@ -136,12 +147,20 @@ class Capture:
 
                     if not self.ready:
                         self.ready = True
-                    time.sleep(0.001)
+                    time.sleep(1/30)
+
+    def _mini_map_sanity_check(self, mm_tl, mm_br):
+        width = abs(mm_tl[0] - mm_br[0])
+        height = abs(mm_tl[1] - mm_br[1])
+        if width < 100 or width > 500:
+            return False
+        if height < 50 or height > 500:
+            return False
+        return True
 
     def screenshot(self, delay=1):
         try:
             return np.array(self.sct.grab(self.window))
         except mss.exception.ScreenShotError:
-            print(f'\n[!] Error while taking screenshot, retrying in {delay} second'
-)
+            print(f'\n[!] Error while taking screenshot, retrying in {delay} second')
             time.sleep(delay)

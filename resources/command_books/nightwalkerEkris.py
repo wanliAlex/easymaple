@@ -1,5 +1,6 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
 
+import random
 from src.easymaple.common import config, settings, utils
 import time
 import math
@@ -20,13 +21,11 @@ class Key:
 
     PUNCTURE = "d"
     RAGING_BLOW = "q"
-    BEAM_BLADE = "2"
     RIGHT_ARROW = 'right'
     LEFT_ARROW = 'left'
     UP_ARROW = 'up'
     # Skills [Placement]
     ERDA_FOUNTAIN = "page up"
-    BURNING_BLADE = "r"
     WILL = "g"
     SEREN = "t"
     RUSH = 'e'
@@ -34,6 +33,11 @@ class Key:
     SCREEN_CUT = "d"
     BLITZ_SHEILD = "1"
     LEAP_ATTACK = 'a'
+    GDS = 'd'
+    DAWN = 'n'
+    BITE = '2'
+    OMEN = '1'
+    BIRD = 'r'
 #########################
 #       Commands        #
 #########################
@@ -125,9 +129,88 @@ class Move(Command):
             if self.prev_direction:
                 key_up(self.prev_direction)
 
-class LeapAttack(Command):
+class GDSCancel(Command):
     def main(self):
-        press(Key.LEAP_ATTACK)
+        time.sleep(0.275)
+        press(Key.GDS)
+        time.sleep(0.475)
+
+class DAWN(Command):
+    def main(self):
+        time.sleep(0.275)
+        press(Key.DAWN)
+        time.sleep(0.4)
+
+class BIRD(Command):
+    def main(self):
+        print("Bird")
+        press(Key.BIRD)
+
+class BITE(Command):
+    def main(self):
+        print("BITE")
+        press(Key.BITE)
+
+class OMEN(Command):
+    def main(self):
+        print("OMEN")
+        press(Key.OMEN)
+
+class OMEN_RB(Command):
+    def main(self):
+        print("OMEN_RB")
+        press(Key.OMEN)
+        time.sleep(0.4)
+        RagingBlow('left').main()
+
+class RB_OMEN(Command):
+    def main(self):
+        print("RB_OMEN")
+        RagingBlow('left').main()
+        time.sleep(0.1)
+        press(Key.OMEN)
+    
+class RagingBlow(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        time.sleep(0.05)
+        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
+        time.sleep(0.335)
+
+class RandomCommand(Command):
+    def main(self):
+        # Randomly select one of the commands
+        command = random.choice([BITE(), RagingBlow('left'),OMEN_RB(),RB_OMEN()])  
+        command.main()
+
+
+class TimedIteration(Command):
+    def main(self):
+        total_time = 0
+        while total_time < 40:
+            RandomCommand().main()
+            sleep_time = random.uniform(7, 8.5)
+            total_time += sleep_time
+            if total_time < 40:
+                time.sleep(sleep_time)
+            else:
+                time.sleep(sleep_time/1.5)
+        print("Out of TimedIteration")
+
+class TimedIteration2(Command):
+    def main(self):
+        total_time = 0
+        while total_time < 48:
+            RandomCommand().main()
+            sleep_time = random.uniform(7, 8.5)
+            total_time += sleep_time
+            if total_time < 48:
+                time.sleep(sleep_time)
+            else:
+                time.sleep(sleep_time/1.5)
+        print("Out of TimedIteration2")
 
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
@@ -188,27 +271,8 @@ class Puncture(Command):
         press(Key.PUNCTURE)
 
 
-class RagingBlow(Command):
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-    def main(self):
-        press(self.direction)
-        time.sleep(0.05)
-        press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
-        time.sleep(0.335)
 
-class ScreenCut(Command):
-    def main(self):
-        press(Key.SCREEN_CUT,2)
 
-class BlitzSheild(Command):
-    def main(self):
-        press(Key.BLITZ_SHEILD,2)
-
-class BeamBlade(Command):
-    def main(self):
-        press(Key.BEAM_BLADE, n=1, down_time=0.094, up_time=0.046)
 
 class JumpBeamBlade(Command):
     def __init__(self, direction):
@@ -366,7 +430,10 @@ class Buff(Command):
 
 class UpJump(Command):
     def main(self):
-        press(Key.UPWAIRD_CHARGE)
+        key_down("up")
+        press(Key.JUMP, 1, down_time=0.05, up_time=0.01)
+        press(Key.JUMP, 1, down_time=0.05, up_time=1.0)
+        key_up("up")
 
 
 class Rope(Command):
@@ -410,6 +477,35 @@ class Move_right(Command):
     def main(self):
         press(Key.RIGHT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
 
+class Move_rightRandom(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.key_down_time = random.uniform(0.1, 0.2)  # Random float between 0.1 and 0.5
+
+    def main(self):
+        print(self.key_down_time)
+        press(Key.RIGHT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+
+class Move_rightRandomBig(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.key_down_time = random.uniform(0.3, 0.5)  # Random float between 0.1 and 0.5
+
+    def main(self):
+        print(self.key_down_time)
+        press(Key.RIGHT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+
+class Move_leftRandom(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.key_down_time = random.uniform(0.1, 0.2)  # Random float between 0.1 and 0.5
+
+    def main(self):
+        print(self.key_down_time)
+        press(Key.LEFT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
 
 class Move_left(Command):
 

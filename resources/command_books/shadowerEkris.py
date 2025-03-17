@@ -1,5 +1,6 @@
 """A collection of all commands that Shadower can use to interact with the game. 	"""
 
+import random
 from src.easymaple.common import config, settings, utils
 import time
 import math
@@ -27,7 +28,7 @@ class Key:
     SHARP_EYE = 'f4'
     COMBAT_ORDERS = 'f4'
     ADVANCED_BLESSING = 'f4'
-
+    ERDA_FOUNTAIN = "page up"
     # Skills
     CRUEL_STAB = '6' 
     MESO_EXPLOSION = 'd' 
@@ -41,6 +42,9 @@ class Key:
     SONIC_BLOW = '3'
     WILL = "g"
     SEREN = "t"
+    DAWN = "c"
+    ASSA = "q"
+    TICK = "f"
 #########################
 #       Commands        #
 #########################
@@ -64,6 +68,13 @@ def step(direction, target):
     """
     pass
 
+class DAWN(Command):
+    def main(self):
+        time.sleep(0.275)
+        press(Key.DAWN)
+        time.sleep(0.45)
+
+
 class will(Command):
     def main(self):
         press(Key.WILL, 1, up_time=0.3)
@@ -71,6 +82,28 @@ class will(Command):
 class seren(Command):
     def main(self):
         press(Key.SEREN, 1, up_time=0.3)
+
+
+class RandomCommand(Command):
+    def main(self):
+        # Randomly select one of the commands
+        command = random.choice([CruelStabNoD(), Assa(),TickAssa()])  # 'left' can be passed to RagingBlow as an example
+        command.main()
+
+
+class TimedIteration(Command):
+    def main(self):
+        total_time = 0
+        while total_time < 35:
+            RandomCommand().main()
+            sleep_time = random.uniform(3, 4)
+            total_time += sleep_time
+            if total_time < 35:
+                time.sleep(sleep_time)
+            else:
+                time.sleep(sleep_time/2)
+        print("Out of TimedIteration")
+
 
 class Move(Command):
     """Moves to a given position using the shortest path based on the current Layout.
@@ -211,6 +244,24 @@ class JumpShadowAssaultBot(Command):
         key_up(Key.DOWN_ARROW)
         time.sleep(0.275)
 
+class JumpShadowAssaultLeft(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.255, up_time=0.3)
+        press(Key.JUMP, n=1, down_time=0.3, up_time=0.09)
+        key_down(Key.LEFT_ARROW)
+        press(Key.SHADOW_ASSAULT, n=1, down_time=0.094, up_time=0.046)
+        key_up(Key.LEFT_ARROW)
+        time.sleep(0.275)
+
+class JumpShadowAssaultLeftFast(Command):
+    def main(self):
+        press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
+        press(Key.JUMP, n=1, down_time=0.3, up_time=0.2)
+        key_down(Key.LEFT_ARROW)
+        press(Key.SHADOW_ASSAULT, n=1, down_time=0.094, up_time=0.046)
+        key_up(Key.LEFT_ARROW)
+        time.sleep(0.275)
+
 class JumpShadowAssaultUpRight(Command):
     def main(self):
         press(Key.JUMP, n=1, down_time=0.125, up_time=0.1)
@@ -284,8 +335,8 @@ class Portal(Command):
 
 class DoubleJump(Command):
     def main(self):
-        press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
-        press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
+        press(Key.JUMP, n=1, down_time=0.064, up_time=0.01)
 			
 class SingleJump(Command):
     def main(self):
@@ -408,7 +459,44 @@ class JumpAttack(Command):
         CruelStabNoD().main()
         key_up(self.direction)
         MesoExplosion().main()
-        time.sleep(0.45)
+        time.sleep(0.1)
+
+class AssaForRand(Command):
+    """Uses 'CruelStab' once."""
+    def main(self):
+        press(Key.ASSA, 1, up_time=0.05)
+        time.sleep(0.4)
+
+class RandomaATT(Command):
+    def main(self):
+        # Randomly select one of the commands
+        command = random.choice([CruelStabNoD(), AssaForRand()])  # 'left' can be passed to RagingBlow as an example
+        print(f"Selected command: {command.__class__.__name__}")
+        command.main()
+
+class RandomJumpAttack(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        RandomaATT().main()
+        key_up(self.direction)
+        MesoExplosion().main()
+        time.sleep(0.17)
+
+class JumpShadowVeil(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.SHADOW_VEIL, 3)
+        key_up(self.direction)
+        time.sleep(0.4)
+
 
 class StraightJumpAttack(Command):
     def __init__(self, direction):
@@ -425,14 +513,59 @@ class MesoExplosion(Command):
     """Uses 'MesoExplosion' once."""
 
     def main(self):
-        press(Key.MESO_EXPLOSION, 1, up_time=0.05)
-		
-class CruelStabNoD(Command):
-    """Uses 'CruelStab' once."""
+        press(Key.MESO_EXPLOSION, 1, up_time=0.001)
+
+class MesoExplosionS(Command):
+    def main():
+        press(Key.MESO_EXPLOSION)
+
+class Move_rightRandom(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.key_down_time = random.uniform(0.1, 0.3)  # Random float between 0.1 and 0.5
 
     def main(self):
-        press(Key.CRUEL_STAB, 1, up_time=0.05)	
-        
+        print(self.key_down_time)
+        press(Key.RIGHT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+
+class Move_LeftRandomBig(Command):
+
+    def __init__(self):
+        super().__init__(locals())
+        self.key_down_time = random.uniform(0.1, 0.2)  # Random float between 0.1 and 0.5
+
+    def main(self):
+        print(self.key_down_time)
+        press(Key.LEFT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
+
+class CruelStabNoD(Command):
+    """Uses 'CruelStab' once."""
+    def main(self):
+        press(Key.CRUEL_STAB, 1, up_time=0.05)
+        time.sleep(0.4)
+
+
+class Assa(Command):
+    """Uses 'CruelStab' once."""
+    def main(self):
+        press(Key.ASSA, 1, up_time=0.05)
+        MesoExplosionS.main()
+        time.sleep(0.2)
+        press(Key.ASSA, 1, up_time=0.05)
+        time.sleep(0.1)
+        MesoExplosionS.main()
+
+class TickAssa(Command):
+    """Uses 'CruelStab' once."""
+    def main(self):
+        press(Key.TICK, 1, up_time=0.05)
+        MesoExplosionS.main()
+        time.sleep(0.2)
+        press(Key.CRUEL_STAB, 1, up_time=0.05)
+        time.sleep(0.1)
+        MesoExplosionS.main()
+
 class DarkFlare(Command):
     """
     Uses 'DarkFlare' in a given direction, or towards the center of the map if
@@ -478,6 +611,13 @@ class ShadowVeil(Command):
             else:
                 press('right', 1, down_time=0.1, up_time=0.05)
         press(Key.SHADOW_VEIL, 3)        		
+
+
+class ErdaFountain(Command):
+
+    def main(self):
+        press(Key.ERDA_FOUNTAIN, 5)
+
 
 class ErdaShower(Command):
     """

@@ -6,6 +6,10 @@ import win32con
 import win32api
 from src.easymaple.common import utils
 from ctypes import wintypes
+import numpy as np
+from pynput.keyboard import Controller, Key
+
+keyboard = Controller()
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 
@@ -21,92 +25,180 @@ KEYEVENTF_SCANCODE = 0x0008
 MAPVK_VK_TO_VSC = 0
 
 # https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN
+# KEY_MAP = {
+#     'left': 0x25,   # Arrow keys
+#     'up': 0x26,
+#     'right': 0x27,
+#     'down': 0x28,
+#
+#     'backspace': 0x08,      # Special keys
+#     'tab': 0x09,
+#     'enter': 0x0D,
+#     'shift': 0x10,
+#     'ctrl': 0x11,
+#     'alt': 0x12,
+#     'caps lock': 0x14,
+#     'esc': 0x1B,
+#     'space': 0x20,
+#     'page up': 0x21,
+#     'page down': 0x22,
+#     'end': 0x23,
+#     'home': 0x24,
+#     'insert': 0x2D,
+#     'delete': 0x2E,
+#
+#     '0': 0x30,      # Numbers
+#     '1': 0x31,
+#     '2': 0x32,
+#     '3': 0x33,
+#     '4': 0x34,
+#     '5': 0x35,
+#     '6': 0x36,
+#     '7': 0x37,
+#     '8': 0x38,
+#     '9': 0x39,
+#
+#     'a': 0x41,      # Letters
+#     'b': 0x42,
+#     'c': 0x43,
+#     'd': 0x44,
+#     'e': 0x45,
+#     'f': 0x46,
+#     'g': 0x47,
+#     'h': 0x48,
+#     'i': 0x49,
+#     'j': 0x4A,
+#     'k': 0x4B,
+#     'l': 0x4C,
+#     'm': 0x4D,
+#     'n': 0x4E,
+#     'o': 0x4F,
+#     'p': 0x50,
+#     'q': 0x51,
+#     'r': 0x52,
+#     's': 0x53,
+#     't': 0x54,
+#     'u': 0x55,
+#     'v': 0x56,
+#     'w': 0x57,
+#     'x': 0x58,
+#     'y': 0x59,
+#     'z': 0x5A,
+#
+#     'f1': 0x70,     # Functional keys
+#     'f2': 0x71,
+#     'f3': 0x72,
+#     'f4': 0x73,
+#     'f5': 0x74,
+#     'f6': 0x75,
+#     'f7': 0x76,
+#     'f8': 0x77,
+#     'f9': 0x78,
+#     'f10': 0x79,
+#     'f11': 0x7A,
+#     'f12': 0x7B,
+#     'num lock': 0x90,
+#     'scroll lock': 0x91,
+#
+#     ';': 0xBA,      # Special characters
+#     '=': 0xBB,
+#     ',': 0xBC,
+#     '-': 0xBD,
+#     '.': 0xBE,
+#     '/': 0xBF,
+#     '`': 0xC0,
+#     '[': 0xDB,
+#     '\\': 0xDC,
+#     ']': 0xDD,
+#     "'": 0xDE
+# }
+
 KEY_MAP = {
-    'left': 0x25,   # Arrow keys
-    'up': 0x26,
-    'right': 0x27,
-    'down': 0x28,
+    'left': Key.left,   # Arrow keys
+    'up': Key.up,
+    'right': Key.right,
+    'down': Key.down,
 
-    'backspace': 0x08,      # Special keys
-    'tab': 0x09,
-    'enter': 0x0D,
-    'shift': 0x10,
-    'ctrl': 0x11,
-    'alt': 0x12,
-    'caps lock': 0x14,
-    'esc': 0x1B,
-    'space': 0x20,
-    'page up': 0x21,
-    'page down': 0x22,
-    'end': 0x23,
-    'home': 0x24,
-    'insert': 0x2D,
-    'delete': 0x2E,
+    'backspace': Key.backspace,      # Special keys
+    'tab': Key.tab,
+    'enter': Key.enter,
+    'shift': Key.shift,
+    'ctrl': Key.ctrl,
+    'alt': Key.alt,
+    'caps lock': Key.caps_lock,
+    'esc': Key.esc,
+    'space': Key.space,
+    'page up': Key.page_up,
+    'page down': Key.page_down,
+    'end': Key.end,
+    'home': Key.home,
+    'insert': Key.insert,
+    'delete': Key.delete,
 
-    '0': 0x30,      # Numbers
-    '1': 0x31,
-    '2': 0x32,
-    '3': 0x33,
-    '4': 0x34,
-    '5': 0x35,
-    '6': 0x36,
-    '7': 0x37,
-    '8': 0x38,
-    '9': 0x39,
+    '0': '0',      # Numbers (pynput does not have direct Key mappings for these, they are used as strings)
+    '1': '1',
+    '2': '2',
+    '3': '3',
+    '4': '4',
+    '5': '5',
+    '6': '6',
+    '7': '7',
+    '8': '8',
+    '9': '9',
 
-    'a': 0x41,      # Letters
-    'b': 0x42,
-    'c': 0x43,
-    'd': 0x44,
-    'e': 0x45,
-    'f': 0x46,
-    'g': 0x47,
-    'h': 0x48,
-    'i': 0x49,
-    'j': 0x4A,
-    'k': 0x4B,
-    'l': 0x4C,
-    'm': 0x4D,
-    'n': 0x4E,
-    'o': 0x4F,
-    'p': 0x50,
-    'q': 0x51,
-    'r': 0x52,
-    's': 0x53,
-    't': 0x54,
-    'u': 0x55,
-    'v': 0x56,
-    'w': 0x57,
-    'x': 0x58,
-    'y': 0x59,
-    'z': 0x5A,
+    'a': 'a',      # Letters (treated as strings)
+    'b': 'b',
+    'c': 'c',
+    'd': 'd',
+    'e': 'e',
+    'f': 'f',
+    'g': 'g',
+    'h': 'h',
+    'i': 'i',
+    'j': 'j',
+    'k': 'k',
+    'l': 'l',
+    'm': 'm',
+    'n': 'n',
+    'o': 'o',
+    'p': 'p',
+    'q': 'q',
+    'r': 'r',
+    's': 's',
+    't': 't',
+    'u': 'u',
+    'v': 'v',
+    'w': 'w',
+    'x': 'x',
+    'y': 'y',
+    'z': 'z',
 
-    'f1': 0x70,     # Functional keys
-    'f2': 0x71,
-    'f3': 0x72,
-    'f4': 0x73,
-    'f5': 0x74,
-    'f6': 0x75,
-    'f7': 0x76,
-    'f8': 0x77,
-    'f9': 0x78,
-    'f10': 0x79,
-    'f11': 0x7A,
-    'f12': 0x7B,
-    'num lock': 0x90,
-    'scroll lock': 0x91,
+    'f1': Key.f1,     # Functional keys
+    'f2': Key.f2,
+    'f3': Key.f3,
+    'f4': Key.f4,
+    'f5': Key.f5,
+    'f6': Key.f6,
+    'f7': Key.f7,
+    'f8': Key.f8,
+    'f9': Key.f9,
+    'f10': Key.f10,
+    'f11': Key.f11,
+    'f12': Key.f12,
+    'num lock': Key.num_lock,
+    'scroll lock': Key.scroll_lock,
 
-    ';': 0xBA,      # Special characters
-    '=': 0xBB,
-    ',': 0xBC,
-    '-': 0xBD,
-    '.': 0xBE,
-    '/': 0xBF,
-    '`': 0xC0,
-    '[': 0xDB,
-    '\\': 0xDC,
-    ']': 0xDD,
-    "'": 0xDE
+    ';': ';',      # Special characters (pynput does not have predefined Key mappings, so we keep them as strings)
+    '=': '=',
+    ',': ',',
+    '-': '-',
+    '.': '.',
+    '/': '/',
+    '`': '`',
+    '[': '[',
+    '\\': '\\',
+    ']': ']',
+    "'": "'"
 }
 
 
@@ -185,8 +277,11 @@ def key_down(key):
     if key not in KEY_MAP.keys():
         print(f"Invalid keyboard input: `{key}`.")
     else:
-        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key]))
-        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+        keyboard.press(KEY_MAP[key])
+
+        # x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key]))
+        # user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+        # print(key)
 
 
 def key_up(key):
@@ -202,12 +297,13 @@ def key_up(key):
     if key not in KEY_MAP.keys():
         print(f"Invalid keyboard input: `{key}`.")
     else:
-        x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
-        user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+        keyboard.release(KEY_MAP[key])
+        # x = Input(type=INPUT_KEYBOARD, ki=KeyboardInput(wVk=KEY_MAP[key], dwFlags=KEYEVENTF_KEYUP))
+        # user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 
 @utils.run_if_enabled
-def press(key, n=1, down_time=0.05, up_time=0.1):
+def press(key, n=1, down_time=0.05, up_time=0.1, random=False):
     """
     Presses KEY N times, holding it for DOWN_TIME seconds, and releasing for UP_TIME seconds.
     :param key:         The keyboard input to press.
@@ -216,12 +312,17 @@ def press(key, n=1, down_time=0.05, up_time=0.1):
     :param up_time:     Duration of release (in seconds).
     :return:            None
     """
-
     for _ in range(n):
-        key_down(key)
-        time.sleep(down_time)
-        key_up(key)
-        time.sleep(up_time)
+        if random==True:
+            key_down(key)
+            time.sleep(down_time * np.random.uniform(low=0.95, high=1.05))
+            key_up(key)
+            time.sleep(up_time * np.random.uniform(low=0.95, high=1.05))
+        else:
+            key_down(key)
+            time.sleep(down_time)
+            key_up(key)
+            time.sleep(up_time)
 
 
 @utils.run_if_enabled

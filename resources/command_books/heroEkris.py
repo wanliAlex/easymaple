@@ -1,5 +1,6 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
 
+import random
 from src.easymaple.common import config, settings, utils
 import time
 import math
@@ -30,6 +31,7 @@ class Key:
     WILL = "g"
     SEREN = "t"
     RUSH = 'e'
+    DASH = 'e'
     RISING_RAGE = '3'
     SCREEN_CUT = "f"
     BLITZ_SHEILD = "w"
@@ -183,6 +185,23 @@ class Adjust(Command):
             error = utils.distance(config.player_pos, self.target)
 
 
+class JumpBeamBladeOrRaging(Command):
+    flip = True
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+
+    def main(self):
+        if self.flip:
+            key_down(self.direction)
+            JumpBeamBladeTwo().main()
+            time.sleep(self.wait)
+        else:
+            JumpPuncture(self.direction).main()
+            time.sleep(self.wait)
+        JumpBeamBladeOrRaging.flip = not JumpBeamBladeOrRaging.flip
+
 class Puncture(Command):
     def main(self):
         press(Key.PUNCTURE)
@@ -197,6 +216,65 @@ class RagingBlow(Command):
         time.sleep(0.05)
         press(Key.RAGING_BLOW,n = 1, down_time = 0.094, up_time = 0.046)
         time.sleep(0.335)
+
+class RagingBlowNoMove(Command):
+    def main(self):
+        time.sleep(0.1)
+        key_down("down")
+        press(Key.JUMP, n = 1, down_time = 0.034, up_time = 0.026)
+        key_up("down")
+        press(Key.RAGING_BLOW,n = 3, down_time = 0.094, up_time = 0.046)
+
+class DownJumpLeapRight(Command):
+    def main(self):
+        time.sleep(0.1)
+        key_down("down")
+        press(Key.JUMP, n = 1, down_time = 0.034, up_time = 0.026)
+        key_up("down")
+        time.sleep(0.2)
+        key_down("right")
+        press(Key.LEAP_ATTACK,n = 6, down_time = 0.094, up_time = 0.046)
+        key_up("right")
+
+class RandomRagingOrPunc(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+
+    def main(self):
+        command = random.choice([JumpPunc(self.direction, self.wait), 
+                                 JumpAttack(self.direction, self.wait)])
+        print(f"Selected command: {command.__class__.__name__}")
+
+        command.main()
+
+class JumpAttack(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.RAGING_BLOW, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.4)
+        time.sleep(self.wait)
+
+
+class JumpPunc(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.PUNCTURE, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.5)
+        time.sleep(self.wait)
 
 class ScreenCut(Command):
     def main(self):
@@ -255,6 +333,18 @@ class JumpPuncture(Command):
             press(Key.PUNCTURE, n=1, down_time=0.094, up_time=0.046)
             time.sleep(0.315)
 
+class RandomCommand(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+
+    def main(self):
+        command = random.choice([JumpBeamBladeOrRaging(self.direction, self.wait), 
+                                 JumpAttack(self.direction, self.wait)])
+        print(f"Selected command: {command.__class__.__name__}")
+
+        command.main()
 
 class JumpRagingBlow(Command):
     def __init__(self, direction, repetitions=1):
@@ -269,6 +359,20 @@ class JumpRagingBlow(Command):
             time.sleep(0.08)
             press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
             press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+            time.sleep(0.33)
+
+class SingleJumpRagingBlow(Command):
+    def __init__(self, direction, repetitions=1):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.repetitions = int(repetitions)
+
+    def main(self):
+        for _ in range(self.repetitions):
+            key_down("right")
+            press(Key.JUMP, n=1, down_time=0.072, up_time=0.01)
+            press(Key.RAGING_BLOW, n=1, down_time=0.094, up_time=0.046)
+            key_up("right")
             time.sleep(0.33)
 
 class JumpRagingBlowGreen(Command):
@@ -328,9 +432,7 @@ class JumpRagingBlow2(Command):
 
 class BurningBlade(Command):
     def main(self):
-        key_down("down")
         press(Key.BURNING_BLADE, 4)
-        key_up("down")
 
 
 class Buff(Command):
@@ -390,7 +492,8 @@ class RopeShort(Command):
 
 class will(Command):
     def main(self):
-        press(Key.WILL, 1, up_time=0.3)
+        press(Key.WILL, 1, up_time=0.2)
+        press(Key.SEREN, 1, up_time=0.2)
 
 class seren(Command):
     def main(self):
@@ -429,6 +532,16 @@ class Move_left(Command):
     def main(self):
         press(Key.LEFT_ARROW, n=1, down_time=self.key_down_time, up_time=0.01)
 
+class Dash(Command):
+    def __init__(self, direction, wait = 0):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        press(Key.DASH, 1, 0.1, 0.6)
+        key_up(self.direction)
+        time.sleep(self.wait)
 
 class ErdaShower(Command):
 

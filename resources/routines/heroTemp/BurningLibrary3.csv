@@ -1,0 +1,41 @@
+$, target=move_tolerance, value=0.03
+
+@, label=lefttoright
+*, x=0.203, y=0.324, frequency=1, skip=False, adjust=False
+    RandomCommand, direction=right, wait=0.3
+*, x=0.330, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.463, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.613, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+>, label=loot, frequency=7, skip=False
+
+@, label=righttoleft
+*, x=0.757, y=0.324, frequency=1, skip=False, adjust=False
+    RandomRagingOrPunc, direction=left, wait=0.4
+*, x=0.613, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.463, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.33, y=0.324, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+>, label=lefttoright, frequency=1, skip=False
+
+@, label=loot
+*, x=0.757, y=0.324, frequency=1, skip=False, adjust=False
+    SoulBlade
+    Rope, direction=left, wait=1.5
+*, x=0.757, y=0.158, frequency=1, skip=False, adjust=False
+    Walk, direction=left, duration=0.05
+    Dash, direction=left, wait=0
+*, x=0.653, y=0.158, frequency=1, skip=False, adjust=False
+    ErdaFountain
+    JumpAttack, direction=left, wait=0.2
+    JumpAttack, direction=left, wait=0.6
+    Walk, direction=left, duration=0.6
+*, x=0.234, y=0.243, frequency=1, skip=False, adjust=False
+    DownJump, wait=0.1
+    WorldDreaver, wait=0.5
+    Dash, direction=left, wait=0
+>, label=lefttoright, frequency=1, skip=False
