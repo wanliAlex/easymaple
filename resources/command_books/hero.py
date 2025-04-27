@@ -118,7 +118,7 @@ class Move(Command):
                             time.sleep(0.05)
                             press(Key.JUMP, 3, down_time=0.1)
                             key_up('down')
-                            time.sleep(0.5)
+                            time.sleep(0.8)
                         if settings.record_layout:
                             config.layout.add(*config.player_pos)
                         if i < len(path) - 1:
@@ -311,3 +311,42 @@ class JumpBeamBladeOrRaging(Command):
             time.sleep(0.4)
             time.sleep(self.wait)
         self.flip = not self.flip
+
+class DownJumpAndAttack(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+        self.flip = True
+
+    def main(self):
+        key_down("down")
+        key_down("down")
+        press(Key.JUMP, 2, 0.01, 0.01)
+        key_up("down")
+        press(self.direction, 2, 0.01, 0.01)
+        press(Key.RAGING_BELOW,2, 0.01, 0.01)
+        time.sleep(self.wait)
+
+class GentleSumerPort1(Command):
+    _port = (0.895, 0.13)
+
+    def main(self):
+        JumpAttack(direction="right", wait=0.15).main()
+        for _ in range(300):
+            if utils.distance(self._port, config.player_pos) > 0.01:
+                press("right",1, 0.02, 0.02)
+            else:
+                break
+
+
+class GentleSumerPort2(Command):
+    _port_destination = (0.155, 0.16)
+
+    def main(self):
+        press(Key.RAGING_BELOW, 2, 0.01, 0.01)
+        for _ in range(500):
+            if utils.distance(self._port_destination, config.player_pos) > 0.01:
+                press("up", 1, 0.01, 0.1)
+            else:
+                break

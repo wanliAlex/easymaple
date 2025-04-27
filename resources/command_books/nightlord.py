@@ -233,10 +233,7 @@ class Buff(Command):
         self.buff_time = 0
 
     def main(self):
-        now = time.time()
-        if self.buff_time == 0 or now - self.buff_time > 1200:
-            press(Key.WARRIOR, 1, 0.1, 0.5)
-            self.buff_time = now
+        pass
 
 
 class UpJump(Command):
@@ -581,3 +578,96 @@ class BC4_BALL_3(Command):
         time.sleep(0.5)
         press("left", 1, 0.5)
         press(Key.SHURI, 1, 0.1, 0.7)
+
+
+class FFP3_STAND_STILL(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.show_down_time = 0
+        self.death_star_time = 0
+        self.ball_time = 0
+        self.placed = False
+        self.placed_time = 0
+
+    def main(self):
+        for _ in range(500):
+            if config.enabled is False:
+                time.sleep(0.5)
+                break
+
+            if self.ball_time == 0 or time.time() - self.ball_time > 115 and time.time() - self.placed_time > 57:
+                self.ball_time = time.time()
+                self.placed = False
+                break
+
+            if time.time() - self.ball_time > 57 and self.placed is False:
+                self.placed = True
+                self.placed_time = time.time()
+                press(Key.DARK_FLARE, 2, 0.1, 0.2)
+                press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.2)
+
+            press("left", 1,0.1, 0.01)
+            press(Key.SHOW_DOWN, 1, 0.2, 1)
+            press("right", 1, 0.1, 0.01)
+            press(Key.SHOW_DOWN, 1, 0.2, 1)
+            Adjust(0.508, 0.299).main()
+            time.sleep(np.random.uniform(1, 1.5))
+
+
+class FFP3_START_MOVE(Command):
+    def main(self):
+        press(Key.DARK_FLARE, 2, 0.1, 0.2)
+        press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.2)
+        press(Key.OMEN, 2, 0.1, 0.3)
+        DoubleJumpAttack("left").main()
+
+
+class FFP3_LFET_BOT_PORTAL(Command):
+    _target_point_1 = (0.315, 0.305)
+    _target_point_2 = (0.386, 0.157)
+    def main(self):
+        for _ in range(100):
+            if utils.distance(self._target_point_1, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self._target_point_2, config.player_pos) < 0.1:
+                break
+            if utils.distance(self._target_point_1, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self._target_point_1[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+class FFP3_LFET_TOP_PORTAL(Command):
+    _target_point = (0.746, 0.299)
+
+    def main(self):
+        g
+        press(Key.BALL, 2, 0.1, 0.2)
+        for _ in range(10):
+            press("up", 1 ,0.05, 0.01)
+
+            if utils.distance(self._target_point, config.player_pos) < 0.03:
+                break
+
+
+class FFP3_RIGHT_BOT_PORTAL(Command):
+    _target_point = (0.315, 0.305)
+    def main(self):
+        press(Key.BALL, 2, 0.1, 0.2)
+        time.sleep(1)
+        for _ in range(10):
+            press("up", 1, 0.05, 0.01)
+
+            if utils.distance(self._target_point, config.player_pos) < 0.03:
+                break
+
+
+class FFP3_BOT_LEFT_BALL(Command):
+    def main(self):
+        press(Key.BALL, 2, 0.1, 0.2)
+        time.sleep(1)
+        DoubleJumpAttack("right").main()

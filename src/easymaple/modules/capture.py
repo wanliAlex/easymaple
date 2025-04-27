@@ -86,7 +86,10 @@ class Capture:
                     window_name = title
             if window_name is None:
                 continue
+
             window_obj = gw.getWindowsWithTitle(window_name)[0]
+
+            self.ready = True
 
             self.window['left'] = window_obj.left
             self.window['top'] = window_obj.top
@@ -96,6 +99,7 @@ class Capture:
             # Calibrate by finding the bottom right corner of the minimap
             with mss.mss() as self.sct:
                 self.frame = self.screenshot()
+
             if self.frame is None:
                 continue
 
@@ -115,6 +119,7 @@ class Capture:
             is_valid_mm_map = self._mini_map_sanity_check(mm_tl, mm_br)
             if not is_valid_mm_map:
                 continue
+
             self.calibrated = True
 
             with mss.mss() as self.sct:
