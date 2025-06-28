@@ -82,15 +82,13 @@ def auto_load_last_files():
         print(f"[Cache] Checking routine: {last_routine}")
         if last_routine and os.path.exists(last_routine):
             print(f"[Cache] Routine file exists, config.routine = {config.routine}")
+            print(f"[Cache] config.routine type: {type(config.routine)}")
+            print(f"[Cache] config.routine bool: {bool(config.routine)}")
             try:
-                # Store reference to avoid potential race condition
-                routine_obj = config.routine
-                print(f"[Cache] Stored routine reference: {routine_obj}")
-                if routine_obj:
-                    routine_obj.load(last_routine)
-                    print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
-                else:
-                    print(f"[Cache] routine_obj is None, cannot load routine")
+                # Try direct access
+                print(f"[Cache] About to call config.routine.load() directly")
+                config.routine.load(last_routine)
+                print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
             except Exception as e:
                 print(f"[Cache] Failed to auto-load routine: {e}")
                 import traceback
