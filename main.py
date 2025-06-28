@@ -6,6 +6,7 @@ from src.easymaple.modules.capture import Capture
 from src.easymaple.modules.notifier import Notifier
 from src.easymaple.modules.listener import Listener
 from src.easymaple.modules.gui import GUI
+from src.easymaple.common import cache
 
 def main():
 
@@ -31,6 +32,9 @@ def main():
         time.sleep(0.01)
 
     print('\n[~] Successfully initialized Auto Maple')
+    
+    # Auto-load last used files from cache
+    cache.auto_load_last_files()
     
     gui = GUI()
     gui.start()

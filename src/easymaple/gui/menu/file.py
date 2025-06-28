@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from src.easymaple.common import config, utils
+from src.easymaple.common import config, utils, cache
 from src.easymaple.gui.interfaces import MenuBarItem
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import askyesno
@@ -69,6 +69,7 @@ class File(MenuBarItem):
                                     filetypes=[('*.csv', '*.csv')])
         if file_path:
             config.routine.load(file_path)
+            cache.set_last_routine(file_path)
 
     @staticmethod
     @utils.run_if_disabled('\n[!] Cannot load command books while Auto Maple is enabled')
@@ -84,6 +85,7 @@ class File(MenuBarItem):
                                     filetypes=[('*.py', '*.py')])
         if file_path:
             config.bot.load_commands(file_path)
+            cache.set_last_command_book(file_path)
 
 
 def get_routines_dir():
