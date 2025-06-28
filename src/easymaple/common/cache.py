@@ -58,6 +58,7 @@ def set_last_routine(file_path):
 
 def auto_load_last_files():
     """Attempt to load last used command book and routine."""
+    print(f"[Cache] Starting auto-load, config.routine = {config.routine}")
     cache = load_cache()
     
     command_book_loaded = False
@@ -67,8 +68,10 @@ def auto_load_last_files():
     if last_command_book and os.path.exists(last_command_book):
         try:
             if config.bot:
+                print(f"[Cache] About to load command book, config.routine = {config.routine}")
                 config.bot.load_commands(last_command_book)
                 print(f"[Cache] Auto-loaded command book: {os.path.basename(last_command_book)}")
+                print(f"[Cache] After loading command book, config.routine = {config.routine}")
                 command_book_loaded = True
         except Exception as e:
             print(f"[Cache] Failed to auto-load command book: {e}")
