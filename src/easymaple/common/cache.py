@@ -58,7 +58,6 @@ def set_last_routine(file_path):
 
 def auto_load_last_files():
     """Attempt to load last used command book and routine."""
-    print(f"[Cache] Starting auto-load, config.routine = {config.routine}")
     cache = load_cache()
     
     command_book_loaded = False
@@ -68,10 +67,8 @@ def auto_load_last_files():
     if last_command_book and os.path.exists(last_command_book):
         try:
             if config.bot:
-                print(f"[Cache] About to load command book, config.routine = {config.routine}")
                 config.bot.load_commands(last_command_book)
                 print(f"[Cache] Auto-loaded command book: {os.path.basename(last_command_book)}")
-                print(f"[Cache] After loading command book, config.routine = {config.routine}")
                 command_book_loaded = True
         except Exception as e:
             print(f"[Cache] Failed to auto-load command book: {e}")
@@ -79,24 +76,11 @@ def auto_load_last_files():
     # Try to load last routine (only if command book was loaded successfully)
     if command_book_loaded:
         last_routine = cache.get('last_routine')
-        print(f"[Cache] Checking routine: {last_routine}")
         if last_routine and os.path.exists(last_routine):
-            print(f"[Cache] Routine file exists, config.routine = {config.routine}")
-            print(f"[Cache] config.routine type: {type(config.routine)}")
-            print(f"[Cache] config.routine bool: {bool(config.routine)}")
             try:
-                # Try direct access
-                print(f"[Cache] About to call config.routine.load() directly")
+                # Call load directly - don't check if config.routine because 
+                # empty routines evaluate to False but still have the load method
                 config.routine.load(last_routine)
                 print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
             except Exception as e:
                 print(f"[Cache] Failed to auto-load routine: {e}")
-                import traceback
-                traceback.print_exc()
-        else:
-            if not last_routine:
-                print(f"[Cache] No cached routine found")
-            else:
-                print(f"[Cache] Routine file does not exist: {last_routine}")
-    else:
-        print(f"[Cache] Command book not loaded, skipping routine")
