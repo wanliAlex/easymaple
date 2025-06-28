@@ -60,6 +60,8 @@ def auto_load_last_files():
     """Attempt to load last used command book and routine."""
     cache = load_cache()
     
+    command_book_loaded = False
+    
     # Try to load last command book
     last_command_book = cache.get('last_command_book')
     if last_command_book and os.path.exists(last_command_book):
@@ -67,15 +69,17 @@ def auto_load_last_files():
             if config.bot:
                 config.bot.load_commands(last_command_book)
                 print(f"[Cache] Auto-loaded command book: {os.path.basename(last_command_book)}")
+                command_book_loaded = True
         except Exception as e:
             print(f"[Cache] Failed to auto-load command book: {e}")
     
     # Try to load last routine (only if command book was loaded successfully)
-    last_routine = cache.get('last_routine')
-    if last_routine and os.path.exists(last_routine):
-        try:
-            if config.routine and hasattr(config, 'bot') and config.bot.module_name:
-                config.routine.load(last_routine)
-                print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
-        except Exception as e:
-            print(f"[Cache] Failed to auto-load routine: {e}")
+    if command_book_loaded:
+        last_routine = cache.get('last_routine')
+        if last_routine and os.path.exists(last_routine):
+            try:
+                if config.routine:
+                    config.routine.load(last_routine)
+                    print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
+            except Exception as e:
+                print(f"[Cache] Failed to auto-load routine: {e}")
