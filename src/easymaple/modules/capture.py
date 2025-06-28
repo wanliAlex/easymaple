@@ -106,12 +106,12 @@ class Capture:
             tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
             _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
             mm_tl = (
-                tl[0] + MINIMAP_BOTTOM_BORDER,
-                tl[1] + MINIMAP_TOP_BORDER
+                tl[0] + 2,
+                tl[1] + 2
             )
             mm_br = (
-                max(mm_tl[0] + PT_WIDTH, br[0] - MINIMAP_BOTTOM_BORDER),
-                max(mm_tl[1] + PT_HEIGHT, br[1] - MINIMAP_BOTTOM_BORDER)
+                max(mm_tl[0] + PT_WIDTH, br[0] - 8),
+                max(mm_tl[1] + PT_HEIGHT, br[1] - 9)
             )
             self.minimap_ratio = (mm_br[0] - mm_tl[0]) / (mm_br[1] - mm_tl[1])
             self.minimap_sample = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]

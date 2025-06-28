@@ -610,7 +610,7 @@ class FFP3_STAND_STILL(Command):
             press(Key.SHOW_DOWN, 1, 0.2, 1)
             press("right", 1, 0.1, 0.01)
             press(Key.SHOW_DOWN, 1, 0.2, 1)
-            Adjust(0.508, 0.299).main()
+            Adjust(0.500, 0.309).main()
             time.sleep(np.random.uniform(1, 1.5))
 
 
@@ -623,8 +623,8 @@ class FFP3_START_MOVE(Command):
 
 
 class FFP3_LFET_BOT_PORTAL(Command):
-    _target_point_1 = (0.315, 0.305)
-    _target_point_2 = (0.386, 0.157)
+    _target_point_1 = (0.309, 0.314)
+    _target_point_2 = (0.381, 0.165)
     def main(self):
         for _ in range(100):
             if utils.distance(self._target_point_1, config.player_pos) < 0.03:
@@ -642,10 +642,9 @@ class FFP3_LFET_BOT_PORTAL(Command):
         return base_value if direction == "left" else 1.8 * base_value
 
 class FFP3_LFET_TOP_PORTAL(Command):
-    _target_point = (0.746, 0.299)
+    _target_point = (0.747, 0.309)
 
     def main(self):
-        g
         press(Key.BALL, 2, 0.1, 0.2)
         for _ in range(10):
             press("up", 1 ,0.05, 0.01)
@@ -655,7 +654,7 @@ class FFP3_LFET_TOP_PORTAL(Command):
 
 
 class FFP3_RIGHT_BOT_PORTAL(Command):
-    _target_point = (0.315, 0.305)
+    _target_point = (0.309, 0.314)
     def main(self):
         press(Key.BALL, 2, 0.1, 0.2)
         time.sleep(1)
