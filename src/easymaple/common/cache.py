@@ -76,10 +76,21 @@ def auto_load_last_files():
     # Try to load last routine (only if command book was loaded successfully)
     if command_book_loaded:
         last_routine = cache.get('last_routine')
+        print(f"[Cache] Checking routine: {last_routine}")
         if last_routine and os.path.exists(last_routine):
+            print(f"[Cache] Routine file exists, config.routine = {config.routine}")
             try:
                 if config.routine:
                     config.routine.load(last_routine)
                     print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
+                else:
+                    print(f"[Cache] config.routine is None, cannot load routine")
             except Exception as e:
                 print(f"[Cache] Failed to auto-load routine: {e}")
+        else:
+            if not last_routine:
+                print(f"[Cache] No cached routine found")
+            else:
+                print(f"[Cache] Routine file does not exist: {last_routine}")
+    else:
+        print(f"[Cache] Command book not loaded, skipping routine")
