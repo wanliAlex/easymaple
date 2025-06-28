@@ -34,10 +34,6 @@ def main():
     print('\n[~] Successfully initialized Auto Maple')
     
     gui = GUI()
-    
-    # Auto-load last used files from cache after GUI is created
-    cache.auto_load_last_files()
-    
     gui.start()
 
 if __name__== "__main__":

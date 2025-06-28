@@ -4,7 +4,7 @@ import time
 import threading
 import tkinter as tk
 from tkinter import ttk
-from src.easymaple.common import config, settings
+from src.easymaple.common import config, settings, cache
 from src.easymaple.gui import Menu, View, Edit, Settings
 
 
@@ -82,6 +82,9 @@ class GUI:
         layout_thread = threading.Thread(target=self._save_layout)
         layout_thread.daemon = True
         layout_thread.start()
+
+        # Auto-load last used files from cache after GUI is fully initialized
+        self.root.after(100, cache.auto_load_last_files)
 
         self.root.mainloop()
 
