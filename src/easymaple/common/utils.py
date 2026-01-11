@@ -118,7 +118,11 @@ def multi_match(frame, template, threshold=0.95):
     :return:            An array of matches that exceed THRESHOLD.
     """
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    if len(frame.shape) != 2:
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = frame
+
     try:
         result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
     except cv2.error:

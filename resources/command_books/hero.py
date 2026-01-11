@@ -23,6 +23,7 @@ class Key:
     WORLD_DREAVER = "3"
     BEAM_BLADE = "t"
     SOUL_BLADE="f2"
+    BALL = "page up"
 
 
     RIGHT="right"
@@ -226,6 +227,20 @@ class JumpAttack(Command):
         time.sleep(0.4)
         time.sleep(self.wait)
 
+class JumpAttack2(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        press(Key.JUMP, n=1, down_time=0.1, up_time=0.1)
+        press(Key.JUMP, n=1, down_time=0.01, up_time=0.1)
+        press(Key.RAGING_BELOW, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.4)
+        time.sleep(self.wait)
+
 
 class JumpPuncture(Command):
     def __init__(self, direction):
@@ -341,12 +356,143 @@ class GentleSumerPort1(Command):
 
 
 class GentleSumerPort2(Command):
-    _port_destination = (0.155, 0.16)
-
+    SELF_POSITION = (0.895, 0.135)
+    NEXT_POSITION = (0.155, 0.165)
     def main(self):
-        press(Key.RAGING_BELOW, 2, 0.01, 0.01)
-        for _ in range(500):
-            if utils.distance(self._port_destination, config.player_pos) > 0.01:
-                press("up", 1, 0.01, 0.1)
+        press(Key.RAGING_BELOW,2, 0.01, 0.01)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+
+
+class TopDeckPassage8PortLeftBottom(Command):
+    SELF_POSITION = (0.118, 0.390)
+    NEXT_POSITION = (0.171, 0.139)
+    def main(self):
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+should_place_ball = False
+
+class TopDeckPassage8PortLeftTop(Command):
+    SELF_POSITION = (0.171, 0.139)
+    NEXT_POSITION = (0.444, 0.198)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        global should_place_ball
+        for _ in range(100):
+            if config.enabled is False:
+                time.sleep(0.5)
             else:
                 break
+
+        if self.timer == 0 or time.time() - self.timer > 70:
+            should_place_ball = True
+
+        if should_place_ball:
+            self.timer = time.time()
+            press(Key.BALL, 2, 0.1, 0.2)
+
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+class TopDeckPassage8PortMid(Command):
+    SELF_POSITION = (0.444, 0.198)
+    NEXT_POSITION = (0.813, 0.134)
+    def main(self):
+
+        if should_place_ball:
+            press(Key.BALL, 2, 0.1, 0.2)
+
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+class TopDeckPassage8PortTopRight(Command):
+    SELF_POSITION = (0.813, 0.134)
+    NEXT_POSITION = (0.882, 0.390)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+
+        global should_place_ball
+
+        if should_place_ball:
+            press(Key.BALL, 2, 0.1, 0.2)
+            should_place_ball = False
+
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+        if self.timer == 0 or time.time() - self.timer > 120:
+            press(Key.SOUL_BLADE, 2, 0.1, 0.3)
+            press("left",4, 0.05, 0.01)
+            self.timer = time.time()
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value

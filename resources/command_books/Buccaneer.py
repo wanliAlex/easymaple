@@ -19,7 +19,7 @@ class Key:
 
     # Skills
     HOOK_BOMBER = "1"
-    DICE = "insert"
+    DICE = "x"
 
     RIGHT="right"
     LEFT="left"
@@ -198,8 +198,8 @@ class Buff(Command):
 
     def main(self):
         now = time.time()
-        if self.buff_time_180 == 0 or now - self.buff_time_180 > 200:
-            press(Key.DICE, 3, 0.2, 0.2)
+        if self.buff_time_180 == 0 or now - self.buff_time_180 > 280:
+            press(Key.DICE, 1, 0.1, 0.5)
             self.buff_time_180 = time.time()
             
 class Rope(Command):
@@ -406,4 +406,76 @@ class UpJump(Command):
         press(Key.JUMP, 1, down_time = 0.05, up_time = 1.0)
         key_up("up")
 
+
+class JumpAttack(Command):
+    def __init__(self, direction, wait):
+        super().__init__(locals())
+        self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait = float(wait)
+    def main(self):
+        key_down(self.direction)
+        DoubleJump().main()
+        press(Key.HOOK_BOMBER, 2, 0.01, 0.01)
+        key_up(self.direction)
+        time.sleep(0.4)
+        time.sleep(self.wait)
+
+
+class GentleSumerStart(Command):
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        if self.timer == 0 or time.time() - self.timer > 57:
+            self._placements()
+        else:
+            time.sleep(0.1)
+        JumpAttack(direction="right", wait=0.6).main()
+
+    def _placements(self):
+        DownJump(wait_time=0.8).main()
+        press(Key.ERDA_FOUNTAIN,2,0.1,0.5)
+        self.timer = time.time()
+        UpJump().main()
+        time.sleep(0.3)
+
+
+
+
+class GentleSumerPort1(Command):
+    _port = (0.895, 0.13)
+
+    def main(self):
+        JumpAttack(direction="right", wait=0.15).main()
+        for _ in range(300):
+            if utils.distance(self._port, config.player_pos) > 0.01:
+                press("right",1, 0.02, 0.02)
+            else:
+                break
+
+
+class GentleSumerPort2(Command):
+    SELF_POSITION = (0.895, 0.135)
+    NEXT_POSITION = (0.155, 0.165)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.timer = 0
+    def main(self):
+        press(Key.LEFT, 1, 0.05, 0.01)
+        press(Key.HOOK_BOMBER,2, 0.01, 0.01)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.055:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
 

@@ -1,4 +1,5 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
+import random
 
 from src.easymaple.common import config, settings, utils
 import time
@@ -133,7 +134,7 @@ class Move(Command):
 class Adjust(Command):
     """Fine-tunes player position using small movements."""
 
-    def __init__(self, x, y, max_steps=5):
+    def __init__(self, x, y, max_steps=10):
         super().__init__(locals())
         self.target = (float(x), float(y))
         self.max_steps = settings.validate_nonnegative_int(max_steps)
@@ -150,14 +151,14 @@ class Adjust(Command):
                 if d_x < 0:
                     key_down('left')
                     while config.enabled and d_x < -1.5 * threshold and walk_counter < 60:
-                        time.sleep(0.05)
+                        time.sleep(0.025)
                         walk_counter += 1
                         d_x = self.target[0] - config.player_pos[0]
                     key_up('left')
                 else:
                     key_down('right')
                     while config.enabled and d_x > 1.5 * threshold and walk_counter < 60:
-                        time.sleep(0.05)
+                        time.sleep(0.025)
                         walk_counter += 1
                         d_x = self.target[0] - config.player_pos[0]
                     key_up('right')
@@ -606,11 +607,11 @@ class FFP3_STAND_STILL(Command):
                 press(Key.DARK_FLARE, 2, 0.1, 0.2)
                 press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.2)
 
-            press("left", 1,0.1, 0.01)
+            press("left", 1,0.05, 0.01)
             press(Key.SHOW_DOWN, 1, 0.2, 1)
-            press("right", 1, 0.1, 0.01)
+            press("right", 1, 0.05, 0.01)
             press(Key.SHOW_DOWN, 1, 0.2, 1)
-            Adjust(0.500, 0.309).main()
+            Adjust(0.524, 0.321).main()
             time.sleep(np.random.uniform(1, 1.5))
 
 
@@ -623,8 +624,8 @@ class FFP3_START_MOVE(Command):
 
 
 class FFP3_LFET_BOT_PORTAL(Command):
-    _target_point_1 = (0.309, 0.314)
-    _target_point_2 = (0.381, 0.165)
+    _target_point_1 = (0.305, 0.326)
+    _target_point_2 = (0.380, 0.171)
     def main(self):
         for _ in range(100):
             if utils.distance(self._target_point_1, config.player_pos) < 0.03:
@@ -641,8 +642,9 @@ class FFP3_LFET_BOT_PORTAL(Command):
         base_value = max(distance * 6, 0.03)
         return base_value if direction == "left" else 1.8 * base_value
 
+
 class FFP3_LFET_TOP_PORTAL(Command):
-    _target_point = (0.747, 0.309)
+    _target_point = (0.759, 0.321)
 
     def main(self):
         press(Key.BALL, 2, 0.1, 0.2)
@@ -654,7 +656,7 @@ class FFP3_LFET_TOP_PORTAL(Command):
 
 
 class FFP3_RIGHT_BOT_PORTAL(Command):
-    _target_point = (0.309, 0.314)
+    _target_point = (0.305, 0.326)
     def main(self):
         press(Key.BALL, 2, 0.1, 0.2)
         time.sleep(1)
@@ -670,3 +672,118 @@ class FFP3_BOT_LEFT_BALL(Command):
         press(Key.BALL, 2, 0.1, 0.2)
         time.sleep(1)
         DoubleJumpAttack("right").main()
+
+
+class NIGHT_ROAD_1_MID_STANDSTILL(Command):
+    SELF_POSITION = (0.476, 0.256)
+    NEXT_POSITION_RIGHT = (0.770, 0.262)
+    NEXT_POSITION_LEFT = (0.182, 0.267)
+    def __init__(self):
+        super().__init__(locals())
+        self.show_down_time = 0
+        self.death_star_time = 0
+        self.ball_time = 0
+        self.placed = False
+        self.placed_time = 0
+
+    def get_into_portal(self, this_port_position, next_portal_position):
+        for _ in range(100):
+            if utils.distance(this_port_position, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(next_portal_position, config.player_pos) < 0.1:
+                break
+            if utils.distance(this_port_position, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - this_port_position[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def place(self):
+        self.get_into_portal(self.SELF_POSITION, self.NEXT_POSITION_RIGHT)
+        press(Key.DARK_FLARE, 1, 0.1, 0.8)
+        self.get_into_portal(self.NEXT_POSITION_RIGHT, self.NEXT_POSITION_LEFT)
+        press(Key.ERDA_FOUNTAIN, 1, 0.1, 0.8)
+        self.get_into_portal(self.NEXT_POSITION_LEFT, self.SELF_POSITION)
+
+
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+    def main(self):
+        for _ in range(500):
+            if config.enabled is False:
+                time.sleep(0.5)
+                break
+
+            if self.ball_time == 0 or time.time() - self.ball_time > 117 and time.time() - self.placed_time > 59:
+                self.ball_time = time.time()
+                self.placed = False
+                break
+
+            if time.time() - self.ball_time > 59 and self.placed is False:
+                self.placed = True
+                self.placed_time = time.time()
+                self.place()
+
+            if random.randint(0, 1) < 0.5:
+                press(Key.SHOW_DOWN, 1, 0.1, 1)
+            else:
+                press(Key.JUMP, 1, 0.05, 0.05)
+                press(random.choice(["left", "right"]), 1, 0.01, 0.01)
+                press(Key.SHOW_DOWN, 1, 0.1, 0.01)
+
+            time.sleep(np.random.uniform(1, 1.5))
+            Adjust(self.SELF_POSITION[0], self.SELF_POSITION[1]).main()
+            time.sleep(np.random.uniform(0.5, 0.8))
+
+
+class NIGHT_ROAD_1_MID_MOVE(Command):
+    SELF_POSITION = (0.476, 0.256)
+    NEXT_POSITION = (0.770, 0.262)
+    def main(self):
+        press(Key.OMEN, 2, 0.1, 0.3)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+class NIGHT_ROAD_1_RIGHT(Command):
+    SELF_POSITION = (0.770, 0.262)
+    NEXT_POSITION = (0.182, 0.267)
+    def main(self):
+        press(Key.BALL, 2, 0.1, 0.2)
+        press(Key.DARK_FLARE, 2, 0.1, 0.5)
+        for _ in range(10):
+            press("up", 1, 0.05, 0.01)
+
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.03:
+                break
+
+
+class NIGHT_ROAD_1_LEFT(Command):
+    SELF_POSITION = (0.182, 0.267)
+    NEXT_POSITION = (0.476, 0.256)
+
+    def main(self):
+        press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.5)
+        press(Key.BALL, 2, 0.1, 0.2)
+        for _ in range(10):
+            press("up", 1, 0.05, 0.01)
+
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.03:
+                break
+
+        press(Key.BALL, 2, 0.1, 0.2)

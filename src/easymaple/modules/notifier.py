@@ -13,7 +13,7 @@ from src.easymaple.routine.components import Point
 
 # A rune's symbol on the minimap
 RUNE_RANGES = (
-    ((135, 130, 225), (166, 178, 255)),
+    ((135, 50, 220), (200, 160, 255)),
 )
 rune_filtered = utils.filter_color(cv2.imread('assets/rune_template.png'), RUNE_RANGES)
 RUNE_TEMPLATE = cv2.cvtColor(rune_filtered, cv2.COLOR_BGR2GRAY)
@@ -31,31 +31,15 @@ ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
 RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd_template.jpg', 0)
 RUNE_COOLDOWN_TEMPLATE_1 = cv2.imread('assets/rune_cd_template_1.jpg', 0)
 
+DEATH_TEMPLATE = cv2.imread('assets/death_template.png', 0)
+
 RUNE_DETECT_FREQUENCY = 40
+
+DEATH_DETECT_FREQUENCY = 400
 
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
 
-
-class RuneWarningThread(threading.Thread):
-
-    def __init__(self, start_interval=20, min_interval=5, decrement=5, target_method=None):
-        super().__init__()
-        self.current_interval = start_interval
-        self.min_interval = min_interval
-        self.decrement = decrement
-        self.target_method = target_method
-        self.running = True
-
-    def run(self):
-        while self.running and self.current_interval >= self.min_interval and config.bot.rune_active:
-            if config.enabled:
-                self.target_method("rune_appeared", volume=0.75)
-                time.sleep(self.current_interval)
-                self.current_interval = max(self.min_interval, self.current_interval - self.decrement)
-
-    def stop(self):
-        self.running = False
 
 class Notifier:
     ALERTS_DIR = os.path.join('assets', 'alerts')
@@ -73,8 +57,10 @@ class Notifier:
         self.room_change_threshold = 0.85
         self.rune_alert_delay = 10
 
-        self.counter = 0
+        self.rune_counter = 0
         self.rune_warning_thread = None
+
+        self.death_counter = 0
 
     def start(self):
         """Starts this Notifier's thread."""
@@ -114,16 +100,24 @@ class Notifier:
                 #     prev_others = others
 
                 # Check for rune
-                if self.counter >= RUNE_DETECT_FREQUENCY or self.counter == 0:
-                    self.counter = 1
+                if self.rune_counter >= RUNE_DETECT_FREQUENCY or self.rune_counter == 0:
+                    self.rune_counter = 1
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
-                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.25)
+                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.55)
                     if matches:
                         config.bot.rune_active=True
                         if time.time() - report_time > 10 or report_time == 0:
                             self._ping("rune_appeared", volume=0.75)
                             report_time = time.time()
-                self.counter += 1
+
+                if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
+                    self.death_counter = 1
+                    matches = utils.multi_match(frame=gray, template=DEATH_TEMPLATE, threshold=0.60)
+                    if matches:
+                        self._ping("ding", volume=0.75)
+
+                self.rune_counter += 1
+                self.death_counter +=1
             time.sleep(0.05)
 
     def _alert(self, name, volume=0.75):
