@@ -1,0 +1,21 @@
+$, target=move_tolerance, value=0.02
+*, x=0.089, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.260, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.420, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.580, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.740, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.900, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.740, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.580, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.420, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2
+*, x=0.260, y=0.318, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.2

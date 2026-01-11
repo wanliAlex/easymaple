@@ -1,0 +1,50 @@
+$, target=move_tolerance, value=0.03
+
+@, label=attack
+*, x=0.806, y=0.234, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=left
+*, x=0.653, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.500, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.347, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.194, y=0.234, frequency=1, skip=False, adjust=True
+    JumpPuncture, direction=right
+*, x=0.347, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=right
+*, x=0.500, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=right
+*, x=0.653, y=0.234, frequency=1, skip=False, adjust=False
+    JumpPuncture, direction=right
+
+@, label=loot
+*, x=0.806, y=0.234, frequency=5, skip=False, adjust=True
+    Walk, direction=left, duration=0.05
+    Dash, direction=left
+*, x=0.703, y=0.234, frequency=5, skip=False, adjust=False
+    UpJump, wait=1.2
+*, x=0.703, y=0.171, frequency=5, skip=False, adjust=False
+    RisingRage
+    DownJump, wait=0.4
+*, x=0.703, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.559, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.414, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=left
+*, x=0.270, y=0.234, frequency=5, skip=False, adjust=False
+    UpJump, wait=1.2
+*, x=0.270, y=0.176, frequency=5, skip=False, adjust=False
+    WorldDreaver
+    Walk, direction=right, duration=0.5
+    ErdaFountain
+    DownJump, wait=0.4
+*, x=0.260, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=right
+*, x=0.357, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=right
+*, x=0.510, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=right
+*, x=0.663, y=0.234, frequency=5, skip=False, adjust=False
+    JumpPuncture, direction=right

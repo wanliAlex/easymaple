@@ -1,0 +1,10 @@
+$, target=move_tolerance, value=0.03
+
+*, x=0.155, y=0.165, frequency=1, skip=False, adjust=True
+    GentleSumerStart
+*, x=0.415, y=0.245, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.35
+*, x=0.645, y=0.305, frequency=1, skip=False, adjust=False
+    GentleSumerPort1
+*, x=0.895, y=0.135, frequency=1, skip=False, adjust=True
+    GentleSumerPort2

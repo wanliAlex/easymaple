@@ -1,0 +1,20 @@
+$, target=move_tolerance, value=0.03
+*, x=0.155, y=0.203, frequency=1, skip=False, adjust=True
+    RandomJumpAttack, direction=right
+*, x=0.340, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+*, x=0.525, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+*, x=0.710, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=right
+*, x=0.895, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=left
+*, x=0.710, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=left
+*, x=0.525, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=left
+*, x=0.340, y=0.203, frequency=1, skip=False, adjust=False
+    RandomJumpAttack, direction=left
+
+
+

@@ -1,0 +1,8 @@
+$, target=move_tolerance, value=0.03
+$, target=adjust_tolerance, value=0.02
+*, x=0.770, y=0.185, frequency=1, skip=False, adjust=True
+    LibrarySimple
+*, x=0.77, y=0.333, frequency=1, skip=False, adjust=True
+    LibrarySimple2
+*, x=0.77, y=0.185, frequency=15, skip=False, adjust=True
+    LibSimple2

@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.02
+
+@, label=left
+*, x=0.197, y=0.197, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+    JumpPunch, direction=Right
+
+@, label=wait_right
+*, x=0.803, y=0.197, frequency=1, skip=False, adjust=True
+    Wait, duration=1.5
+
+@, label=right
+*, x=0.803, y=0.197, frequency=1, skip=False, adjust=True
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+
+@, label=wait_left
+*, x=0.197, y=0.197, frequency=1, skip=False, adjust=True
+    Wait, duration=1

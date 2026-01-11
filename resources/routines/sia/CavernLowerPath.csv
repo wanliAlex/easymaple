@@ -1,0 +1,27 @@
+$, target=move_tolerance, value=0.03
+*, x=0.330, y=0.059, frequency=1, skip=False, adjust=True
+    Attack
+    Teleport, direction=right, jump=False
+*, x=0.404, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=right, jump=False
+*, x=0.478, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=right, jump=False
+*, x=0.551, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=right, jump=False
+    Attack
+*, x=0.625, y=0.059, frequency=1, skip=False, adjust=True
+    Attack
+    Teleport, direction=left, jump=False
+*, x=0.551, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=left, jump=False
+*, x=0.478, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=left, jump=False
+*, x=0.404, y=0.059, frequency=1, skip=False, adjust=False
+    Attack
+    Teleport, direction=left, jump=False
+    Attack

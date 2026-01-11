@@ -1,0 +1,24 @@
+$, target=move_tolerance, value=0.04
+
+@, label=start
+*, x=0.168, y=0.387, frequency=1, skip=False, adjust=False
+    JumpPunch, direction=right
+    JumpPunch, direction=right
+    JumpPunch, direction=right
+
+@, label=bot_right
+*, x=0.746, y=0.387, frequency=1, skip=False, adjust=True
+    Rope
+    Wait, duration=1.6
+    TrueSpiritClaw
+    Wait, duration=0.4
+
+@, label=mid_right
+*, x=0.746, y=0.197, frequency=1, skip=False, adjust=False
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    JumpPunch, direction=Left
+    Wait, duration=1
+    JumpPunch, direction=right

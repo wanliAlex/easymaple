@@ -1,0 +1,26 @@
+$, target=move_tolerance, value=0.04
+
+@, label=Rountine
+*, x=0.155, y=0.165, frequency=1, skip=False, adjust=False
+    Wait, duration=0.05
+    DownJumpAndAttack, direction=right, wait=0.7
+
+@, label=Fountain
+*, x=0.155, y=0.245, frequency=9, skip=False, adjust=False
+    ErdaFountain
+*, x=0.155, y=0.245, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.35
+*, x=0.375, y=0.305, frequency=18, skip=False, adjust=False
+    Wait, duration=0.2
+    UpJump, wait=0.5
+    DownJump, wait=0.6
+*, x=0.375, y=0.305, frequency=1, skip=False, adjust=False
+    JumpBeamBladeOrRaging, direction=right, wait=0.2
+*, x=0.540, y=0.305, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.2
+*, x=0.705, y=0.305, frequency=18, skip=False, adjust=False
+    SoulBlade
+*, x=0.705, y=0.305, frequency=1, skip=False, adjust=False
+    GentleSumerPort1
+*, x=0.895, y=0.135, frequency=1, skip=False, adjust=True
+    GentleSumerPort2

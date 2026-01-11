@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.04
+
+@, label=BottomRight
+*, x=0.882, y=0.390, frequency=1, skip=False, adjust=False
+    Wait, duration=0.1
+    JumpAttack2, direction=left, wait=0.25
+*, x=0.706, y=0.390, frequency=1, skip=False, adjust=False
+    JumpAttack2, direction=left, wait=0.25
+*, x=0.530, y=0.390, frequency=1, skip=False, adjust=False
+    JumpAttack2, direction=left, wait=0.25
+*, x=0.354, y=0.390, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.25
+*, x=0.178, y=0.390, frequency=1, skip=False, adjust=False
+
+@, label=StartPort
+*, x=0.118, y=0.390, frequency=1, skip=False, adjust=False
+    TopDeckPassage8PortLeftBottom
+*, x=0.171, y=0.139, frequency=1, skip=False, adjust=False
+    TopDeckPassage8PortLeftTop
+*, x=0.444, y=0.198, frequency=1, skip=False, adjust=False
+    TopDeckPassage8PortMid
+*, x=0.813, y=0.134, frequency=1, skip=False, adjust=False
+    TopDeckPassage8PortTopRight

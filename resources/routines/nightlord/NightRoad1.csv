@@ -1,0 +1,17 @@
+$, target=move_tolerance, value=0.0300
+
+@, label=mid_stand_still
+*, x=0.476, y=0.256, frequency=1, skip=False, adjust=True
+    NIGHT_ROAD_1_MID_STANDSTILL
+
+@, label=mid_start_to_move
+*, x=0.476, y=0.256, frequency=1, skip=False, adjust=False
+    NIGHT_ROAD_1_MID_MOVE
+
+@, label=right
+*, x=0.770, y=0.262, frequency=1, skip=False, adjust=False
+    NIGHT_ROAD_1_RIGHT
+
+@, label=left
+*, x=0.182, y=0.267, frequency=1, skip=False, adjust=False
+    NIGHT_ROAD_1_LEFT

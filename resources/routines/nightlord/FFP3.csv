@@ -1,0 +1,23 @@
+$, target=move_tolerance, value=0.0300
+
+@, label=stand_still
+*, x=0.524, y=0.321, frequency=1, skip=False, adjust=True
+    FFP3_STAND_STILL
+
+@, label=start_to_move
+*, x=0.524, y=0.321, frequency=1, skip=False, adjust=False
+    FFP3_START_MOVE
+
+@, label=left_bot_portal
+*, x=0.305, y=0.326, frequency=1, skip=False, adjust=False
+    FFP3_LFET_BOT_PORTAL
+
+@, label=left_top_portal
+*, x=0.380, y=0.171, frequency=1, skip=False, adjust=False
+    FFP3_LFET_TOP_PORTAL
+
+@, label=right_bot_portal
+*, x=0.759, y=0.321, frequency=1, skip=False, adjust=False
+    FFP3_RIGHT_BOT_PORTAL
+*, x=0.305, y=0.326, frequency=1, skip=False, adjust=False
+    FFP3_BOT_LEFT_BALL
