@@ -1,4 +1,6 @@
 """A collection of all commands that a Kanna can use to interact with the game."""
+import random
+from asyncio import wait
 
 from src.easymaple.common import config, settings, utils
 import time
@@ -13,13 +15,15 @@ class Key:
     JUMP = 'space'
 
     # Skills
-    CRUEL_STAB = "1"
+    CRUEL_STAB = "f3"
+    ASSIN = "f4"
     DARK_FLARE = "g"
     SUDDEN_RAID = "w"
-    MESO_EXPLOSION = "3"
+    MESO_EXPLOSION = "f5"
     SHADOW_VEIL="e"
-    WARRIOR = "f5"
+    # WARRIOR = "f5"
     DASH = "d"
+    PhaseDash = "4"
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
@@ -179,9 +183,13 @@ class Adjust(Command):
 class CRUEL_STAB_MESO_EXPLOSION(Command):
     def main(self):
         press(Key.CRUEL_STAB)
-        press(Key.MESO_EXPLOSION, 3, 0.05, 0.05)
+        press(Key.MESO_EXPLOSION, 1, 0.01, 0.05)
 
+class ASSIN_MESO_EXPLOSION(Command):
 
+    def main(self):
+        press(Key.ASSIN)
+        press(Key.MESO_EXPLOSION, 1, 0.01, 0.05)
 
 class TripleJumpAttack(Command):
     def __init__(self, direction):
@@ -197,16 +205,27 @@ class TripleJumpAttack(Command):
 
 
 class DoubleJumpAttack(Command):
-    def __init__(self, direction):
+    def __init__(self, direction:str, wait: float=0.0, random: str = ""):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
+        self.wait=float(wait)
+        self.random = random.lower() == "true"
     def main(self):
         key_down(self.direction)
         DoubleJump().main()
-        time.sleep(0.15)
-        CRUEL_STAB_MESO_EXPLOSION().main()
-        time.sleep(0.2)
+        time.sleep(0.10)
+        if self.random:
+            number = random.random()
+            if number < 0.6:
+                CRUEL_STAB_MESO_EXPLOSION().main()
+            else:
+                ASSIN_MESO_EXPLOSION().main()
+        else:
+            CRUEL_STAB_MESO_EXPLOSION().main()
         key_up(self.direction)
+        time.sleep(0.4)
+        if self.wait > 0:
+            time.sleep(self.wait)
 
 
 class StraightJumpAttack(Command):
@@ -245,9 +264,7 @@ class Rope(Command):
 
 class ErdaFountain(Command):
     def main(self):
-        key_down("down")
-        press(Key.ERDA_FOUNTAIN, 4)
-        key_up("down")
+        press(Key.ERDA_FOUNTAIN, 4, 0.1, 0.2)
 
 
 class MESO_EXPLOSION(Command):
@@ -268,28 +285,40 @@ class TripleJump(Command):
 
 
 class DoubleJump(Command):
+    def __init__(self, direction="", wait: float=0.0):
+        super().__init__(locals())
+        self.direction = direction
+        self.wait=float(wait)
+
     def main(self):
+        if self.direction:
+            key_down(self.direction)
         press(Key.JUMP, n = 1, down_time = 0.094, up_time = 0.046)
         press(Key.JUMP, n = 1, down_time=0.141, up_time=0.11)
+        key_up(self.direction)
+        if self.wait > 0:
+            time.sleep(self.wait)
+
 
 
 class DownJump(Command):
-    def __init__(self, wait_time = 0.3):
+    def __init__(self, wait:float = 0.3):
         super().__init__(locals())
-        self.wait_time = float(wait_time)
+        self.wait = float(wait)
 
     def main(self):
         key_down("down")
         time.sleep(0.1)
         press(Key.JUMP, 3, 0.01, up_time =0.01)
-        time.sleep(self.wait_time / 2.0)
+        time.sleep(self.wait / 2.0)
         key_up("down")
-        time.sleep(self.wait_time / 2.0)
+        time.sleep(self.wait / 2.0)
 
 
 class DarkFlare(Command):
     def main(self):
-        press(Key.DARK_FLARE, 3, 0.02, 0.02)
+        press(Key.DARK_FLARE, 2, 0.1, 0.1)
+        time.sleep(0.7)
 
 
 class SuddenRaid(Command):
@@ -298,21 +327,44 @@ class SuddenRaid(Command):
 
 
 class Dash(Command):
-    def __init__(self, direction, jump: bool = False):
+    def __init__(self, direction_1, direction_2 = "", jump: bool = False, wait: float=0):
         super().__init__(locals())
-        self.direction = str(direction)
+        self.direction_1 = str(direction_1)
+        self.direction_2 = str(direction_2)
         self.jump = bool(jump)
+        self.wait = float(wait)
 
     def main(self):
         if self.jump:
             press(Key.JUMP, 1, 0.05, 0.1)
-        key_down(self.direction)
+        key_down(self.direction_1)
+        if self.direction_2:
+            key_down(self.direction_2)
         press(Key.DASH, 1, 0.1, 0.4)
-        key_up(self.direction)
+        key_up(self.direction_1)
+        key_up(self.direction_2)
+        if self.wait > 0:
+            time.sleep(self.wait)
 
 class SHADOW_VEIL(Command):
     def main(self):
         press(Key.SHADOW_VEIL, 3, 0.2, 0.2)
+
+
+class Phase_DASH(Command):
+    def __init__(self, direction: str = "", wait: float=0):
+        super().__init__(locals())
+        self.direction = str(direction)
+        self.wait = float(wait)
+
+    def main(self):
+
+        if self.direction:
+            key_down(self.direction)
+        press(Key.PhaseDash, 1, 0.1, 0.1)
+        key_up(self.direction)
+        if self.wait > 0:
+            time.sleep(self.wait)
 
 
 class DownAttack(Command):
@@ -325,3 +377,36 @@ class DownAttack(Command):
         press(Key.MESO_EXPLOSION, 3, 0.05, 0.05)
         time.sleep(0.5)
 
+
+class GentleSumerPort1(Command):
+    _port = (0.895, 0.13)
+
+    def main(self):
+        DoubleJumpAttack(direction="right", wait=0.15).main()
+        for _ in range(300):
+            if utils.distance(self._port, config.player_pos) > 0.01:
+                press("right",1, 0.02, 0.02)
+            else:
+                break
+
+
+class GentleSumerPort2(Command):
+    SELF_POSITION = (0.895, 0.135)
+    NEXT_POSITION = (0.155, 0.165)
+    def main(self):
+        press("left", 1, 0.05,0.01)
+        CRUEL_STAB_MESO_EXPLOSION().main()
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
