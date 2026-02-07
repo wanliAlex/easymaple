@@ -1,0 +1,42 @@
+$, target=move_tolerance, value=0.03
+
+@, label=lefttoright
+*, x=0.140, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=right
+*, x=0.335, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=right
+*, x=0.530, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=right
+*, x=0.725, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=right
+>, label=loot, frequency=6, skip=False
+
+@, label=righttoleft
+*, x=0.920, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=left
+*, x=0.725, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=left
+*, x=0.530, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=left
+*, x=0.335, y=0.410, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, random=True, direction=left
+>, label=lefttoright,frequency=1, skip=False
+
+@, label=loot
+*, x=0.920, y=0.410, frequency=1, skip=False, adjust=False
+    SHADOW_VEIL
+    Dash, direction_1=up, direction_2=left, wait=0.2
+*, x=0.775, y=0.309, frequency=1, skip=False, adjust=False
+    Dash, direction_1=up, wait=0.2
+*, x=0.775, y=0.202, frequency=1, skip=False, adjust=False
+    Phase_DASH, direction=left, wait=0.6
+*, x=0.674, y=0.202, frequency=1, skip=False, adjust=False
+    DarkFlare
+    DoubleJumpAttack, random=True, wait=0.15, direction=left
+*, x=0.480, y=0.202, frequency=1, skip=False, adjust=False
+    DoubleJump, direction=left, wait=0.2
+    Dash, direction_1=left, wait=0.1
+*, x=0.185, y=0.185, frequency=1, skip=False, adjust=False
+    ErdaFountain
+    DownJump, wait=0.4
+    Dash, direction_1=down, wait=0.1

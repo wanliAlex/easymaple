@@ -1,0 +1,37 @@
+$, target=move_tolerance, value=0.04
+
+@, label=Placement
+*, x=0.155, y=0.165, frequency=9, skip=False, adjust=False
+    ErdaFountain
+    DownJump, wait=0.3
+    Dash, direction_1=down, direction_2=, jump=False, wait=0
+*, x=0.155, y=0.305, frequency=9, skip=False, adjust=False
+    DarkFlare
+    Dash, direction_1=up, direction_2=, jump=False, wait=0.05
+
+@, label=Rountine
+*, x=0.155, y=0.165, frequency=1, skip=False, adjust=False
+    Wait, duration=0.05
+    DoubleJumpAttack, direction=right, wait=0.0, random=
+    CRUEL_STAB_MESO_EXPLOSION
+    Wait, duration=0.5
+*, x=0.410, y=0.245, frequency=1, skip=False, adjust=False
+    Wait, duration=0.05
+    DoubleJumpAttack, direction=right, wait=0.1, random=True
+*, x=0.640, y=0.305, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right, wait=0.0, random=True
+>, label=loot, frequency=18, skip=False
+*, x=0.820, y=0.305, frequency=1, skip=False, adjust=False
+    GentleSumerPort1
+*, x=0.895, y=0.135, frequency=1, skip=False, adjust=True
+    GentleSumerPort2
+>, label=Placement, frequency=1, skip=False
+
+@, label=loot
+*, x=0.820, y=0.305, frequency=1, skip=False, adjust=False
+    Dash, direction_1=up, direction_2=, jump=False, wait=0.1
+*, x=0.820, y=0.135, frequency=1, skip=False, adjust=True
+    Phase_DASH, direction=right, wait=0.35
+*, x=0.895, y=0.135, frequency=1, skip=False, adjust=False
+    GentleSumerPort2
+>, label=Placement, frequency=1, skip=False

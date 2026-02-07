@@ -1,0 +1,21 @@
+$, target=move_tolerance, value=0.03
+
+@, label=lefttoright
+*, x=0.100, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.300, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.500, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+*, x=0.700, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=right
+
+@, label=righttoleft
+*, x=0.900, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.700, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.500, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
+*, x=0.300, y=0.333, frequency=1, skip=False, adjust=False
+    DoubleJumpAttack, direction=left
