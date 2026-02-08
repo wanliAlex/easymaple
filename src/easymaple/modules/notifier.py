@@ -180,11 +180,8 @@ class Notifier:
             while config.bot.rune_active:
                 for _ in range(3):
                     notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
-                # Wait 30s, checking every second so we stop quickly once resolved
-                for _ in range(30):
-                    if not config.bot.rune_active:
-                        break
-                    time.sleep(1)
+                # Wait 30s
+                time.sleep(30)
         finally:
             self.rune_notifying = False
 
