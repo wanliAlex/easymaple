@@ -18,6 +18,8 @@ load_dotenv()
 WEB_HOOK = os.environ.get("DISCORD_WEBHOOK", "")
 DISCORD_USER_ID = os.environ.get("DISCORD_USER_ID", "")
 
+print(f"Successfully loaded WEB_HOOK = {WEB_HOOK}, DISCORD_USER_ID={DISCORD_USER_ID}")
+
 def notify(message):
     """Sends a message to the Discord webhook."""
     try:
