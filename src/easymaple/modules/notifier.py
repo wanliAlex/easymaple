@@ -9,11 +9,14 @@ import threading
 import numpy as np
 import keyboard as kb
 import requests
+from dotenv import load_dotenv
 from src.easymaple.routine.components import Point
 
+load_dotenv()
 
 # Discord webhook for notifications
-WEB_HOOK = "https://discord.com/api/webhooks/1469663433011237006/XTHyKhXduxKAO0h8YU9j1gB_iS4M8qbv9IepY91vAwuR4lCICGRqtG7SgWuvncH7J_8w"
+WEB_HOOK = os.environ.get("DISCORD_WEBHOOK", "")
+DISCORD_USER_ID = os.environ.get("DISCORD_USER_ID", "")
 
 def notify(message):
     """Sends a message to the Discord webhook."""
@@ -94,7 +97,8 @@ class Notifier:
                 # white room
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
-                    notify("<@1241605431260876854> 白屋了兄弟")
+                    for _ in range(5):
+                        notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
                     self._alert('siren')
 
                 # Check for elite warning
@@ -171,7 +175,7 @@ class Notifier:
         try:
             while config.bot.rune_active:
                 for _ in range(3):
-                    notify("<@1241605431260876854> 符文出现了，快去解！")
+                    notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
                 # Wait 30s, checking every second so we stop quickly once resolved
                 for _ in range(30):
                     if not config.bot.rune_active:
