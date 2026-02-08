@@ -9,9 +9,11 @@ import threading
 import numpy as np
 import keyboard as kb
 import requests
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
 
+
+print(find_dotenv())
 load_dotenv()
 
 # Discord webhook for notifications
