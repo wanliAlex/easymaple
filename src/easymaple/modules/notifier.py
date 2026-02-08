@@ -178,9 +178,7 @@ class Notifier:
 
         try:
             while config.bot.rune_active:
-                for _ in range(3):
-                    notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
-                    time.sleep(5)
+                notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
                 # Wait 30s
                 time.sleep(30)
         finally:
