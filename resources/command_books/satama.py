@@ -743,9 +743,11 @@ class LeftAndRightAttack(Command):
     def main(self):
         for _ in range(3):
             press(Key.SHOW_DOWN, 1 , 0.1, 0.5)
+            time.sleep(0.3)
             press("left", 1, 0.05, 0.1)
-            time.sleep(0.6)
+            time.sleep(0.4)
 
             press(Key.SHOW_DOWN, 1 , 0.1, 0.5)
+            time.sleep(0.3)
             press("right", 1, 0.05, 0.1)
-            time.sleep(0.6)
+            time.sleep(0.4)
