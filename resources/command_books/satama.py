@@ -748,4 +748,4 @@ class LeftAndRightAttack(Command):
 
             press(Key.SHOW_DOWN, 1 , 0.1, 0.5)
             press("right", 1, 0.1, 0.1)
-            time.sleep(0.3)
+            time.sleep(0.6)
