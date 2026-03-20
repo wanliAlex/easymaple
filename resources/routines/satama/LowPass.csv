@@ -1,4 +1,5 @@
 $, target=move_tolerance, value=0.03
+$, target=adjust_tolerance, value=0.015
 
 @, label=attack_point
 *, x=0.563, y=0.216, frequency=1, skip=False, adjust=True
