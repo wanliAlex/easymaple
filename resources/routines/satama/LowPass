@@ -1,0 +1,5 @@
+$, target=move_tolerance, value=0.03
+
+@, label=attack_point
+*, x=0.563, y=0.261, frequency=1, skip=False, adjust=True
+    LeftAndRightAttack
