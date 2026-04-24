@@ -176,12 +176,16 @@ class Capture:
             print('[!] Cannot align window: minimap not detected')
             return False
         mm_tl, _ = bounds
-        scroll_x = mm_tl[0] - WINDOWED_OFFSET_LEFT
-        scroll_y = mm_tl[1] - WINDOWED_OFFSET_TOP
+        # Anchor on the TL template corner (2px above/left of mm_tl interior) so the
+        # full corner graphic ends up at the WINDOWED_OFFSET position after the scroll.
+        tl_x = mm_tl[0] - 2
+        tl_y = mm_tl[1] - 2
+        scroll_x = tl_x - WINDOWED_OFFSET_LEFT
+        scroll_y = tl_y - WINDOWED_OFFSET_TOP
         if not self.window_locator.scroll(scroll_x, scroll_y):
             return False
-        new_w = self.window['width'] - scroll_x
-        new_h = self.window['height'] - scroll_y
+        new_w = GAME_WIDTH - scroll_x
+        new_h = GAME_HEIGHT - scroll_y
         self.window_locator.resize(new_w, new_h)
         print(f'[~] Window aligned: scrolled ({scroll_x}, {scroll_y}), resized to ({new_w}x{new_h})')
         return True

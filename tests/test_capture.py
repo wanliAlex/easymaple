@@ -135,15 +135,19 @@ class TestAlignToMinimap:
             pytest.skip("minimap not detected in test_image_1.PNG")
         mm_tl, _ = bounds
 
-        from src.easymaple.modules.capture import WINDOWED_OFFSET_LEFT, WINDOWED_OFFSET_TOP
-        scroll_x = mm_tl[0] - WINDOWED_OFFSET_LEFT
-        scroll_y = mm_tl[1] - WINDOWED_OFFSET_TOP
+        from src.easymaple.modules.capture import (
+            WINDOWED_OFFSET_LEFT, WINDOWED_OFFSET_TOP, GAME_WIDTH, GAME_HEIGHT,
+        )
+        # align_to_minimap anchors on tl = mm_tl - (2,2) so the full TL corner
+        # template graphic is visible at the WINDOWED_OFFSET position.
+        scroll_x = (mm_tl[0] - 2) - WINDOWED_OFFSET_LEFT
+        scroll_y = (mm_tl[1] - 2) - WINDOWED_OFFSET_TOP
 
         result = cap.align_to_minimap()
         assert result is True
         assert locator.last_move is None, "window must not be moved"
         assert locator.last_scroll == (scroll_x, scroll_y)
-        assert locator.last_resize == (1200 - scroll_x, 900 - scroll_y)
+        assert locator.last_resize == (GAME_WIDTH - scroll_x, GAME_HEIGHT - scroll_y)
 
     def test_returns_false_when_no_frame(self):
         cap = make_capture()
