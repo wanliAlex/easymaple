@@ -46,3 +46,8 @@ dependencies = [
     "urllib3==2.2.3",
     "xmltodict==0.14.2",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

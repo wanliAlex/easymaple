@@ -3,15 +3,13 @@
 import ctypes
 import threading
 import time
-from ctypes import wintypes
 
 import cv2
-import mss
-import mss.windows
 import numpy as np
-import pygetwindow as gw
 
 from src.easymaple.common import config, utils
+from src.easymaple.common.frame_source import FrameSource, MssFrameSource
+from src.easymaple.common.window_locator import WindowLocator, GameWindowLocator
 
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware()
@@ -46,16 +44,24 @@ class Capture:
     displays the minimap in a pop-up window.
     """
 
-    def __init__(self):
-        """Initializes this Capture object's main thread."""
-
+    def __init__(
+        self,
+        frame_source: FrameSource = None,
+        window_locator: WindowLocator = None,
+    ):
+        """
+        :param frame_source:    How to grab screenshots. Defaults to MssFrameSource (live screen).
+        :param window_locator:  How to find the game window. Defaults to GameWindowLocator.
+        """
         config.capture = self
+
+        self.frame_source = frame_source or MssFrameSource()
+        self.window_locator = window_locator or GameWindowLocator()
 
         self.frame = None
         self.minimap = {}
         self.minimap_ratio = 1
         self.minimap_sample = None
-        self.sct = None
         self.window = {
             'left': 0,
             'top': 0,
@@ -77,81 +83,77 @@ class Capture:
     def _main(self):
         """Constantly monitors the player's position and in-game events."""
         while True:
-            # Calibrate screen capture
-            all_titles = gw.getAllTitles()
-            window_name = None
-            for title in all_titles:
-                if ("Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title
-                        or " - Moonlight" in title):
-                    window_name = title
-            if window_name is None:
+            window = self.window_locator.find()
+            if window is None:
                 continue
 
-            window_obj = gw.getWindowsWithTitle(window_name)[0]
-
+            self.window.update(window)
             self.ready = True
 
-            self.window['left'] = window_obj.left
-            self.window['top'] = window_obj.top
-            self.window['width'] = window_obj.width
-            self.window['height'] = window_obj.height
+            # Grab one frame for calibration
+            frame = self.frame_source.grab(self.window)
+            if frame is None:
+                continue
+            self.frame = frame
 
-            # Calibrate by finding the bottom right corner of the minimap
-            with mss.mss() as self.sct:
-                self.frame = self.screenshot()
-
-            if self.frame is None:
+            bounds = self._find_minimap_bounds(frame)
+            if bounds is None:
                 continue
 
-            tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
-            _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
-            mm_tl = (
-                tl[0] + 2,
-                tl[1] + 2
-            )
-            mm_br = (
-                max(mm_tl[0] + PT_WIDTH, br[0] - 8),
-                max(mm_tl[1] + PT_HEIGHT, br[1] - 9)
-            )
+            mm_tl, mm_br = bounds
             self.minimap_ratio = (mm_br[0] - mm_tl[0]) / (mm_br[1] - mm_tl[1])
-            self.minimap_sample = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
-
-            is_valid_mm_map = self._mini_map_sanity_check(mm_tl, mm_br)
-            if not is_valid_mm_map:
-                continue
-
+            self.minimap_sample = frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
             self.calibrated = True
 
-            with mss.mss() as self.sct:
-                while True:
-                    if not self.calibrated:
-                        break
+            # Main capture loop — runs until calibration is invalidated
+            while True:
+                if not self.calibrated:
+                    break
 
-                    # Take screenshot
-                    self.frame = self.screenshot()
-                    if self.frame is None:
-                        continue
+                frame = self.frame_source.grab(self.window)
+                if frame is None:
+                    continue
+                self.frame = frame
 
-                    # Crop the frame to only show the minimap
-                    minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
+                minimap = frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
+                player_pos = self._detect_player(minimap)
+                if player_pos is not None:
+                    config.player_pos = player_pos
 
-                    # Determine the player's position
-                    player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
-                    if player:
-                        config.player_pos = utils.convert_to_relative(player[0], minimap)
+                self.minimap = {
+                    'minimap': minimap,
+                    'rune_active': config.bot.rune_active,
+                    'rune_pos': config.bot.rune_pos,
+                    'path': config.path,
+                    'player_pos': config.player_pos
+                }
+                time.sleep(1/30)
 
-                    # Package display information to be polled by GUI
-                    self.minimap = {
-                        'minimap': minimap,
-                        'rune_active': config.bot.rune_active,
-                        'rune_pos': config.bot.rune_pos,
-                        'path': config.path,
-                        'player_pos': config.player_pos
-                    }
+    def _find_minimap_bounds(self, frame: np.ndarray):
+        """
+        Locate the minimap corners in FRAME.
+        Returns (mm_tl, mm_br) on success, None if the bounds fail the sanity check.
+        """
+        tl, _ = utils.single_match(frame, MM_TL_TEMPLATE)
+        _, br = utils.single_match(frame, MM_BR_TEMPLATE)
+        mm_tl = (tl[0] + 2, tl[1] + 2)
+        mm_br = (
+            max(mm_tl[0] + PT_WIDTH, br[0] - 8),
+            max(mm_tl[1] + PT_HEIGHT, br[1] - 9)
+        )
+        if not self._mini_map_sanity_check(mm_tl, mm_br):
+            return None
+        return mm_tl, mm_br
 
-                    if not self.ready:
-                        self.ready = True
-                    time.sleep(1/30)
+    def _detect_player(self, minimap: np.ndarray):
+        """
+        Find the player icon in MINIMAP.
+        Returns relative (x, y) in [0, 1] on success, None if not found.
+        """
+        player = utils.multi_match(minimap, PLAYER_TEMPLATE, threshold=0.8)
+        if player:
+            return utils.convert_to_relative(player[0], minimap)
+        return None
 
     def _mini_map_sanity_check(self, mm_tl, mm_br):
         width = abs(mm_tl[0] - mm_br[0])
@@ -161,10 +163,3 @@ class Capture:
         if height < 50 or height > 500:
             return False
         return True
-
-    def screenshot(self, delay=1):
-        try:
-            return np.array(self.sct.grab(self.window))
-        except mss.exception.ScreenShotError:
-            print(f'\n[!] Error while taking screenshot, retrying in {delay} second')
-            time.sleep(delay)
