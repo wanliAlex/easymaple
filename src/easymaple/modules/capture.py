@@ -25,6 +25,10 @@ MINIMAP_BOTTOM_BORDER = 9
 WINDOWED_OFFSET_TOP = 36
 WINDOWED_OFFSET_LEFT = 10
 
+# Assumed game resolution (MapleStory window inside the RDP session)
+GAME_WIDTH = 1024
+GAME_HEIGHT = 768
+
 # The top-left and bottom-right corners of the minimap
 MM_TL_TEMPLATE = cv2.imread('assets/minimap_tl_template.png', 0)
 MM_BR_TEMPLATE = cv2.imread('assets/minimap_br_template.png', 0)
@@ -157,9 +161,10 @@ class Capture:
 
     def align_to_minimap(self) -> bool:
         """
-        Reposition the game window so the minimap's top-left sits at the window's
-        client-area origin (just below the title bar), without shifting horizontally
-        or pushing the window to the top of the monitor.
+        Align the view to the minimap without moving the window's top-left:
+          1. Scroll the RDP content so the minimap reaches the client-area origin.
+          2. Shrink the window from the bottom-right to hide the now-invisible
+             area that was scrolled away.
 
         Returns True on success, False if the frame or minimap bounds are unavailable.
         """
@@ -171,14 +176,15 @@ class Capture:
             print('[!] Cannot align window: minimap not detected')
             return False
         mm_tl, _ = bounds
-        # Keep left edge unchanged; move up only by the in-game distance above
-        # the minimap (excluding the Windows title bar height).
-        new_left = self.window['left']
-        new_top = self.window['top'] - (mm_tl[1] - WINDOWED_OFFSET_TOP)
-        success = self.window_locator.move(new_left, new_top)
-        if success:
-            print(f'[~] Window aligned: moved to ({new_left}, {new_top})')
-        return success
+        scroll_x = mm_tl[0] - WINDOWED_OFFSET_LEFT
+        scroll_y = mm_tl[1] - WINDOWED_OFFSET_TOP
+        if not self.window_locator.scroll(scroll_x, scroll_y):
+            return False
+        new_w = self.window['width'] - scroll_x
+        new_h = self.window['height'] - scroll_y
+        self.window_locator.resize(new_w, new_h)
+        print(f'[~] Window aligned: scrolled ({scroll_x}, {scroll_y}), resized to ({new_w}x{new_h})')
+        return True
 
     def _mini_map_sanity_check(self, mm_tl, mm_br):
         width = abs(mm_tl[0] - mm_br[0])

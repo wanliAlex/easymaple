@@ -121,13 +121,13 @@ class TestFileFrameSource:
 # ---------------------------------------------------------------------------
 
 class TestAlignToMinimap:
-    def test_moves_window_by_minus_mm_tl(self, test_frame):
-        locator = FixedWindowLocator()
+    def test_scrolls_and_resizes_without_moving(self, test_frame):
+        locator = FixedWindowLocator({'left': 50, 'top': 80, 'width': 1200, 'height': 900})
         cap = Capture(
             frame_source=FileFrameSource(FIXTURES / 'test_image_1.PNG'),
             window_locator=locator,
         )
-        cap.window = {'left': 200, 'top': 100, 'width': 1024, 'height': 768}
+        cap.window = {'left': 50, 'top': 80, 'width': 1200, 'height': 900}
         cap.frame = test_frame
 
         bounds = cap._find_minimap_bounds(test_frame)
@@ -135,10 +135,15 @@ class TestAlignToMinimap:
             pytest.skip("minimap not detected in test_image_1.PNG")
         mm_tl, _ = bounds
 
+        from src.easymaple.modules.capture import WINDOWED_OFFSET_LEFT, WINDOWED_OFFSET_TOP
+        scroll_x = mm_tl[0] - WINDOWED_OFFSET_LEFT
+        scroll_y = mm_tl[1] - WINDOWED_OFFSET_TOP
+
         result = cap.align_to_minimap()
         assert result is True
-        from src.easymaple.modules.capture import WINDOWED_OFFSET_TOP
-        assert locator.last_move == (200, 100 - (mm_tl[1] - WINDOWED_OFFSET_TOP))
+        assert locator.last_move is None, "window must not be moved"
+        assert locator.last_scroll == (scroll_x, scroll_y)
+        assert locator.last_resize == (1200 - scroll_x, 900 - scroll_y)
 
     def test_returns_false_when_no_frame(self):
         cap = make_capture()
@@ -153,4 +158,5 @@ class TestAlignToMinimap:
         )
         cap.frame = np.zeros((768, 1366, 3), dtype=np.uint8)
         assert cap.align_to_minimap() is False
-        assert locator.last_move is None
+        assert locator.last_scroll is None
+        assert locator.last_resize is None
