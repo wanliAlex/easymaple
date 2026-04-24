@@ -21,7 +21,7 @@ class Key:
     SUDDEN_RAID = "w"
     DEATH_STAR = "a"
     WARRIOR = "f5"
-    OMEN = "d"
+    OMEN = "r"
     DASH="4"
     SHURI="t"
     BALL="page up"
