@@ -2,3 +2,4 @@ assets/models
 .settings/
 .env
 CLAUDE.md
+./resources/.cache.json
