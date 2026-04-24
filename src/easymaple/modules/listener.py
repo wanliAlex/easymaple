@@ -75,6 +75,7 @@ class Listener(Configurable):
 
         if not config.enabled:
             Listener.recalibrate_minimap()      # Recalibrate only when being enabled.
+            config.capture.align_to_minimap()
 
         config.enabled = not config.enabled
         utils.print_state()
@@ -88,6 +89,7 @@ class Listener(Configurable):
     @staticmethod
     def reload_routine():
         Listener.recalibrate_minimap()
+        config.capture.align_to_minimap()
 
         config.routine.load(config.routine.path)
 

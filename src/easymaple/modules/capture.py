@@ -155,6 +155,26 @@ class Capture:
             return utils.convert_to_relative(player[0], minimap)
         return None
 
+    def align_to_minimap(self) -> bool:
+        """
+        Move the game window so the minimap's top-left corner is at screen (0, 0).
+        Returns True on success, False if the frame or minimap bounds are unavailable.
+        """
+        if self.frame is None:
+            print('[!] Cannot align window: no frame captured yet')
+            return False
+        bounds = self._find_minimap_bounds(self.frame)
+        if bounds is None:
+            print('[!] Cannot align window: minimap not detected')
+            return False
+        mm_tl, _ = bounds
+        new_left = self.window['left'] - mm_tl[0]
+        new_top = self.window['top'] - mm_tl[1]
+        success = self.window_locator.move(new_left, new_top)
+        if success:
+            print(f'[~] Window aligned: moved to ({new_left}, {new_top})')
+        return success
+
     def _mini_map_sanity_check(self, mm_tl, mm_br):
         width = abs(mm_tl[0] - mm_br[0])
         height = abs(mm_tl[1] - mm_br[1])

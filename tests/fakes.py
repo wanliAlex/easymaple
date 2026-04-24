@@ -23,12 +23,17 @@ class FileFrameSource(FrameSource):
 
 
 class FixedWindowLocator(WindowLocator):
-    """Returns a fixed window bounds dict. Intended for tests only."""
+    """Returns a fixed window bounds dict and records move calls. Intended for tests only."""
 
     _DEFAULT = {'left': 0, 'top': 0, 'width': 1366, 'height': 768}
 
     def __init__(self, window: dict = None):
         self._window = window or self._DEFAULT.copy()
+        self.last_move: 'tuple[int, int] | None' = None
 
     def find(self) -> dict:
         return self._window.copy()
+
+    def move(self, left: int, top: int) -> bool:
+        self.last_move = (left, top)
+        return True

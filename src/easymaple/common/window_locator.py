@@ -6,15 +6,19 @@ import pygetwindow as gw
 
 
 class WindowLocator(ABC):
-    """Finds the game window and returns its bounds."""
+    """Finds and manipulates the game window."""
 
     @abstractmethod
     def find(self) -> 'dict | None':
         """Return {left, top, width, height} for the game window, or None if not found."""
 
+    @abstractmethod
+    def move(self, left: int, top: int) -> bool:
+        """Move the game window's top-left to (left, top). Returns True on success."""
+
 
 class GameWindowLocator(WindowLocator):
-    """Locates the MapleStory window by known title fragments."""
+    """Locates and moves the MapleStory window by known title fragments."""
 
     _TITLE_FRAGMENTS = (
         "Remote Desktop Connection",
@@ -34,3 +38,10 @@ class GameWindowLocator(WindowLocator):
                     'height': win.height,
                 }
         return None
+
+    def move(self, left: int, top: int) -> bool:
+        for title in gw.getAllTitles():
+            if any(fragment in title for fragment in self._TITLE_FRAGMENTS):
+                gw.getWindowsWithTitle(title)[0].moveTo(left, top)
+                return True
+        return False

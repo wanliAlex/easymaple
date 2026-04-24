@@ -114,3 +114,42 @@ class TestFileFrameSource:
         f1[0, 0, 0] = (original_pixel + 1) % 256
         f2 = src.grab({})
         assert f2[0, 0, 0] == original_pixel
+
+
+# ---------------------------------------------------------------------------
+# align_to_minimap
+# ---------------------------------------------------------------------------
+
+class TestAlignToMinimap:
+    def test_moves_window_by_minus_mm_tl(self, test_frame):
+        locator = FixedWindowLocator()
+        cap = Capture(
+            frame_source=FileFrameSource(FIXTURES / 'test_image_1.PNG'),
+            window_locator=locator,
+        )
+        cap.window = {'left': 200, 'top': 100, 'width': 1024, 'height': 768}
+        cap.frame = test_frame
+
+        bounds = cap._find_minimap_bounds(test_frame)
+        if bounds is None:
+            pytest.skip("minimap not detected in test_image_1.PNG")
+        mm_tl, _ = bounds
+
+        result = cap.align_to_minimap()
+        assert result is True
+        assert locator.last_move == (200 - mm_tl[0], 100 - mm_tl[1])
+
+    def test_returns_false_when_no_frame(self):
+        cap = make_capture()
+        cap.frame = None
+        assert cap.align_to_minimap() is False
+
+    def test_returns_false_when_minimap_not_detected(self):
+        locator = FixedWindowLocator()
+        cap = Capture(
+            frame_source=FileFrameSource(FIXTURES / 'test_image_1.PNG'),
+            window_locator=locator,
+        )
+        cap.frame = np.zeros((768, 1366, 3), dtype=np.uint8)
+        assert cap.align_to_minimap() is False
+        assert locator.last_move is None
