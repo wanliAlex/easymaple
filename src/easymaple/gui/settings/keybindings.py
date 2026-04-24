@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import keyboard as kb
 from src.easymaple.gui.interfaces import LabelFrame, Frame
 from src.easymaple.common import utils
@@ -41,10 +42,10 @@ class KeyBindings(LabelFrame):
         else:
             self.create_disabled_entry()
 
-        reset = tk.Button(self.contents, text='Reset', command=self.refresh_edit_ui, takefocus=False)
+        reset = ttk.Button(self.contents, text='Reset', command=self.refresh_edit_ui, takefocus=False)
         reset.pack(side=tk.LEFT, pady=5)
 
-        save = tk.Button(self.contents, text='Save', command=self.save, takefocus=False)
+        save = ttk.Button(self.contents, text='Save', style='Accent.TButton', command=self.save, takefocus=False)
         save.pack(side=tk.RIGHT, pady=5)
 
     def refresh_edit_ui(self):

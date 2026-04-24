@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.gui.interfaces import LabelFrame, Frame
 from src.easymaple.common.interfaces import Configurable
 
@@ -12,7 +13,7 @@ class Rune(LabelFrame):
 
         feed_row = Frame(self)
         feed_row.pack(side=tk.TOP, fill='x', expand=True, pady=5, padx=5)
-        check = tk.Checkbutton(
+        check = ttk.Checkbutton(
             feed_row,
             variable=self.solve_rune,
             text='Solve Rune',

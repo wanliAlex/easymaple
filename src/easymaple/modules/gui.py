@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from src.easymaple.common import config, settings, cache
 from src.easymaple.gui import Menu, View, Edit, Settings
+from src.easymaple.gui.style import apply_theme
 
 
 class GUI:
@@ -24,6 +25,7 @@ class GUI:
         self.root.iconphoto(False, icon)
         self.root.geometry(GUI.RESOLUTIONS['DEFAULT'])
         self.root.resizable(False, False)
+        apply_theme(self.root)
 
         # Initialize GUI variables
         self.routine_var = tk.StringVar()

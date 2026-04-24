@@ -3,6 +3,7 @@
 from src.easymaple.common import config
 import inspect
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.routine.components import Point, Command
 from src.easymaple.gui.edit.minimap import Minimap
 from src.easymaple.gui.edit.record import Record
@@ -116,7 +117,7 @@ class Editor(LabelFrame):
         if len(arr[i].kwargs) > 0:
             for key, value in arr[i].kwargs.items():
                 self.create_entry(key, value)
-            button = tk.Button(self.contents, text='Save', command=func(arr, i, self.vars))
+            button = ttk.Button(self.contents, text='Save', style='Accent.TButton', command=func(arr, i, self.vars))
             button.pack(pady=5)
         else:
             self.create_disabled_entry()
@@ -187,7 +188,7 @@ class Editor(LabelFrame):
         results = Frame(self.contents)
         results.pack(expand=True, fill='both', pady=(1, 0))
 
-        scroll = tk.Scrollbar(results)
+        scroll = ttk.Scrollbar(results)
         scroll.pack(side=tk.RIGHT, fill='both')
 
         display = tk.Listbox(results, listvariable=var,
@@ -253,10 +254,10 @@ class Editor(LabelFrame):
         controls = Frame(self.contents)
         controls.pack(expand=True, fill='x')
 
-        add_button = tk.Button(controls, text='Add', command=self.add(component))
+        add_button = ttk.Button(controls, text='Add', style='Accent.TButton', command=self.add(component))
         if sticky:          # Only create 'cancel' button if stickied
             add_button.pack(side=tk.RIGHT, pady=5)
-            cancel_button = tk.Button(controls, text='Cancel', command=self.cancel, takefocus=False)
+            cancel_button = ttk.Button(controls, text='Cancel', command=self.cancel, takefocus=False)
             cancel_button.pack(side=tk.LEFT, pady=5)
         else:
             add_button.pack(pady=5)

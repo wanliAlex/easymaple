@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.gui.interfaces import LabelFrame
 from src.easymaple.common import config
 
@@ -7,7 +8,7 @@ class Routine(LabelFrame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, 'Routine', **kwargs)
 
-        self.scroll = tk.Scrollbar(self)
+        self.scroll = ttk.Scrollbar(self)
         self.scroll.pack(side=tk.RIGHT, fill='both', pady=5)
 
         self.listbox = tk.Listbox(self, width=25,

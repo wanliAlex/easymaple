@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.gui.interfaces import LabelFrame, Frame
 from src.easymaple.common.interfaces import Configurable
 
@@ -13,7 +14,7 @@ class Pets(LabelFrame):
 
         feed_row = Frame(self)
         feed_row.pack(side=tk.TOP, fill='x', expand=True, pady=5, padx=5)
-        check = tk.Checkbutton(
+        check = ttk.Checkbutton(
             feed_row,
             variable=self.auto_feed,
             text='Auto-feed',
@@ -23,12 +24,12 @@ class Pets(LabelFrame):
 
         num_row = Frame(self)
         num_row.pack(side=tk.TOP, fill='x', expand=True, pady=(0, 5), padx=5)
-        label = tk.Label(num_row, text='Number of pets to feed:')
+        label = ttk.Label(num_row, text='Number of pets to feed:', style='Surface.TLabel')
         label.pack(side=tk.LEFT, padx=(0, 15))
         radio_group = Frame(num_row)
         radio_group.pack(side=tk.LEFT)
         for i in range(1, 4):
-            radio = tk.Radiobutton(
+            radio = ttk.Radiobutton(
                 radio_group,
                 text=str(i),
                 variable=self.num_pets,
