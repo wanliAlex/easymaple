@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.gui.interfaces import LabelFrame
 from src.easymaple.common import config
 
@@ -11,7 +12,7 @@ class Details(LabelFrame):
         self.name = tk.Entry(self, textvariable=self.name_var, justify=tk.CENTER, state=tk.DISABLED)
         self.name.pack(pady=(5, 2))
 
-        self.scroll = tk.Scrollbar(self)
+        self.scroll = ttk.Scrollbar(self)
         self.scroll.pack(side=tk.RIGHT, fill=tk.Y, pady=5)
 
         self.text = tk.Text(self, width=1, height=10,

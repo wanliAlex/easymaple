@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.common import config
 from src.easymaple.gui.interfaces import Frame
 
@@ -7,16 +8,16 @@ class Controls(Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
 
-        self.up_arrow = tk.Button(self, text='▲', width=6, command=self.move('up'))
+        self.up_arrow = ttk.Button(self, text='▲', style='Icon.TButton', command=self.move('up'))
         self.up_arrow.grid(row=0, column=0)
 
-        self.down_arrow = tk.Button(self, text='▼', width=6, command=self.move('down'))
+        self.down_arrow = ttk.Button(self, text='▼', style='Icon.TButton', command=self.move('down'))
         self.down_arrow.grid(row=0, column=1, padx=(5, 0))
 
-        self.delete = tk.Button(self, text='\U00002715', width=3, command=self.delete)
+        self.delete = ttk.Button(self, text='\U00002715', style='Danger.TButton', command=self.delete)
         self.delete.grid(row=0, column=2, padx=(5, 0))
 
-        self.new = tk.Button(self, text='\U00002795', width=6, command=self.new)
+        self.new = ttk.Button(self, text='\U00002795', style='Accent.TButton', command=self.new)
         self.new.grid(row=0, column=3, padx=(5, 0))
 
     def move(self, direction):

@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.common import config
 from src.easymaple.routine.components import Point
 from src.easymaple.gui.interfaces import Frame
@@ -11,7 +12,7 @@ class Components(Frame):
         self.label = tk.Label(self, text='Components')
         self.label.pack(fill='x', padx=5)
 
-        self.scroll = tk.Scrollbar(self)
+        self.scroll = ttk.Scrollbar(self)
         self.scroll.pack(side=tk.RIGHT, fill='y', pady=(0, 5))
 
         self.listbox = tk.Listbox(self, width=25,

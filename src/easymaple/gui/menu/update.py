@@ -1,7 +1,9 @@
 import git
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.common import config
 from src.easymaple.gui.interfaces import MenuBarItem, LabelFrame, Frame
+from src.easymaple.gui.style import BG
 from tkinter.messagebox import askyesno
 
 
@@ -25,6 +27,7 @@ class UpdatePrompt(tk.Toplevel):
 
         self.path = path
 
+        self.configure(bg=BG)
         self.grab_set()
         self.title(f'Update {name}')
         icon = tk.PhotoImage(file='assets/icon.png')
@@ -40,7 +43,7 @@ class UpdatePrompt(tk.Toplevel):
         # Display local changes
         display_frame = LabelFrame(self, 'Local Changes')
         display_frame.grid(row=0, column=1, sticky=tk.NSEW, padx=(10, 0), pady=10)
-        self.scroll = tk.Scrollbar(display_frame)
+        self.scroll = ttk.Scrollbar(display_frame)
         self.scroll.pack(side=tk.RIGHT, fill='both', pady=5)
         self.listbox = tk.Listbox(display_frame,
                                   width=40,
@@ -54,17 +57,19 @@ class UpdatePrompt(tk.Toplevel):
         # Controls
         controls_frame = Frame(self)
         controls_frame.grid(row=0, column=2, sticky=tk.NSEW, padx=10, pady=10)
-        self.refresh = tk.Button(controls_frame, text='Refresh', command=self._refresh_display)
+        self.refresh = ttk.Button(controls_frame, text='Refresh', command=self._refresh_display)
         self.refresh.pack(side=tk.TOP, pady=(10, 5))
-        self.soft_update = tk.Button(
+        self.soft_update = ttk.Button(
             controls_frame,
             text='Update',
+            style='Accent.TButton',
             command=self._update
         )
         self.soft_update.pack(side=tk.BOTTOM)
-        self.force_update = tk.Button(
+        self.force_update = ttk.Button(
             controls_frame,
             text='Rebuild',
+            style='Danger.TButton',
             command=lambda: self._update(force=True)
         )
         self.force_update.pack(side=tk.BOTTOM, pady=(0, 5))

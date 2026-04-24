@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from src.easymaple.routine.components import Point
 from src.easymaple.gui.interfaces import LabelFrame
 
@@ -12,7 +13,7 @@ class Record(LabelFrame):
         self.entries = []
         self.display_var = tk.StringVar()
 
-        self.scroll = tk.Scrollbar(self)
+        self.scroll = ttk.Scrollbar(self)
         self.scroll.pack(side=tk.RIGHT, fill='y', pady=5)
 
         self.listbox = tk.Listbox(self, width=25,
