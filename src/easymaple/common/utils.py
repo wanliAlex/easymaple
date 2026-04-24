@@ -9,6 +9,14 @@ from src.easymaple.common import config, settings
 from random import random
 
 
+def load_image(path, flags=cv2.IMREAD_COLOR):
+    """Load an image from PATH, raising FileNotFoundError if it cannot be read."""
+    img = cv2.imread(path, flags)
+    if img is None:
+        raise FileNotFoundError(f"Asset not found or failed to load: '{path}'")
+    return img
+
+
 def run_if_enabled(function):
     """
     Decorator for functions that should only run if the bot is enabled.

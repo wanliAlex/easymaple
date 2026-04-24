@@ -28,14 +28,14 @@ WINDOWED_OFFSET_TOP = 36
 WINDOWED_OFFSET_LEFT = 10
 
 # The top-left and bottom-right corners of the minimap
-MM_TL_TEMPLATE = cv2.imread('assets/minimap_tl_template.png', 0)
-MM_BR_TEMPLATE = cv2.imread('assets/minimap_br_template.png', 0)
+MM_TL_TEMPLATE = utils.load_image('assets/minimap_tl_template.png', cv2.IMREAD_GRAYSCALE)
+MM_BR_TEMPLATE = utils.load_image('assets/minimap_br_template.png', cv2.IMREAD_GRAYSCALE)
 
 MMT_HEIGHT = max(MM_TL_TEMPLATE.shape[0], MM_BR_TEMPLATE.shape[0])
 MMT_WIDTH = max(MM_TL_TEMPLATE.shape[1], MM_BR_TEMPLATE.shape[1])
 
 # The player's symbol on the minimap
-PLAYER_TEMPLATE = cv2.imread('assets/player_template.png', 0)
+PLAYER_TEMPLATE = utils.load_image('assets/player_template.png', cv2.IMREAD_GRAYSCALE)
 PT_HEIGHT, PT_WIDTH = PLAYER_TEMPLATE.shape
 
 

@@ -18,7 +18,7 @@ from src.easymaple.common.vkeys import press, key_down, key_up
 
 
 # The rune's buff icon
-RUNE_BUFF_TEMPLATE = cv2.imread('assets/rune_buff_template.jpg', 0)
+RUNE_BUFF_TEMPLATE = utils.load_image('assets/rune_buff_template.jpg', cv2.IMREAD_GRAYSCALE)
 
 
 class Bot(Configurable):
