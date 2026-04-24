@@ -10,7 +10,7 @@ FIXTURES = Path(__file__).parent / 'fixtures'
 
 @pytest.fixture
 def test_frame():
-    path = FIXTURES / 'test_frame.jpg'
+    path = FIXTURES / 'test_frame.png'
     frame = cv2.imread(str(path))
     assert frame is not None, f"Test fixture missing: {path}"
     return frame
@@ -18,7 +18,7 @@ def test_frame():
 
 @pytest.fixture
 def test_frame_dark():
-    path = FIXTURES / 'test_frame_dark.jpg'
+    path = FIXTURES / 'test_frame_dark.png'
     frame = cv2.imread(str(path))
     assert frame is not None, f"Test fixture missing: {path}"
     return frame
