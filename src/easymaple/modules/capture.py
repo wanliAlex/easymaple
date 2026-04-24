@@ -157,7 +157,10 @@ class Capture:
 
     def align_to_minimap(self) -> bool:
         """
-        Move the game window so the minimap's top-left corner is at screen (0, 0).
+        Reposition the game window so the minimap's top-left sits at the window's
+        client-area origin (just below the title bar), without shifting horizontally
+        or pushing the window to the top of the monitor.
+
         Returns True on success, False if the frame or minimap bounds are unavailable.
         """
         if self.frame is None:
@@ -168,8 +171,10 @@ class Capture:
             print('[!] Cannot align window: minimap not detected')
             return False
         mm_tl, _ = bounds
-        new_left = self.window['left'] - mm_tl[0]
-        new_top = self.window['top'] - mm_tl[1]
+        # Keep left edge unchanged; move up only by the in-game distance above
+        # the minimap (excluding the Windows title bar height).
+        new_left = self.window['left']
+        new_top = self.window['top'] - (mm_tl[1] - WINDOWED_OFFSET_TOP)
         success = self.window_locator.move(new_left, new_top)
         if success:
             print(f'[~] Window aligned: moved to ({new_left}, {new_top})')

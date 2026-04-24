@@ -137,7 +137,8 @@ class TestAlignToMinimap:
 
         result = cap.align_to_minimap()
         assert result is True
-        assert locator.last_move == (200 - mm_tl[0], 100 - mm_tl[1])
+        from src.easymaple.modules.capture import WINDOWED_OFFSET_TOP
+        assert locator.last_move == (200, 100 - (mm_tl[1] - WINDOWED_OFFSET_TOP))
 
     def test_returns_false_when_no_frame(self):
         cap = make_capture()
