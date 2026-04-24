@@ -121,11 +121,19 @@ class GameWindowLocator(WindowLocator):
         _user32.GetCursorPos(ctypes.byref(pt))
         saved = (pt.x, pt.y)
 
+        # Bring mstsc.exe to the foreground so it can receive mouse input
+        _user32.SetForegroundWindow(hwnd)
+        time.sleep(0.1)
+
         try:
             if dy != 0:
-                self._drag_vert(hwnd, wr, dy)
+                si_v = self._get_scroll_info(hwnd, _SB_VERT)
+                print(f'[~] vert scroll info: nMin={si_v.nMin} nMax={si_v.nMax} nPos={si_v.nPos} nPage={si_v.nPage}')
+                self._drag_vert(hwnd, wr, dy, si_v)
             if dx != 0:
-                self._drag_horz(hwnd, wr, dx)
+                si_h = self._get_scroll_info(hwnd, _SB_HORZ)
+                print(f'[~] horz scroll info: nMin={si_h.nMin} nMax={si_h.nMax} nPos={si_h.nPos} nPage={si_h.nPage}')
+                self._drag_horz(hwnd, wr, dx, si_h)
         finally:
             win32api.SetCursorPos(saved)
 
@@ -196,24 +204,26 @@ class GameWindowLocator(WindowLocator):
         ratio        = (target - si.nMin) / scroll_range
         return wr.left + arrow_w + int(ratio * avail_w) + thumb_w // 2
 
-    def _drag_vert(self, hwnd: int, wr: _RECT, dy: int) -> None:
-        si     = self._get_scroll_info(hwnd, _SB_VERT)
+    def _drag_vert(self, hwnd: int, wr: _RECT, dy: int, si: _SCROLLINFO) -> None:
         from_y = self._thumb_center_y(wr, si)
         if from_y is None:
+            print(f'[!] vert scrollbar not found or nMax=0 — skipping vertical drag')
             return
         target = max(si.nMin, min(si.nMax, si.nPos + dy))
         to_y   = self._thumb_center_y_for_target(wr, si, target)
         sb_cx  = wr.right - _user32.GetSystemMetrics(_SM_CXVSCROLL) // 2
+        print(f'[~] drag vert: sb_cx={sb_cx} from_y={from_y} → to_y={to_y} (target pos={target})')
         self._mouse_drag(sb_cx, from_y, sb_cx, to_y)
 
-    def _drag_horz(self, hwnd: int, wr: _RECT, dx: int) -> None:
-        si     = self._get_scroll_info(hwnd, _SB_HORZ)
+    def _drag_horz(self, hwnd: int, wr: _RECT, dx: int, si: _SCROLLINFO) -> None:
         from_x = self._thumb_center_x(wr, si)
         if from_x is None:
+            print(f'[!] horz scrollbar not found or nMax=0 — skipping horizontal drag')
             return
         target = max(si.nMin, min(si.nMax, si.nPos + dx))
         to_x   = self._thumb_center_x_for_target(wr, si, target)
         sb_cy  = wr.bottom - _user32.GetSystemMetrics(_SM_CYVSCROLL) // 2
+        print(f'[~] drag horz: sb_cy={sb_cy} from_x={from_x} → to_x={to_x} (target pos={target})')
         self._mouse_drag(from_x, sb_cy, to_x, sb_cy)
 
     @staticmethod
