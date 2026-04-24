@@ -11,7 +11,7 @@ from tests.fakes import FileFrameSource, FixedWindowLocator
 FIXTURES = Path(__file__).parent / 'fixtures'
 
 
-def make_capture(fixture: str = 'test_frame.png') -> Capture:
+def make_capture(fixture: str = 'test_image_1.PNG') -> Capture:
     """Return a Capture wired to a fixture file, never touching the real screen."""
     return Capture(
         frame_source=FileFrameSource(FIXTURES / fixture),
@@ -44,7 +44,7 @@ class TestMinimapSanityCheck:
 
 
 # ---------------------------------------------------------------------------
-# Minimap bounds detection — requires test_frame.png with visible minimap
+# Minimap bounds detection — requires test_image_1.PNG with visible minimap
 # ---------------------------------------------------------------------------
 
 class TestFindMinimapBounds:
@@ -53,7 +53,7 @@ class TestFindMinimapBounds:
         bounds = cap._find_minimap_bounds(test_frame)
         if bounds is None:
             pytest.skip(
-                "Minimap not detected in tests/fixtures/test_frame.png — "
+                "Minimap not detected in tests/fixtures/test_image_1.PNG — "
                 "replace the fixture with a fresh in-game screenshot that shows the minimap."
             )
         mm_tl, mm_br = bounds
@@ -80,12 +80,12 @@ class TestDetectPlayer:
         cap = make_capture()
         bounds = cap._find_minimap_bounds(test_frame)
         if bounds is None:
-            pytest.skip("minimap not detected in test_frame.png")
+            pytest.skip("minimap not detected in test_image_1.PNG")
         mm_tl, mm_br = bounds
         minimap = test_frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
         pos = cap._detect_player(minimap)
         if pos is None:
-            pytest.skip("player icon not visible in test_frame.png minimap")
+            pytest.skip("player icon not visible in test_image_1.PNG minimap")
         x, y = pos
         assert 0.0 <= x <= 1.0, f"player x={x} out of [0, 1]"
         assert y >= 0.0, f"player y={y} is negative"
@@ -97,7 +97,7 @@ class TestDetectPlayer:
 
 class TestFileFrameSource:
     def test_grab_returns_numpy_array(self):
-        src = FileFrameSource(FIXTURES / 'test_frame.png')
+        src = FileFrameSource(FIXTURES / 'test_image_1.PNG')
         frame = src.grab({'left': 0, 'top': 0, 'width': 1366, 'height': 768})
         assert isinstance(frame, np.ndarray)
         assert frame.ndim == 3
@@ -108,7 +108,7 @@ class TestFileFrameSource:
 
     def test_grab_returns_independent_copy(self):
         """Mutating one grab result must not affect the next."""
-        src = FileFrameSource(FIXTURES / 'test_frame.png')
+        src = FileFrameSource(FIXTURES / 'test_image_1.PNG')
         f1 = src.grab({})
         original_pixel = f1[0, 0, 0]
         f1[0, 0, 0] = (original_pixel + 1) % 256
