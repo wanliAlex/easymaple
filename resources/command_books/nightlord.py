@@ -16,7 +16,7 @@ class Key:
 
     # Skills
     SHOW_DOWN = "1"
-    DARK_FLARE = "g"
+    DARK_FLARE = "r"
     LEAP = "z"
     SUDDEN_RAID = "w"
     DEATH_STAR = "a"
