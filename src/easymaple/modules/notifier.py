@@ -1,6 +1,7 @@
 """A module for detecting and notifying the user of dangerous in-game events."""
 
 from src.easymaple.common import config, utils
+import logging
 import time
 import os
 import cv2
@@ -12,6 +13,7 @@ import requests
 from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
 
+log = logging.getLogger(__name__)
 
 print(find_dotenv())
 load_dotenv()
@@ -20,37 +22,42 @@ load_dotenv()
 WEB_HOOK = os.environ.get("DISCORD_WEBHOOK", "")
 DISCORD_USER_ID = os.environ.get("DISCORD_USER_ID", "")
 
+if not WEB_HOOK:
+    log.warning("DISCORD_WEBHOOK is not set — Discord notifications will be disabled")
+
 print(f"Successfully loaded WEB_HOOK = {WEB_HOOK}, DISCORD_USER_ID={DISCORD_USER_ID}")
 
 def notify(message):
     """Sends a message to the Discord webhook."""
+    if not WEB_HOOK:
+        return
     try:
         requests.post(WEB_HOOK, json={"content": message})
-    except requests.RequestException:
-        pass
+    except requests.RequestException as e:
+        log.warning("Discord notification failed: %s", e)
 
 
 # A rune's symbol on the minimap
 RUNE_RANGES = (
     ((135, 50, 220), (200, 160, 255)),
 )
-rune_filtered = utils.filter_color(cv2.imread('assets/rune_template.png'), RUNE_RANGES)
+rune_filtered = utils.filter_color(utils.load_image('assets/rune_template.png'), RUNE_RANGES)
 RUNE_TEMPLATE = cv2.cvtColor(rune_filtered, cv2.COLOR_BGR2GRAY)
 
 # Other players' symbols on the minimap
 OTHER_RANGES = (
     ((0, 245, 215), (10, 255, 255)),
 )
-other_filtered = utils.filter_color(cv2.imread('assets/other_template.png'), OTHER_RANGES)
+other_filtered = utils.filter_color(utils.load_image('assets/other_template.png'), OTHER_RANGES)
 OTHER_TEMPLATE = cv2.cvtColor(other_filtered, cv2.COLOR_BGR2GRAY)
 
 # The Elite Boss's warning sign
-ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
+ELITE_TEMPLATE = utils.load_image('assets/elite_template.jpg', cv2.IMREAD_GRAYSCALE)
 
-RUNE_COOLDOWN_TEMPLATE = cv2.imread('assets/rune_cd_template.jpg', 0)
-RUNE_COOLDOWN_TEMPLATE_1 = cv2.imread('assets/rune_cd_template_1.jpg', 0)
+RUNE_COOLDOWN_TEMPLATE = utils.load_image('assets/rune_cd_template.jpg', cv2.IMREAD_GRAYSCALE)
+RUNE_COOLDOWN_TEMPLATE_1 = utils.load_image('assets/rune_cd_template_1.jpg', cv2.IMREAD_GRAYSCALE)
 
-DEATH_TEMPLATE = cv2.imread('assets/death_template.png', 0)
+DEATH_TEMPLATE = utils.load_image('assets/death_template.png', cv2.IMREAD_GRAYSCALE)
 
 RUNE_DETECT_FREQUENCY = 40
 

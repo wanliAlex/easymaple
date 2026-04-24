@@ -1,8 +1,11 @@
 """Cache management for storing last loaded files."""
 
 import json
+import logging
 import os
 from src.easymaple.common import config
+
+log = logging.getLogger(__name__)
 
 
 CACHE_FILE = os.path.join(config.RESOURCES_DIR, '.cache.json')
@@ -26,8 +29,8 @@ def save_cache(cache_data):
         os.makedirs(config.RESOURCES_DIR, exist_ok=True)
         with open(CACHE_FILE, 'w') as f:
             json.dump(cache_data, f, indent=2)
-    except IOError:
-        pass  # Fail silently if can't save cache
+    except IOError as e:
+        log.warning("Failed to save cache: %s", e)
 
 
 def get_last_command_book():
