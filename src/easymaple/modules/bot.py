@@ -105,10 +105,12 @@ class Bot(Configurable):
                 solve_rune = rune_settings.solve_rune.get()
                 if self.rune_active:
                     if solve_rune and isinstance(element, Point) and element.location == self.rune_closest_pos:
-                        if self.model == None:
-                            model = detection.load_model()
-                        self._solve_rune(model)
-                    elif solve_rune == False:
+                        if self.model is None:
+                            print('\n[~] Loading rune detection model...')
+                            self.model = detection.load_model()
+                            print('[~] Rune detection model loaded')
+                        self._solve_rune(self.model)
+                    elif not solve_rune:
                         self.rune_active = False
                 element.execute()
                 config.routine.step()

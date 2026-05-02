@@ -2,6 +2,7 @@
 
 from src.easymaple.common import config, utils
 import logging
+import queue
 import time
 import os
 import cv2
@@ -26,15 +27,6 @@ if not WEB_HOOK:
     log.warning("DISCORD_WEBHOOK is not set — Discord notifications will be disabled")
 
 print(f"Successfully loaded WEB_HOOK = {WEB_HOOK}, DISCORD_USER_ID={DISCORD_USER_ID}")
-
-def notify(message):
-    """Sends a message to the Discord webhook."""
-    if not WEB_HOOK:
-        return
-    try:
-        requests.post(WEB_HOOK, json={"content": message})
-    except requests.RequestException as e:
-        log.warning("Discord notification failed: %s", e)
 
 
 # A rune's symbol on the minimap
@@ -84,15 +76,17 @@ class Notifier:
         self.rune_alert_delay = 10
 
         self.rune_counter = 0
-        self.rune_warning_thread = None
-
         self.death_counter = 0
-        self.rune_notifying = False
+
+        self._discord_queue = queue.Queue()
+        self._rune_notify_event = threading.Event()
 
     def start(self):
         """Starts this Notifier's thread."""
 
         print('\n[~] Started notifier')
+        threading.Thread(target=self._discord_sender, daemon=True).start()
+        threading.Thread(target=self._rune_discord_loop, daemon=True).start()
         self.thread.start()
 
     def _main(self):
@@ -109,7 +103,7 @@ class Notifier:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
                     for _ in range(5):
-                        notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
+                        self._enqueue_notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
                     self._alert('siren')
 
                 # Check for elite warning
@@ -134,14 +128,18 @@ class Notifier:
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
                     matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.75)
                     if matches:
-                        config.bot.rune_active=True
+                        # On first detection, record rune position and nearest routine point
+                        if not config.bot.rune_active and config.routine.sequence:
+                            abs_rune_pos = (matches[0][0], matches[0][1])
+                            config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
+                            distances = list(map(distance_to_rune, config.routine.sequence))
+                            config.bot.rune_closest_pos = config.routine[int(np.argmin(distances))].location
+                        config.bot.rune_active = True
                         if time.time() - report_time > 10 or report_time == 0:
                             self._ping("rune_appeared", volume=0.75)
                             report_time = time.time()
-                        if not self.rune_notifying:
-                            self.rune_notifying = True
-                            t = threading.Thread(target=self._rune_discord_loop, daemon=True)
-                            t.start()
+                        if not self._rune_notify_event.is_set():
+                            self._rune_notify_event.set()
 
                 if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
                     self.death_counter = 1
@@ -150,7 +148,7 @@ class Notifier:
                         self._ping("ding", volume=0.75)
 
                 self.rune_counter += 1
-                self.death_counter +=1
+                self.death_counter += 1
             time.sleep(0.05)
 
     def _alert(self, name, volume=0.75):
@@ -177,19 +175,29 @@ class Notifier:
         self.mixer.set_volume(volume)
         self.mixer.play()
 
-    def _rune_discord_loop(self):
-        """
-        Sends bursts of 3 Discord notifications for rune detection.
-        Repeats every 30 seconds until the rune is resolved.
-        """
+    def _enqueue_notify(self, message):
+        if WEB_HOOK:
+            self._discord_queue.put(message)
 
-        try:
+    def _discord_sender(self):
+        """Persistent worker that drains _discord_queue and posts to Discord."""
+        while True:
+            message = self._discord_queue.get()
+            try:
+                requests.post(WEB_HOOK, json={"content": message})
+            except requests.RequestException as e:
+                log.warning("Discord notification failed: %s", e)
+            finally:
+                self._discord_queue.task_done()
+
+    def _rune_discord_loop(self):
+        """Persistent worker: wakes on _rune_notify_event, notifies Discord every 30s until rune clears."""
+        while True:
+            self._rune_notify_event.wait()
             while config.bot.rune_active:
-                notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
-                # Wait 30s
+                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
                 time.sleep(30)
-        finally:
-            self.rune_notifying = False
+            self._rune_notify_event.clear()
 
 
 #################################
