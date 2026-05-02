@@ -240,11 +240,10 @@ class Bot(Configurable):
                 return
             h, w = frame.shape[:2]
             # Proportional crop so it scales with game window size.
-            # Tuned against a sample where the rune arrow band occupied
-            # roughly 30-85% horizontally and 40-70% vertically of the
-            # broader region. Includes ~5% margin on each side.
-            y0, y1 = int(h * 0.27), int(h * 0.42)
-            x0, x1 = int(w * 0.37), int(w * 0.70)
+            # Tuned against a 528x300 sample where the arrows occupied
+            # roughly 30-90% horizontally and 40-70% vertically.
+            y0, y1 = int(h * 0.24), int(h * 0.45)
+            x0, x1 = int(w * 0.30), int(w * 0.74)
             cropped = frame[y0:y1, x0:x1]
             os.makedirs('training_data', exist_ok=True)
             ts = time.strftime('%Y%m%d_%H%M%S')
