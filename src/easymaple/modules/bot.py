@@ -132,10 +132,9 @@ class Bot(Configurable):
     @utils.run_if_enabled
     def _solve_rune(self, model):
         """
-        Moves to the position of the rune and solves the arrow-key puzzle. Always
-        clears `rune_active` on exit so the notifier re-detects on the next scan
-        instead of busy-looping. After `RUNE_FAIL_THRESHOLD` consecutive failures
-        (no consensus solution, or buff icon never appeared), alerts the user.
+        Moves to the rune, then tries up to RUNE_FAIL_THRESHOLD times to solve it
+        in-place (3s sleep between retries). Always clears `rune_active` on exit
+        so we don't busy-loop. Alerts the user if all retries fail.
         """
 
         try:
@@ -149,21 +148,52 @@ class Bot(Configurable):
             self._record_solve_failure()
             return
 
-        time.sleep(1)
-        press(self.config['Interact'], 1, down_time=0.2)        # Inherited from Configurable
+        # Move/Adjust use key_down to walk and may leave an arrow held — release
+        # all arrows so they don't bleed into the rune-solve key presses
+        for arrow in ('left', 'right', 'up', 'down'):
+            key_up(arrow)
+        time.sleep(0.5)
 
+        solved = False
+        for attempt in range(1, self.RUNE_FAIL_THRESHOLD + 1):
+            if attempt > 1:
+                print(f'[~] Retrying rune solve in 3s (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD})...')
+                time.sleep(3)
+
+            # Open the rune UI
+            press(self.config['Interact'], 1, down_time=0.2)
+            time.sleep(0.5)     # let the arrow puzzle render
+
+            if self._attempt_solve_once(model):
+                solved = True
+                break
+
+        self.rune_active = False
+        if solved:
+            if self.rune_solve_failures > 0:
+                print(f'[~] Rune solved after {self.rune_solve_failures + 1} prior failures')
+            self.rune_solve_failures = 0
+        else:
+            self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
+            self._record_solve_failure()
+
+    def _attempt_solve_once(self, model):
+        """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
         inferences = []
-        buff_confirmed = False
         for _ in range(15):
             frame = config.capture.frame
             solution = detection.merge_detection(model, frame)
             if solution:
                 print(', '.join(solution))
                 if solution in inferences:
-                    print('Solution found, entering result')
+                    print(f'[~] Entering solution: {", ".join(solution)}')
+                    # Belt-and-suspenders: clear any stuck arrows right before pressing
+                    for arrow in ('left', 'right', 'up', 'down'):
+                        key_up(arrow)
+                    time.sleep(0.1)
                     for arrow in solution:
-                        press(arrow, 1, down_time=0.1)
+                        press(arrow, 1, down_time=0.15, up_time=0.15)
                     time.sleep(1)
                     for _ in range(3):
                         time.sleep(0.3)
@@ -172,27 +202,17 @@ class Bot(Configurable):
                                                       RUNE_BUFF_TEMPLATE,
                                                       threshold=0.9)
                         if rune_buff:
-                            buff_confirmed = True
                             rune_buff_pos = min(rune_buff, key=lambda p: p[0])
                             target = (
                                 round(rune_buff_pos[0] + config.capture.window['left']),
                                 round(rune_buff_pos[1] + config.capture.window['top'])
                             )
                             click(target, button='right')
-                            break
-                    break
+                            return True
+                    return False
                 elif len(solution) == 4:
                     inferences.append(solution)
-
-        # Always clear so we don't busy-loop; the notifier re-sets it if the rune
-        # is still on the minimap (real failure) or stays clear if it was a false alarm.
-        self.rune_active = False
-        if buff_confirmed:
-            if self.rune_solve_failures > 0:
-                print(f'[~] Rune solved after {self.rune_solve_failures + 1} attempt(s)')
-            self.rune_solve_failures = 0
-        else:
-            self._record_solve_failure()
+        return False
 
     def _kick_off_model_load(self):
         """Loads the rune detection model in a background daemon thread."""
