@@ -717,6 +717,12 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
                 time.sleep(0.5)
                 break
 
+            # Yield to the rune solver if a rune appeared during this point.
+            # The bot's main loop will solve the rune before stepping to the
+            # next routine point, then resume the routine.
+            if config.bot.rune_active:
+                break
+
             if self.ball_time == 0 or time.time() - self.ball_time > 117 and time.time() - self.placed_time > 59:
                 self.ball_time = time.time()
                 self.placed = False
