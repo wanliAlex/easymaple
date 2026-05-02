@@ -228,17 +228,21 @@ class Bot(Configurable):
 
     @staticmethod
     def _save_training_frame():
-        """Save the current capture frame to training_data/ for later use as
-        labeled training data for the rune detection model. Filename includes
-        a millisecond-precision timestamp so frames don't collide."""
+        """Save just the rune-UI region of the current capture frame to
+        training_data/ for later use as labeled training data. Crop matches
+        the region merge_detection feeds to the model: top-eighth-to-middle
+        vertically, middle 50% horizontally. Filename includes millisecond-
+        precision timestamp so retries within the same second don't collide."""
         try:
             frame = config.capture.frame
             if frame is None:
                 return
+            h, w = frame.shape[:2]
+            cropped = frame[120:h // 2, w // 4:3 * w // 4]
             os.makedirs('training_data', exist_ok=True)
             ts = time.strftime('%Y%m%d_%H%M%S')
             ms = int(time.time() * 1000) % 1000
-            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}.png'), frame)
+            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}.png'), cropped)
         except Exception as e:
             print(f'[!] Failed to save training frame: {e}')
 
