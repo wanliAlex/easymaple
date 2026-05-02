@@ -46,6 +46,7 @@ class Bot(Configurable):
         self.module_name = None
         self.buff = components.Buff()
         self.model = None
+        self._model_load_thread = None
 
         self.command_book = {}
         for c in (components.Wait, components.Walk, components.Fall,
@@ -90,13 +91,19 @@ class Bot(Configurable):
         while True:
             if config.enabled:
                 solve_rune = config.gui.settings.rune.solve_rune.get()
+
+                # Warm up the rune model in the background as soon as the toggle
+                # is on, so the first rune doesn't pay the multi-second load cost
+                if solve_rune and self.model is None and self._model_load_thread is None:
+                    self._kick_off_model_load()
+
                 if self.rune_active:
                     if solve_rune:
-                        if self.model is None:
-                            print('\n[~] Loading rune detection model...')
-                            self.model = detection.load_model()
-                            print('[~] Rune detection model loaded')
-                        self._solve_rune(self.model)
+                        if self.model is None and self._model_load_thread is not None:
+                            print('[~] Rune appeared but detection model is still loading — waiting...')
+                            self._model_load_thread.join()
+                        if self.model is not None:
+                            self._solve_rune(self.model)
                     else:
                         self.rune_active = False
 
@@ -186,6 +193,20 @@ class Bot(Configurable):
             self.rune_solve_failures = 0
         else:
             self._record_solve_failure()
+
+    def _kick_off_model_load(self):
+        """Loads the rune detection model in a background daemon thread."""
+        def loader():
+            try:
+                print('\n[~] Pre-loading rune detection model in background...')
+                self.model = detection.load_model()
+                print('[~] Rune detection model ready')
+            except Exception as e:
+                print(f'[!] Failed to pre-load rune detection model: {e}')
+                self._model_load_thread = None  # Allow another attempt later
+
+        self._model_load_thread = threading.Thread(target=loader, daemon=True)
+        self._model_load_thread.start()
 
     def _record_solve_failure(self):
         self.rune_solve_failures += 1
