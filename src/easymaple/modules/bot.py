@@ -299,8 +299,9 @@ class Bot(Configurable):
 
     def _kick_off_model_load(self):
         """Loads the rune detection model in a background daemon thread, then
-        runs a dummy inference so the first real solve doesn't pay the TF
-        graph JIT cost (which can add several seconds on CPU)."""
+        runs warmup inferences for each input shape merge_detection uses so
+        the first real solve doesn't pay TF JIT cost. Also warns the user
+        when per-inference cost exceeds the in-game rune UI lifetime."""
         def loader():
             try:
                 print('\n[~] Pre-loading rune detection model in background...')
@@ -308,13 +309,51 @@ class Bot(Configurable):
                 self.model = detection.load_model()
                 print(f'[~] Model loaded in {time.time()-t0:.1f}s, warming up...')
 
-                # Warm up — call the un-decorated inference helper directly so
-                # @run_if_enabled doesn't gate it before the bot is enabled
                 import numpy as np
-                dummy = np.zeros((300, 300, 3), dtype=np.uint8)
-                t0 = time.time()
-                detection.run_inference_for_single_image(self.model, dummy)
-                print(f'[~] Rune detection model ready (warmup {time.time()-t0:.1f}s)')
+                warmup_start = time.time()
+
+                # Wait briefly for capture to expose a real frame so we warm
+                # up with the user's actual game-window dimensions
+                frame = None
+                for _ in range(50):
+                    if config.capture is not None and getattr(config.capture, 'frame', None) is not None:
+                        frame = config.capture.frame
+                        break
+                    time.sleep(0.1)
+                if frame is None:
+                    frame = np.zeros((768, 1366, 3), dtype=np.uint8)
+
+                # Inference 1: get_boxes on the cannied frame (shape varies with window)
+                h, w = frame.shape[:2]
+                cropped = frame[120:h//2, w//4:3*w//4]
+                if cropped.shape[2] == 4:    # mss returns BGRA; filter_color expects 3 chans
+                    cropped = cv2.cvtColor(cropped, cv2.COLOR_BGRA2BGR)
+                filtered = detection.filter_color(cropped)
+                cannied = detection.canny(filtered)
+                t_inf = time.time()
+                detection.get_boxes(self.model, cannied)
+                get_boxes_dt = time.time() - t_inf
+                print(f'[~]   warmup get_boxes ({cannied.shape[1]}x{cannied.shape[0]}): {get_boxes_dt:.2f}s')
+
+                # Inferences 2 & 3: fixed shapes used after a successful box detection
+                t_inf = time.time()
+                detection.sort_by_confidence(self.model, np.zeros((384, 455, 3), dtype=np.uint8))
+                print(f'[~]   warmup classify (455x384): {time.time()-t_inf:.2f}s')
+                t_inf = time.time()
+                detection.sort_by_confidence(self.model, np.zeros((455, 384, 3), dtype=np.uint8))
+                print(f'[~]   warmup classify (384x455 rotated): {time.time()-t_inf:.2f}s')
+
+                print(f'[~] Rune detection model ready (total warmup {time.time()-warmup_start:.1f}s)')
+
+                # The rune UI is only on screen for ~10s. If a single get_boxes
+                # call alone exceeds that, the solver cannot keep up no matter
+                # how we tune retries. Surface this loudly with a fix path.
+                if get_boxes_dt > 5.0:
+                    print(f'[!] WARNING: per-inference cost is {get_boxes_dt:.1f}s; the rune UI '
+                          f'closes after ~10s, so the solver may not keep up on this device.')
+                    print(f'[!] TensorFlow on native Windows is CPU-only since TF 2.11. To get GPU '
+                          f'acceleration, either run under WSL2 or install the DirectML plugin: '
+                          f'`uv pip install tensorflow-directml-plugin`.')
             except Exception as e:
                 print(f'[!] Failed to pre-load rune detection model: {e}')
                 self._model_load_thread = None  # Allow another attempt later
