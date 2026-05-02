@@ -74,27 +74,37 @@ class Capture:
         print('\n[~] Started video capture')
         self.thread.start()
 
+    def _find_game_window(self):
+        """Returns a pygetwindow object for the game window, or None if not found."""
+        for title in gw.getAllTitles():
+            if ("Remote Desktop Connection" in title or "远程桌面协议" in title
+                    or "Maplestory" in title or " - Moonlight" in title):
+                windows = gw.getWindowsWithTitle(title)
+                if windows:
+                    return windows[0]
+        return None
+
     def _main(self):
         """Constantly monitors the player's position and in-game events."""
+        window_obj = None
         while True:
-            # Calibrate screen capture
-            all_titles = gw.getAllTitles()
-            window_name = None
-            for title in all_titles:
-                if ("Remote Desktop Connection" in title or "远程桌面协议" in title or "Maplestory" in title
-                        or " - Moonlight" in title):
-                    window_name = title
-            if window_name is None:
-                continue
-
-            window_obj = gw.getWindowsWithTitle(window_name)[0]
+            # Only search for the game window when we don't already have a handle
+            if window_obj is None:
+                window_obj = self._find_game_window()
+                if window_obj is None:
+                    time.sleep(0.5)
+                    continue
 
             self.ready = True
 
-            self.window['left'] = window_obj.left
-            self.window['top'] = window_obj.top
-            self.window['width'] = window_obj.width
-            self.window['height'] = window_obj.height
+            try:
+                self.window['left'] = window_obj.left
+                self.window['top'] = window_obj.top
+                self.window['width'] = window_obj.width
+                self.window['height'] = window_obj.height
+            except Exception:
+                window_obj = None
+                continue
 
             # Calibrate by finding the bottom right corner of the minimap
             with mss.mss() as self.sct:
@@ -103,8 +113,12 @@ class Capture:
             if self.frame is None:
                 continue
 
-            tl, _ = utils.single_match(self.frame, MM_TL_TEMPLATE)
-            _, br = utils.single_match(self.frame, MM_BR_TEMPLATE)
+            gray_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+            result_tl = cv2.matchTemplate(gray_frame, MM_TL_TEMPLATE, cv2.TM_CCOEFF_NORMED)
+            _, _, _, tl = cv2.minMaxLoc(result_tl)
+            result_br = cv2.matchTemplate(gray_frame, MM_BR_TEMPLATE, cv2.TM_CCOEFF_NORMED)
+            _, _, _, br_tl = cv2.minMaxLoc(result_br)
+            br = (br_tl[0] + MM_BR_TEMPLATE.shape[1], br_tl[1] + MM_BR_TEMPLATE.shape[0])
             mm_tl = (
                 tl[0] + 2,
                 tl[1] + 2
