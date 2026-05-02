@@ -125,7 +125,13 @@ class Bot(Configurable):
                 # Execute next Point in the routine
                 element = config.routine[config.routine.index]
                 element.execute()
-                config.routine.step()
+
+                # Only advance if the command finished naturally. If it broke
+                # early because a rune appeared, leave the index in place so
+                # we re-enter the same point after the rune is solved on the
+                # next loop iteration.
+                if not self.rune_active:
+                    config.routine.step()
             else:
                 time.sleep(0.01)
 
