@@ -81,19 +81,16 @@ class Notifier:
         self.death_counter = 0
 
         self._discord_queue = queue.Queue()
-        self._rune_notify_event = threading.Event()
 
     def start(self):
         """Starts this Notifier's thread."""
 
         print('\n[~] Started notifier')
         threading.Thread(target=self._discord_sender, daemon=True).start()
-        threading.Thread(target=self._rune_discord_loop, daemon=True).start()
         self.thread.start()
 
     def _main(self):
         self.ready = True
-        report_time = 0
         while True:
             if config.enabled:
                 frame = config.capture.frame
@@ -124,7 +121,9 @@ class Notifier:
                 #         self._ping('ding')
                 #     prev_others = others
 
-                # Check for rune
+                # Check for rune. Notifications for rune appearance are intentionally
+                # silent — the bot solves it automatically. The notifier only alerts
+                # via alert_rune_unsolvable() when the solver actually fails.
                 if self.rune_counter >= RUNE_DETECT_FREQUENCY or self.rune_counter == 0:
                     self.rune_counter = 1
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
@@ -135,11 +134,6 @@ class Notifier:
                             abs_rune_pos = (matches[0][0], matches[0][1])
                             config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
                         config.bot.rune_active = True
-                        if time.time() - report_time > 10 or report_time == 0:
-                            self._ping("rune_appeared", volume=0.75)
-                            report_time = time.time()
-                        if not self._rune_notify_event.is_set():
-                            self._rune_notify_event.set()
 
                 if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
                     self.death_counter = 1
@@ -197,15 +191,6 @@ class Notifier:
                 log.warning("Discord notification failed: %s", e)
             finally:
                 self._discord_queue.task_done()
-
-    def _rune_discord_loop(self):
-        """Persistent worker: wakes on _rune_notify_event, notifies Discord every 30s until rune clears."""
-        while True:
-            self._rune_notify_event.wait()
-            while config.bot.rune_active:
-                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
-                time.sleep(30)
-            self._rune_notify_event.clear()
 
 
 #################################

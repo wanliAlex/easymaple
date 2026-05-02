@@ -32,6 +32,11 @@ class Bot(Configurable):
     # Number of consecutive failed rune solves before alerting the user
     RUNE_FAIL_THRESHOLD = 3
 
+    # After a full solve attempt (with all internal retries) fails, ignore
+    # rune detections for this many seconds so the bot keeps farming instead
+    # of looping into another doomed solve.
+    RUNE_COOLDOWN_AFTER_FAIL = 60
+
     def __init__(self):
         """Loads a user-defined routine on start up and initializes this Bot's main thread."""
 
@@ -42,6 +47,7 @@ class Bot(Configurable):
         self.rune_pos = (0, 0)
         self.rune_closest_pos = (0, 0)      # Location of the Point closest to rune
         self.rune_solve_failures = 0
+        self.rune_solve_cooldown_until = 0
         self.submodules = []
         self.module_name = None
         self.buff = components.Buff()
@@ -98,14 +104,19 @@ class Bot(Configurable):
                     self._kick_off_model_load()
 
                 if self.rune_active:
-                    if solve_rune:
+                    if not solve_rune:
+                        self.rune_active = False
+                    elif time.time() < self.rune_solve_cooldown_until:
+                        # We just exhausted our retries; ignore this rune for a
+                        # while so the bot keeps farming instead of re-triggering
+                        # a guaranteed-to-fail solve every ~2s.
+                        self.rune_active = False
+                    else:
                         if self.model is None and self._model_load_thread is not None:
                             print('[~] Rune appeared but detection model is still loading — waiting...')
                             self._model_load_thread.join()
                         if self.model is not None:
                             self._solve_rune(self.model)
-                    else:
-                        self.rune_active = False
 
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
@@ -201,6 +212,8 @@ class Bot(Configurable):
             self.rune_solve_failures = 0
         else:
             self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
+            self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
+            print(f'[!] Rune solve failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
             self._record_solve_failure()
 
     def _release_solver_keys(self, reason=''):
