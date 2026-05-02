@@ -1,5 +1,6 @@
 """An interpreter that reads and executes user-created routines."""
 
+import os
 import threading
 import time
 import cv2
@@ -202,6 +203,11 @@ class Bot(Configurable):
             if not self._interruptible_sleep(0.5):
                 break
 
+            # Snapshot the rune UI for training-data collection. Saved here
+            # because at this point Interact has rendered the puzzle but no
+            # arrows have been pressed, so the frame shows the unsolved rune.
+            self._save_training_frame()
+
             if self._attempt_solve_once(model):
                 solved = True
                 break
@@ -219,6 +225,22 @@ class Bot(Configurable):
             self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
             print(f'[!] Rune solve failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
             self._record_solve_failure()
+
+    @staticmethod
+    def _save_training_frame():
+        """Save the current capture frame to training_data/ for later use as
+        labeled training data for the rune detection model. Filename includes
+        a millisecond-precision timestamp so frames don't collide."""
+        try:
+            frame = config.capture.frame
+            if frame is None:
+                return
+            os.makedirs('training_data', exist_ok=True)
+            ts = time.strftime('%Y%m%d_%H%M%S')
+            ms = int(time.time() * 1000) % 1000
+            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}.png'), frame)
+        except Exception as e:
+            print(f'[!] Failed to save training frame: {e}')
 
     def _release_solver_keys(self):
         """Release every key the rune solver or command book might be holding."""

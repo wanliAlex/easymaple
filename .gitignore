@@ -2,3 +2,4 @@
 .env
 CLAUDE.md
 ./resources/.cache.json
+training_data/
