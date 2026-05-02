@@ -228,17 +228,24 @@ class Bot(Configurable):
 
     @staticmethod
     def _save_training_frame():
-        """Save just the rune-UI region of the current capture frame to
-        training_data/ for later use as labeled training data. Crop matches
-        the region merge_detection feeds to the model: top-eighth-to-middle
-        vertically, middle 50% horizontally. Filename includes millisecond-
-        precision timestamp so retries within the same second don't collide."""
+        """Save just the rune-puzzle band of the current capture frame to
+        training_data/ for later use as labeled training data. Tighter than
+        the region merge_detection feeds to the model — drops the
+        'tap the arrow keys' header above and the empty space / NPC text
+        below. Note: if you retrain with these tighter crops, you should
+        also tighten merge_detection's input region to match."""
         try:
             frame = config.capture.frame
             if frame is None:
                 return
             h, w = frame.shape[:2]
-            cropped = frame[120:h // 2, w // 4:3 * w // 4]
+            # Proportional crop so it scales with game window size.
+            # Tuned against a sample where the rune arrow band occupied
+            # roughly 30-85% horizontally and 40-70% vertically of the
+            # broader region. Includes ~5% margin on each side.
+            y0, y1 = int(h * 0.27), int(h * 0.42)
+            x0, x1 = int(w * 0.37), int(w * 0.70)
+            cropped = frame[y0:y1, x0:x1]
             os.makedirs('training_data', exist_ok=True)
             ts = time.strftime('%Y%m%d_%H%M%S')
             ms = int(time.time() * 1000) % 1000
