@@ -1,9 +1,21 @@
 """A module for classifying directional arrows using TensorFlow."""
 
 import cv2
-import tensorflow as tf
 import numpy as np
 from src.easymaple.common import utils
+
+# TensorFlow is imported lazily inside load_model / inference to avoid the
+# multi-second import cost on bot startup. The rune solver only needs it
+# when a rune actually appears.
+tf = None
+
+
+def _ensure_tf():
+    global tf
+    if tf is None:
+        import tensorflow as _tf
+        tf = _tf
+    return tf
 
 
 #########################
@@ -15,6 +27,7 @@ def load_model():
     :return:    The TensorFlow model object.
     """
 
+    _ensure_tf()
     model_dir = 'assets/models/rune_model_rnn_filtered_cannied/saved_model'
     return tf.saved_model.load(model_dir)
 
@@ -57,6 +70,7 @@ def run_inference_for_single_image(model, image):
     :return:        The model's predictions including bounding boxes and classes.
     """
 
+    _ensure_tf()
     image = np.asarray(image)
 
     input_tensor = tf.convert_to_tensor(image)

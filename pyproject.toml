@@ -3,7 +3,7 @@ name = "easymaple"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "certifi==2024.8.30",
     "cffi==1.17.1",
@@ -43,6 +43,6 @@ dependencies = [
     "smmap==5.0.1",
     "sspilib==0.2.0",
     "urllib3==2.2.3",
-    "tensorflow>=2.13,<3",
+    "tensorflow==2.21.0",
     "xmltodict==0.14.2",
 ]
