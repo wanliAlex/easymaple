@@ -37,6 +37,12 @@ class Bot(Configurable):
     # of looping into another doomed solve.
     RUNE_COOLDOWN_AFTER_FAIL = 60
 
+    # Hard wall-clock timeout for the inference loop. The in-game rune UI
+    # closes after ~10s, so if we haven't found a 4-arrow solution by this
+    # point there's no point continuing. Bumped slightly above 10s to leave
+    # room for the very first cold-start inference.
+    RUNE_INFERENCE_TIMEOUT = 15
+
     def __init__(self):
         """Loads a user-defined routine on start up and initializes this Bot's main thread."""
 
@@ -237,16 +243,28 @@ class Bot(Configurable):
         # The 15-iteration loop only exists to wait for the rune UI to render —
         # we don't require two matching inferences before pressing.
         solution = None
-        for _ in range(15):
+        loop_start = time.time()
+        deadline = loop_start + self.RUNE_INFERENCE_TIMEOUT
+        for i in range(15):
             if not config.enabled:
                 return False
+            if time.time() >= deadline:
+                elapsed = time.time() - loop_start
+                print(f'[!] Inference timed out after {elapsed:.1f}s with no 4-arrow solution')
+                return False
+
+            iter_start = time.time()
             frame = config.capture.frame
             candidate = detection.merge_detection(model, frame)
+            iter_dt = time.time() - iter_start
+
             if candidate:
-                print(', '.join(candidate))
+                print(f'  iter {i+1} ({iter_dt:.2f}s): {", ".join(candidate)}')
                 if len(candidate) == 4:
                     solution = candidate
                     break
+            else:
+                print(f'  iter {i+1} ({iter_dt:.2f}s): no detection')
 
         if not solution:
             return False
@@ -280,12 +298,23 @@ class Bot(Configurable):
         return False
 
     def _kick_off_model_load(self):
-        """Loads the rune detection model in a background daemon thread."""
+        """Loads the rune detection model in a background daemon thread, then
+        runs a dummy inference so the first real solve doesn't pay the TF
+        graph JIT cost (which can add several seconds on CPU)."""
         def loader():
             try:
                 print('\n[~] Pre-loading rune detection model in background...')
+                t0 = time.time()
                 self.model = detection.load_model()
-                print('[~] Rune detection model ready')
+                print(f'[~] Model loaded in {time.time()-t0:.1f}s, warming up...')
+
+                # Warm up — call the un-decorated inference helper directly so
+                # @run_if_enabled doesn't gate it before the bot is enabled
+                import numpy as np
+                dummy = np.zeros((300, 300, 3), dtype=np.uint8)
+                t0 = time.time()
+                detection.run_inference_for_single_image(self.model, dummy)
+                print(f'[~] Rune detection model ready (warmup {time.time()-t0:.1f}s)')
             except Exception as e:
                 print(f'[!] Failed to pre-load rune detection model: {e}')
                 self._model_load_thread = None  # Allow another attempt later
