@@ -184,7 +184,7 @@ class Bot(Configurable):
 
         # Move/Adjust press arrows + jump (space) during navigation; release
         # everything we know about so nothing bleeds into the rune-solve presses
-        self._release_solver_keys(reason='post-navigation cleanup')
+        self._release_solver_keys()
         if not self._interruptible_sleep(0.5):
             self.rune_active = False
             return
@@ -198,9 +198,7 @@ class Bot(Configurable):
                 if not self._interruptible_sleep(3):
                     break
 
-            interact_key = self.config['Interact']
-            print(f"[rune-key] press Interact='{interact_key}' (open rune UI, attempt {attempt})")
-            press(interact_key, 1, down_time=0.2)
+            press(self.config['Interact'], 1, down_time=0.2)
             if not self._interruptible_sleep(0.5):
                 break
 
@@ -222,16 +220,12 @@ class Bot(Configurable):
             print(f'[!] Rune solve failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
             self._record_solve_failure()
 
-    def _release_solver_keys(self, reason=''):
+    def _release_solver_keys(self):
         """Release every key the rune solver or command book might be holding."""
         keys = ['left', 'right', 'up', 'down', 'space', 'shift', 'ctrl', 'alt']
         interact = self.config.get('Interact')
         if interact and interact not in keys:
             keys.append(interact)
-        if reason:
-            print(f"[rune-key] release {keys} ({reason})")
-        else:
-            print(f"[rune-key] release {keys}")
         for k in keys:
             key_up(k)
 
@@ -243,40 +237,30 @@ class Bot(Configurable):
         # The 15-iteration loop only exists to wait for the rune UI to render —
         # we don't require two matching inferences before pressing.
         solution = None
-        loop_start = time.time()
-        deadline = loop_start + self.RUNE_INFERENCE_TIMEOUT
-        for i in range(15):
+        deadline = time.time() + self.RUNE_INFERENCE_TIMEOUT
+        for _ in range(15):
             if not config.enabled:
                 return False
             if time.time() >= deadline:
-                elapsed = time.time() - loop_start
-                print(f'[!] Inference timed out after {elapsed:.1f}s with no 4-arrow solution')
+                print('[!] Inference timed out with no 4-arrow solution')
                 return False
 
-            iter_start = time.time()
             frame = config.capture.frame
             candidate = detection.merge_detection(model, frame)
-            iter_dt = time.time() - iter_start
-
-            if candidate:
-                print(f'  iter {i+1} ({iter_dt:.2f}s): {", ".join(candidate)}')
-                if len(candidate) == 4:
-                    solution = candidate
-                    break
-            else:
-                print(f'  iter {i+1} ({iter_dt:.2f}s): no detection')
+            if candidate and len(candidate) == 4:
+                solution = candidate
+                break
 
         if not solution:
             return False
 
         print(f'[~] Entering solution: {", ".join(solution)}')
-        self._release_solver_keys(reason='pre-solution-press')
+        self._release_solver_keys()
         if not self._interruptible_sleep(0.1):
             return False
         for arrow in solution:
             if not config.enabled:
                 return False
-            print(f'[rune-key] press {arrow}')
             press(arrow, 1, down_time=0.15, up_time=0.15)
         if not self._interruptible_sleep(1):
             return False
@@ -300,17 +284,13 @@ class Bot(Configurable):
     def _kick_off_model_load(self):
         """Loads the rune detection model in a background daemon thread, then
         runs warmup inferences for each input shape merge_detection uses so
-        the first real solve doesn't pay TF JIT cost. Also warns the user
-        when per-inference cost exceeds the in-game rune UI lifetime."""
+        the first real solve doesn't pay TF JIT cost."""
         def loader():
             try:
-                print('\n[~] Pre-loading rune detection model in background...')
-                t0 = time.time()
+                print('\n[~] Loading rune detection model...')
                 self.model = detection.load_model()
-                print(f'[~] Model loaded in {time.time()-t0:.1f}s, warming up...')
 
                 import numpy as np
-                warmup_start = time.time()
 
                 # Wait briefly for capture to expose a real frame so we warm
                 # up with the user's actual game-window dimensions
@@ -330,30 +310,13 @@ class Bot(Configurable):
                     cropped = cv2.cvtColor(cropped, cv2.COLOR_BGRA2BGR)
                 filtered = detection.filter_color(cropped)
                 cannied = detection.canny(filtered)
-                t_inf = time.time()
                 detection.get_boxes(self.model, cannied)
-                get_boxes_dt = time.time() - t_inf
-                print(f'[~]   warmup get_boxes ({cannied.shape[1]}x{cannied.shape[0]}): {get_boxes_dt:.2f}s')
 
                 # Inferences 2 & 3: fixed shapes used after a successful box detection
-                t_inf = time.time()
                 detection.sort_by_confidence(self.model, np.zeros((384, 455, 3), dtype=np.uint8))
-                print(f'[~]   warmup classify (455x384): {time.time()-t_inf:.2f}s')
-                t_inf = time.time()
                 detection.sort_by_confidence(self.model, np.zeros((455, 384, 3), dtype=np.uint8))
-                print(f'[~]   warmup classify (384x455 rotated): {time.time()-t_inf:.2f}s')
 
-                print(f'[~] Rune detection model ready (total warmup {time.time()-warmup_start:.1f}s)')
-
-                # The rune UI is only on screen for ~10s. If a single get_boxes
-                # call alone exceeds that, the solver cannot keep up no matter
-                # how we tune retries. Surface this loudly with a fix path.
-                if get_boxes_dt > 5.0:
-                    print(f'[!] WARNING: per-inference cost is {get_boxes_dt:.1f}s; the rune UI '
-                          f'closes after ~10s, so the solver may not keep up on this device.')
-                    print(f'[!] TensorFlow on native Windows is CPU-only since TF 2.11. To get GPU '
-                          f'acceleration, either run under WSL2 or install the DirectML plugin: '
-                          f'`uv pip install tensorflow-directml-plugin`.')
+                print('[~] Rune detection model ready')
             except Exception as e:
                 print(f'[!] Failed to pre-load rune detection model: {e}')
                 self._model_load_thread = None  # Allow another attempt later
