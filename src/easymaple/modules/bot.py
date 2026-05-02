@@ -25,7 +25,7 @@ class Bot(Configurable):
     """A class that interprets and executes user-defined routines."""
 
     DEFAULT_CONFIG = {
-        'Interact': 'y',
+        'Interact': 'alt',
         'Feed pet': '9'
     }
 
