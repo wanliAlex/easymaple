@@ -41,5 +41,8 @@ capture = None
 # Shares the keyboard listener
 listener = None
 
+# Shares the notifier (rune detection, Discord, audio alerts)
+notifier = None
+
 # Shares the gui to all modules
 gui = None

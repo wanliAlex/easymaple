@@ -65,6 +65,8 @@ class Notifier:
     def __init__(self):
         """Initializes this Notifier object's main thread."""
 
+        config.notifier = self
+
         pygame.mixer.init()
         self.mixer = pygame.mixer.music
 
@@ -176,6 +178,14 @@ class Notifier:
     def _enqueue_notify(self, message):
         if WEB_HOOK:
             self._discord_queue.put(message)
+
+    def alert_rune_unsolvable(self, attempts):
+        """Audio + Discord alert when the rune solver fails repeatedly."""
+        msg = (f"<@{DISCORD_USER_ID}> 符文已连续 {attempts} 次解不开，"
+               f"可能是误报或模型识别失败，请手动检查")
+        print(f'\n[!] {msg}')
+        self._enqueue_notify(msg)
+        self._ping("siren", volume=0.75)
 
     def _discord_sender(self):
         """Persistent worker that drains _discord_queue and posts to Discord."""

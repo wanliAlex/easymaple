@@ -29,6 +29,9 @@ class Bot(Configurable):
         'Feed pet': '9'
     }
 
+    # Number of consecutive failed rune solves before alerting the user
+    RUNE_FAIL_THRESHOLD = 3
+
     def __init__(self):
         """Loads a user-defined routine on start up and initializes this Bot's main thread."""
 
@@ -38,6 +41,7 @@ class Bot(Configurable):
         self.rune_active = False
         self.rune_pos = (0, 0)
         self.rune_closest_pos = (0, 0)      # Location of the Point closest to rune
+        self.rune_solve_failures = 0
         self.submodules = []
         self.module_name = None
         self.buff = components.Buff()
@@ -121,21 +125,29 @@ class Bot(Configurable):
     @utils.run_if_enabled
     def _solve_rune(self, model):
         """
-        Moves to the position of the rune and solves the arrow-key puzzle.
-        :param model:   The TensorFlow model to classify with.
-        :param sct:     The mss instance object with which to take screenshots.
-        :return:        None
+        Moves to the position of the rune and solves the arrow-key puzzle. Always
+        clears `rune_active` on exit so the notifier re-detects on the next scan
+        instead of busy-looping. After `RUNE_FAIL_THRESHOLD` consecutive failures
+        (no consensus solution, or buff icon never appeared), alerts the user.
         """
 
-        move = self.command_book['move']
-        move(*self.rune_pos).execute()
-        adjust = self.command_book['adjust']
-        adjust(*self.rune_pos).execute()
+        try:
+            move = self.command_book['move']
+            move(*self.rune_pos).execute()
+            adjust = self.command_book['adjust']
+            adjust(*self.rune_pos).execute()
+        except Exception as e:
+            print(f'[!] Failed to navigate to rune: {e}')
+            self.rune_active = False
+            self._record_solve_failure()
+            return
+
         time.sleep(1)
         press(self.config['Interact'], 1, down_time=0.2)        # Inherited from Configurable
 
         print('\nSolving rune:')
         inferences = []
+        buff_confirmed = False
         for _ in range(15):
             frame = config.capture.frame
             solution = detection.merge_detection(model, frame)
@@ -153,16 +165,36 @@ class Bot(Configurable):
                                                       RUNE_BUFF_TEMPLATE,
                                                       threshold=0.9)
                         if rune_buff:
+                            buff_confirmed = True
                             rune_buff_pos = min(rune_buff, key=lambda p: p[0])
                             target = (
                                 round(rune_buff_pos[0] + config.capture.window['left']),
                                 round(rune_buff_pos[1] + config.capture.window['top'])
                             )
                             click(target, button='right')
-                    self.rune_active = False
+                            break
                     break
                 elif len(solution) == 4:
                     inferences.append(solution)
+
+        # Always clear so we don't busy-loop; the notifier re-sets it if the rune
+        # is still on the minimap (real failure) or stays clear if it was a false alarm.
+        self.rune_active = False
+        if buff_confirmed:
+            if self.rune_solve_failures > 0:
+                print(f'[~] Rune solved after {self.rune_solve_failures + 1} attempt(s)')
+            self.rune_solve_failures = 0
+        else:
+            self._record_solve_failure()
+
+    def _record_solve_failure(self):
+        self.rune_solve_failures += 1
+        print(f'[!] Rune solve attempt {self.rune_solve_failures} failed')
+        if self.rune_solve_failures >= self.RUNE_FAIL_THRESHOLD:
+            notifier = getattr(config, 'notifier', None)
+            if notifier is not None:
+                notifier.alert_rune_unsolvable(self.rune_solve_failures)
+            self.rune_solve_failures = 0
 
     def load_commands(self, file):
         """Prompts the user to select a command module to import. Updates config's command book."""
