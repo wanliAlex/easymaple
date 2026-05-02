@@ -129,12 +129,23 @@ class Bot(Configurable):
             else:
                 time.sleep(0.01)
 
+    @staticmethod
+    def _interruptible_sleep(duration):
+        """Sleeps in 0.05s slices and returns False as soon as config.enabled is cleared."""
+        end = time.time() + duration
+        while time.time() < end:
+            if not config.enabled:
+                return False
+            time.sleep(0.05)
+        return config.enabled
+
     @utils.run_if_enabled
     def _solve_rune(self, model):
         """
         Moves to the rune, then tries up to RUNE_FAIL_THRESHOLD times to solve it
         in-place (3s sleep between retries). Always clears `rune_active` on exit
-        so we don't busy-loop. Alerts the user if all retries fail.
+        so we don't busy-loop. Alerts the user if all retries fail. Bails early
+        whenever config.enabled is cleared (F8).
         """
 
         try:
@@ -152,23 +163,31 @@ class Bot(Configurable):
         # all arrows so they don't bleed into the rune-solve key presses
         for arrow in ('left', 'right', 'up', 'down'):
             key_up(arrow)
-        time.sleep(0.5)
+        if not self._interruptible_sleep(0.5):
+            self.rune_active = False
+            return
 
         solved = False
         for attempt in range(1, self.RUNE_FAIL_THRESHOLD + 1):
+            if not config.enabled:
+                break
             if attempt > 1:
                 print(f'[~] Retrying rune solve in 3s (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD})...')
-                time.sleep(3)
+                if not self._interruptible_sleep(3):
+                    break
 
-            # Open the rune UI
             press(self.config['Interact'], 1, down_time=0.2)
-            time.sleep(0.5)     # let the arrow puzzle render
+            if not self._interruptible_sleep(0.5):
+                break
 
             if self._attempt_solve_once(model):
                 solved = True
                 break
 
         self.rune_active = False
+        if not config.enabled:
+            print('[~] Rune solver interrupted by F8')
+            return
         if solved:
             if self.rune_solve_failures > 0:
                 print(f'[~] Rune solved after {self.rune_solve_failures + 1} prior failures')
@@ -182,21 +201,27 @@ class Bot(Configurable):
         print('\nSolving rune:')
         inferences = []
         for _ in range(15):
+            if not config.enabled:
+                return False
             frame = config.capture.frame
             solution = detection.merge_detection(model, frame)
             if solution:
                 print(', '.join(solution))
                 if solution in inferences:
                     print(f'[~] Entering solution: {", ".join(solution)}')
-                    # Belt-and-suspenders: clear any stuck arrows right before pressing
                     for arrow in ('left', 'right', 'up', 'down'):
                         key_up(arrow)
-                    time.sleep(0.1)
+                    if not self._interruptible_sleep(0.1):
+                        return False
                     for arrow in solution:
+                        if not config.enabled:
+                            return False
                         press(arrow, 1, down_time=0.15, up_time=0.15)
-                    time.sleep(1)
+                    if not self._interruptible_sleep(1):
+                        return False
                     for _ in range(3):
-                        time.sleep(0.3)
+                        if not self._interruptible_sleep(0.3):
+                            return False
                         frame = config.capture.frame
                         rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
                                                       RUNE_BUFF_TEMPLATE,
