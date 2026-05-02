@@ -213,44 +213,51 @@ class Bot(Configurable):
     def _attempt_solve_once(self, model):
         """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
-        inferences = []
+
+        # Take the first inference that returns a complete 4-arrow solution.
+        # The 15-iteration loop only exists to wait for the rune UI to render —
+        # we don't require two matching inferences before pressing.
+        solution = None
         for _ in range(15):
             if not config.enabled:
                 return False
             frame = config.capture.frame
-            solution = detection.merge_detection(model, frame)
-            if solution:
-                print(', '.join(solution))
-                if solution in inferences:
-                    print(f'[~] Entering solution: {", ".join(solution)}')
-                    self._release_solver_keys(reason='pre-solution-press')
-                    if not self._interruptible_sleep(0.1):
-                        return False
-                    for arrow in solution:
-                        if not config.enabled:
-                            return False
-                        print(f'[rune-key] press {arrow}')
-                        press(arrow, 1, down_time=0.15, up_time=0.15)
-                    if not self._interruptible_sleep(1):
-                        return False
-                    for _ in range(3):
-                        if not self._interruptible_sleep(0.3):
-                            return False
-                        frame = config.capture.frame
-                        rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                                      RUNE_BUFF_TEMPLATE,
-                                                      threshold=0.9)
-                        if rune_buff:
-                            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-                            target = (
-                                round(rune_buff_pos[0] + config.capture.window['left']),
-                                round(rune_buff_pos[1] + config.capture.window['top'])
-                            )
-                            click(target, button='right')
-                            return True
-                    return False
-                elif len(solution) == 4:
-                    inferences.append(solution)
+            candidate = detection.merge_detection(model, frame)
+            if candidate:
+                print(', '.join(candidate))
+                if len(candidate) == 4:
+                    solution = candidate
+                    break
+
+        if not solution:
+            return False
+
+        print(f'[~] Entering solution: {", ".join(solution)}')
+        self._release_solver_keys(reason='pre-solution-press')
+        if not self._interruptible_sleep(0.1):
+            return False
+        for arrow in solution:
+            if not config.enabled:
+                return False
+            print(f'[rune-key] press {arrow}')
+            press(arrow, 1, down_time=0.15, up_time=0.15)
+        if not self._interruptible_sleep(1):
+            return False
+        for _ in range(3):
+            if not self._interruptible_sleep(0.3):
+                return False
+            frame = config.capture.frame
+            rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
+                                          RUNE_BUFF_TEMPLATE,
+                                          threshold=0.9)
+            if rune_buff:
+                rune_buff_pos = min(rune_buff, key=lambda p: p[0])
+                target = (
+                    round(rune_buff_pos[0] + config.capture.window['left']),
+                    round(rune_buff_pos[1] + config.capture.window['top'])
+                )
+                click(target, button='right')
+                return True
         return False
 
     def _kick_off_model_load(self):
