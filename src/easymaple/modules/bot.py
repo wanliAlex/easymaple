@@ -159,10 +159,9 @@ class Bot(Configurable):
             self._record_solve_failure()
             return
 
-        # Move/Adjust use key_down to walk and may leave an arrow held — release
-        # all arrows so they don't bleed into the rune-solve key presses
-        for arrow in ('left', 'right', 'up', 'down'):
-            key_up(arrow)
+        # Move/Adjust press arrows + jump (space) during navigation; release
+        # everything we know about so nothing bleeds into the rune-solve presses
+        self._release_solver_keys(reason='post-navigation cleanup')
         if not self._interruptible_sleep(0.5):
             self.rune_active = False
             return
@@ -176,7 +175,9 @@ class Bot(Configurable):
                 if not self._interruptible_sleep(3):
                     break
 
-            press(self.config['Interact'], 1, down_time=0.2)
+            interact_key = self.config['Interact']
+            print(f"[rune-key] press Interact='{interact_key}' (open rune UI, attempt {attempt})")
+            press(interact_key, 1, down_time=0.2)
             if not self._interruptible_sleep(0.5):
                 break
 
@@ -196,6 +197,19 @@ class Bot(Configurable):
             self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
             self._record_solve_failure()
 
+    def _release_solver_keys(self, reason=''):
+        """Release every key the rune solver or command book might be holding."""
+        keys = ['left', 'right', 'up', 'down', 'space', 'shift', 'ctrl', 'alt']
+        interact = self.config.get('Interact')
+        if interact and interact not in keys:
+            keys.append(interact)
+        if reason:
+            print(f"[rune-key] release {keys} ({reason})")
+        else:
+            print(f"[rune-key] release {keys}")
+        for k in keys:
+            key_up(k)
+
     def _attempt_solve_once(self, model):
         """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
@@ -209,13 +223,13 @@ class Bot(Configurable):
                 print(', '.join(solution))
                 if solution in inferences:
                     print(f'[~] Entering solution: {", ".join(solution)}')
-                    for arrow in ('left', 'right', 'up', 'down'):
-                        key_up(arrow)
+                    self._release_solver_keys(reason='pre-solution-press')
                     if not self._interruptible_sleep(0.1):
                         return False
                     for arrow in solution:
                         if not config.enabled:
                             return False
+                        print(f'[rune-key] press {arrow}')
                         press(arrow, 1, down_time=0.15, up_time=0.15)
                     if not self._interruptible_sleep(1):
                         return False
