@@ -128,12 +128,10 @@ class Notifier:
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
                     matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.75)
                     if matches:
-                        # On first detection, record rune position and nearest routine point
-                        if not config.bot.rune_active and config.routine.sequence:
+                        # On first detection, record the rune's minimap position
+                        if not config.bot.rune_active:
                             abs_rune_pos = (matches[0][0], matches[0][1])
                             config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
-                            distances = list(map(distance_to_rune, config.routine.sequence))
-                            config.bot.rune_closest_pos = config.routine[int(np.argmin(distances))].location
                         config.bot.rune_active = True
                         if time.time() - report_time > 10 or report_time == 0:
                             self._ping("rune_appeared", volume=0.75)

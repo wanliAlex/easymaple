@@ -84,6 +84,18 @@ class Bot(Configurable):
         last_fed = time.time()
         key_up("left"); key_up("right")
         while True:
+            if config.enabled:
+                solve_rune = config.gui.settings.rune.solve_rune.get()
+                if self.rune_active:
+                    if solve_rune:
+                        if self.model is None:
+                            print('\n[~] Loading rune detection model...')
+                            self.model = detection.load_model()
+                            print('[~] Rune detection model loaded')
+                        self._solve_rune(self.model)
+                    else:
+                        self.rune_active = False
+
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
                 self.buff.main()
@@ -101,17 +113,6 @@ class Bot(Configurable):
 
                 # Execute next Point in the routine
                 element = config.routine[config.routine.index]
-                rune_settings = config.gui.settings.rune
-                solve_rune = rune_settings.solve_rune.get()
-                if self.rune_active:
-                    if solve_rune and isinstance(element, Point) and element.location == self.rune_closest_pos:
-                        if self.model is None:
-                            print('\n[~] Loading rune detection model...')
-                            self.model = detection.load_model()
-                            print('[~] Rune detection model loaded')
-                        self._solve_rune(self.model)
-                    elif not solve_rune:
-                        self.rune_active = False
                 element.execute()
                 config.routine.step()
             else:
