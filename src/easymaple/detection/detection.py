@@ -46,16 +46,19 @@ def canny(image):
 
 def filter_color(image):
     """
-    Filters out all colors not between orange and green on the HSV scale, which
-    eliminates some noise around the arrows.
+    Filters out non-arrow colors. Originally only kept hues 1-75 (red→green),
+    which dropped the magenta/purple arrow variant the game now uses. We now
+    also keep hues 130-170 (magenta→pink) so all four arrows survive into the
+    Canny stage.
     :param image:   The input image.
     :return:        The color-filtered image.
     """
 
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, (1, 100, 100), (75, 255, 255))
+    mask_warm = cv2.inRange(hsv, (1, 100, 100),  (75, 255, 255))    # red→orange→yellow→green
+    mask_cool = cv2.inRange(hsv, (130, 80, 100), (170, 255, 255))   # magenta→pink
+    mask = cv2.bitwise_or(mask_warm, mask_cool)
 
-    # Mask the image
     color_mask = mask > 0
     arrows = np.zeros_like(image, np.uint8)
     arrows[color_mask] = image[color_mask]
