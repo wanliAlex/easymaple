@@ -227,13 +227,11 @@ class Bot(Configurable):
             self._record_solve_failure()
 
     @staticmethod
-    def _save_training_frame():
+    def _save_training_frame(suffix=''):
         """Save just the rune-puzzle band of the current capture frame to
-        training_data/ for later use as labeled training data. Tighter than
-        the region merge_detection feeds to the model — drops the
-        'tap the arrow keys' header above and the empty space / NPC text
-        below. Note: if you retrain with these tighter crops, you should
-        also tighten merge_detection's input region to match."""
+        training_data/ for later use as labeled training data. Optional
+        `suffix` (e.g. '_failed') is appended before the extension so hard
+        cases can be filtered out for retraining."""
         try:
             frame = config.capture.frame
             if frame is None:
@@ -248,7 +246,7 @@ class Bot(Configurable):
             os.makedirs('training_data', exist_ok=True)
             ts = time.strftime('%Y%m%d_%H%M%S')
             ms = int(time.time() * 1000) % 1000
-            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}.png'), cropped)
+            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}{suffix}.png'), cropped)
         except Exception as e:
             print(f'[!] Failed to save training frame: {e}')
 
@@ -266,10 +264,13 @@ class Bot(Configurable):
         print('\nSolving rune:')
 
         # Take the first inference that returns a complete 4-arrow solution.
-        # The 15-iteration loop only exists to wait for the rune UI to render —
-        # we don't require two matching inferences before pressing.
+        # If we get nothing for several consecutive iterations the rune likely
+        # contains an arrow style the model can't classify (e.g. magenta) and
+        # no amount of additional inferences will help — bail early so the
+        # bot can keep farming while the user retrains the model.
         solution = None
         deadline = time.time() + self.RUNE_INFERENCE_TIMEOUT
+        empty_iters = 0
         for _ in range(15):
             if not config.enabled:
                 return False
@@ -282,6 +283,13 @@ class Bot(Configurable):
             if candidate and len(candidate) == 4:
                 solution = candidate
                 break
+
+            empty_iters += 1
+            if empty_iters >= 5:
+                print('[!] No 4-arrow detection in 5 inferences; likely an '
+                      'unsupported arrow style — saving frame and bailing')
+                self._save_training_frame(suffix='_failed')
+                return False
 
         if not solution:
             return False
