@@ -172,22 +172,44 @@ class Notifier:
     def _enqueue_notify(self, message):
         if WEB_HOOK:
             self._discord_queue.put(message)
+        else:
+            print('[!] DISCORD_WEBHOOK is not set — Discord notification skipped')
 
     def alert_rune_unsolvable(self, attempts):
-        """Audio + Discord alert when the rune solver fails repeatedly."""
+        """Audio + Discord alert when the rune solver fails a batch of trials."""
         msg = (f"<@{DISCORD_USER_ID}> 符文已连续 {attempts} 次解不开，"
                f"可能是误报或模型识别失败，请手动检查")
         print(f'\n[!] {msg}')
         self._enqueue_notify(msg)
         self._ping("siren", volume=0.75)
 
+    def alert_rune_giving_up(self, total_trials):
+        """Final alert when the bot has disabled itself after too many failed batches."""
+        msg = (f"<@{DISCORD_USER_ID}> 符文连续失败 {total_trials} 次，"
+               f"机器人已自动停止，请手动处理")
+        print(f'\n[!] {msg}')
+        self._enqueue_notify(msg)
+        self._ping("siren", volume=0.75)
+
+    def stop_alerts(self):
+        """Stop any alert audio currently playing. Called on F8 toggle so the
+        siren doesn't keep ringing after the user takes over."""
+        try:
+            self.mixer.stop()
+        except Exception as e:
+            log.warning('Failed to stop mixer: %s', e)
+
     def _discord_sender(self):
         """Persistent worker that drains _discord_queue and posts to Discord."""
         while True:
             message = self._discord_queue.get()
             try:
-                requests.post(WEB_HOOK, json={"content": message})
+                r = requests.post(WEB_HOOK, json={"content": message}, timeout=10)
+                r.raise_for_status()
             except requests.RequestException as e:
+                # Print as well as log — the user is more likely to be watching the
+                # console than the logger output
+                print(f'[!] Discord notification failed: {e}')
                 log.warning("Discord notification failed: %s", e)
             finally:
                 self._discord_queue.task_done()

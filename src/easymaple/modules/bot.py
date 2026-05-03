@@ -39,10 +39,14 @@ class Bot(Configurable):
     RUNE_COOLDOWN_AFTER_FAIL = 60
 
     # Hard wall-clock timeout for the inference loop. The in-game rune UI
-    # closes after ~10s, so if we haven't found a 4-arrow solution by this
-    # point there's no point continuing. Bumped slightly above 10s to leave
-    # room for the very first cold-start inference.
-    RUNE_INFERENCE_TIMEOUT = 15
+    # closes after ~10s, so 11s gives a small safety margin. On timeout the
+    # outer retry loop sleeps 3s, re-presses Interact, and tries again.
+    RUNE_INFERENCE_TIMEOUT = 11
+
+    # After this many consecutive failed _solve_rune batches (each batch is
+    # RUNE_FAIL_THRESHOLD trials), give up entirely and disable the bot so
+    # the user can solve manually. 3 batches × 3 trials = 9 trials.
+    RUNE_BATCH_FAIL_LIMIT = 3
 
     def __init__(self):
         """Loads a user-defined routine on start up and initializes this Bot's main thread."""
@@ -55,6 +59,7 @@ class Bot(Configurable):
         self.rune_closest_pos = (0, 0)      # Location of the Point closest to rune
         self.rune_solve_failures = 0
         self.rune_solve_cooldown_until = 0
+        self.rune_consecutive_batch_failures = 0
         self.submodules = []
         self.module_name = None
         self.buff = components.Buff()
@@ -220,11 +225,26 @@ class Bot(Configurable):
             if self.rune_solve_failures > 0:
                 print(f'[~] Rune solved after {self.rune_solve_failures + 1} prior failures')
             self.rune_solve_failures = 0
+            self.rune_consecutive_batch_failures = 0
+            return
+
+        self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
+        self.rune_consecutive_batch_failures += 1
+        self._record_solve_failure()
+
+        if self.rune_consecutive_batch_failures >= self.RUNE_BATCH_FAIL_LIMIT:
+            total_trials = self.rune_consecutive_batch_failures * self.RUNE_FAIL_THRESHOLD
+            print(f'[!] {self.rune_consecutive_batch_failures} batches failed '
+                  f'({total_trials} trials); disabling bot for manual intervention')
+            notifier = getattr(config, 'notifier', None)
+            if notifier is not None and hasattr(notifier, 'alert_rune_giving_up'):
+                notifier.alert_rune_giving_up(total_trials)
+            config.enabled = False
+            self.rune_consecutive_batch_failures = 0
+            self.rune_solve_cooldown_until = 0   # cooldown is moot; bot is off
         else:
-            self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
             self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
-            print(f'[!] Rune solve failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
-            self._record_solve_failure()
+            print(f'[!] Rune solve batch failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
 
     @staticmethod
     def _save_training_frame(suffix=''):
