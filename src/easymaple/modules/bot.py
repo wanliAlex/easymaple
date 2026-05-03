@@ -171,11 +171,13 @@ class Bot(Configurable):
     @utils.run_if_enabled
     def _solve_rune(self, model):
         """
-        Moves to the rune, then tries up to RUNE_FAIL_THRESHOLD times to solve it
-        in-place (3s sleep between retries). Always clears `rune_active` on exit
-        so we don't busy-loop. Alerts the user if all retries fail. Bails early
-        whenever config.enabled is cleared (F8).
+        Moves to the rune, then tries up to RUNE_FAIL_THRESHOLD times to solve
+        it (3s sleep between retries). Re-navigates before each retry since
+        failed solves often leave the player drifted away. Always clears
+        `rune_active` on exit. Bails early whenever config.enabled is cleared.
         """
+
+        print(f'[~] Rune detected at {self.rune_pos}; moving to solve')
 
         try:
             move = self.command_book['move']
@@ -202,6 +204,17 @@ class Bot(Configurable):
             if attempt > 1:
                 print(f'[~] Retrying rune solve in 3s (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD})...')
                 if not self._interruptible_sleep(3):
+                    break
+
+                # Failed solves often involve drift; re-navigate before retry.
+                try:
+                    move(*self.rune_pos).execute()
+                    adjust(*self.rune_pos).execute()
+                except Exception as e:
+                    print(f'[!] Failed to re-navigate to rune: {e}')
+                    break
+                self._release_solver_keys()
+                if not self._interruptible_sleep(0.5):
                     break
 
             press(self.config['Interact'], 1, down_time=0.2)
