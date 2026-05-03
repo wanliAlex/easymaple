@@ -238,17 +238,14 @@ class Bot(Configurable):
                 if not self._interruptible_sleep(1.0):
                     break
 
-            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 2s for rune UI')
+            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 3s for rune UI')
             press(self.config['Interact'], 1, down_time=0.2)
-            # 2s gives the rune UI plenty of time to fully render before
-            # we start sampling frames for inference.
-            if not self._interruptible_sleep(2.0):
+            # 3s gives the rune UI time to fully render. We then wait a
+            # bit more inside _attempt_solve_once for the band to settle
+            # — damage numbers from in-flight attacks animate for a
+            # couple of seconds and obscure the arrows.
+            if not self._interruptible_sleep(3.0):
                 break
-
-            # Snapshot the rune UI for training-data collection. Saved here
-            # because at this point Interact has rendered the puzzle but no
-            # arrows have been pressed, so the frame shows the unsolved rune.
-            self._save_training_frame()
 
             if self._attempt_solve_once(model):
                 solved = True
@@ -290,34 +287,31 @@ class Bot(Configurable):
             self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
             print(f'[!] Rune solve batch failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
 
-    @staticmethod
-    def _save_training_frame(suffix=''):
-        """Save the full game frame plus the cropped band that gets fed
-        into the rune classifier, as a paired set under training_data/.
-        The pair makes it easy to (a) verify the crop region is correct
-        for the current window size and (b) re-crop differently later
-        without re-running the bot. Optional `suffix` (e.g. '_failed')
-        is appended before the extension so hard cases can be filtered
-        out for retraining."""
-        try:
+    def _wait_for_stable_band(self, timeout=3.0, diff_threshold=5.0, sample_interval=0.2):
+        """Block until the rune-band crop is visually stable frame-to-frame,
+        or until ``timeout`` seconds elapse. 'Stable' = mean absolute pixel
+        diff between two consecutive band crops below ``diff_threshold``.
+        Returns True if stability was reached, False on timeout."""
+        from src.easymaple.detection.detection import _crop_rune_band
+        deadline = time.time() + timeout
+        prev = None
+        while time.time() < deadline:
+            if not config.enabled:
+                return False
             frame = config.capture.frame
             if frame is None:
-                return
-            from src.easymaple.detection.detection import _crop_rune_band
-            cropped = _crop_rune_band(frame)
-            full = frame
-            if full.shape[2] == 4:
-                full = cv2.cvtColor(full, cv2.COLOR_BGRA2BGR)
-            os.makedirs('training_data', exist_ok=True)
-            ts = time.strftime('%Y%m%d_%H%M%S')
-            ms = int(time.time() * 1000) % 1000
-            base = os.path.join('training_data', f'rune_{ts}_{ms:03d}{suffix}')
-            # Cropped (classifier input) keeps the original filename pattern
-            # so existing labels.json entries continue to resolve.
-            cv2.imwrite(f'{base}.png', cropped)
-            cv2.imwrite(f'{base}_full.png', full)
-        except Exception as e:
-            print(f'[!] Failed to save training frame: {e}')
+                time.sleep(0.05)
+                continue
+            curr = _crop_rune_band(frame)
+            if prev is not None and curr.shape == prev.shape:
+                diff = float(cv2.absdiff(prev, curr).mean())
+                if diff < diff_threshold:
+                    print(f'[~] Rune band stable (frame-diff {diff:.2f}); starting inference')
+                    return True
+            prev = curr
+            time.sleep(sample_interval)
+        print(f'[!] Rune band did not stabilize within {timeout}s; running inference anyway')
+        return False
 
     def _release_solver_keys(self):
         """Release every key the rune solver or command book might be holding."""
@@ -331,6 +325,11 @@ class Bot(Configurable):
     def _attempt_solve_once(self, model):
         """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
+
+        # Damage numbers from in-flight attacks animate over the rune band
+        # for a couple of seconds after Interact and confuse both panel
+        # detection and arrow classification. Wait for the band to settle.
+        self._wait_for_stable_band(timeout=3.0)
 
         # Take the first inference that returns a complete 4-arrow solution.
         # If we get nothing for several consecutive iterations the rune likely
@@ -355,9 +354,7 @@ class Bot(Configurable):
 
             empty_iters += 1
             if empty_iters >= 5:
-                print('[!] No 4-arrow detection in 5 inferences; likely an '
-                      'unsupported arrow style — saving frame and bailing')
-                self._save_training_frame(suffix='_failed')
+                print('[!] No 4-arrow detection in 5 inferences; bailing')
                 return False
 
         if not solution:
@@ -365,18 +362,12 @@ class Bot(Configurable):
 
         print(f'[~] Entering solution: {", ".join(solution)}')
 
-        # Debug session id: lets us correlate the pre/post crops we save
-        # with the printed match positions for a single solve attempt.
-        debug_session = f'{time.strftime("%Y%m%d_%H%M%S")}_{int(time.time() * 1000) % 1000:03d}'
-        debug_dir = os.path.join('.data', 'rune_debug')
-        os.makedirs(debug_dir, exist_ok=True)
-
-        def _buff_positions_and_crop():
+        def _buff_positions():
             f = config.capture.frame
             if f is None:
-                return [], None
+                return []
             top = f[:f.shape[0] // 8, :]
-            return (utils.multi_match(top, RUNE_BUFF_TEMPLATE, threshold=0.9) or []), top
+            return utils.multi_match(top, RUNE_BUFF_TEMPLATE, threshold=0.9) or []
 
         # 5px tolerance buckets — the buff bar shifts a few pixels as
         # neighboring buffs tick down, but a fresh icon lands in a
@@ -384,17 +375,8 @@ class Bot(Configurable):
         def _bucketed(matches):
             return {(p[0] // 5, p[1] // 5) for p in matches}
 
-        def _save_crop(crop, label):
-            if crop is None:
-                return
-            try:
-                cv2.imwrite(os.path.join(debug_dir, f'{debug_session}_{label}.png'), crop)
-            except Exception as e:
-                print(f'[!] Failed to save debug crop {label}: {e}')
-
-        pre_matches, pre_crop = _buff_positions_and_crop()
+        pre_matches = _buff_positions()
         pre_buckets = _bucketed(pre_matches)
-        _save_crop(pre_crop, 'pre')
         print(f'[debug] pre  matches={pre_matches} buckets={sorted(pre_buckets)}')
 
         self._release_solver_keys()
@@ -410,9 +392,8 @@ class Bot(Configurable):
         for poll in range(1, 4):
             if not self._interruptible_sleep(0.3):
                 return False
-            rune_buff, post_crop = _buff_positions_and_crop()
+            rune_buff = _buff_positions()
             post_buckets = _bucketed(rune_buff)
-            _save_crop(post_crop, f'post{poll}')
             print(f'[debug] post{poll} matches={rune_buff} buckets={sorted(post_buckets)} '
                   f'fresh={sorted(post_buckets - pre_buckets)}')
             if not rune_buff:
@@ -447,7 +428,7 @@ class Bot(Configurable):
                 # Bypass detect_panel (it'd return "no_image" on a blank
                 # frame and skip the model entirely).
                 import torch
-                dummy = torch.zeros(4, 3, 96, 96, device=self.model.device)
+                dummy = torch.zeros(4, 3, 224, 224, device=self.model.device)
                 with torch.no_grad():
                     self.model.model(dummy)
 
