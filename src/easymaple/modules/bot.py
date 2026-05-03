@@ -217,8 +217,11 @@ class Bot(Configurable):
                 if not self._interruptible_sleep(0.5):
                     break
 
+            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 1s for rune UI')
             press(self.config['Interact'], 1, down_time=0.2)
-            if not self._interruptible_sleep(0.5):
+            # 1s is generous — the rune UI animates in over ~500ms and we
+            # need it fully rendered before the first inference frame.
+            if not self._interruptible_sleep(1.0):
                 break
 
             # Snapshot the rune UI for training-data collection. Saved here
@@ -228,7 +231,9 @@ class Bot(Configurable):
 
             if self._attempt_solve_once(model):
                 solved = True
+                print(f'[~] Rune solve SUCCESS (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD})')
                 break
+            print(f'[!] Rune solve attempt {attempt}/{self.RUNE_FAIL_THRESHOLD} did not confirm a buff')
 
         self.rune_active = False
         if not config.enabled:
@@ -241,6 +246,7 @@ class Bot(Configurable):
             self.rune_consecutive_batch_failures = 0
             return
 
+        print(f'[!] Rune solve FAILED — all {self.RUNE_FAIL_THRESHOLD} attempts exhausted')
         self.rune_solve_failures = self.RUNE_FAIL_THRESHOLD
         self.rune_consecutive_batch_failures += 1
         self._record_solve_failure()

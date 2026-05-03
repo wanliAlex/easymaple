@@ -719,8 +719,9 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
 
             # Yield to the rune solver if a rune appeared during this point.
             # The bot's main loop will solve the rune before stepping to the
-            # next routine point, then resume the routine.
-            if config.bot.rune_active:
+            # next routine point, then resume the routine. Gated on
+            # can_solve_rune so the user can disable mid-command interrupts.
+            if config.bot.rune_active and self.can_solve_rune:
                 break
 
             if self.ball_time == 0 or time.time() - self.ball_time > 117 and time.time() - self.placed_time > 59:
@@ -746,6 +747,7 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
 
 
 class NIGHT_ROAD_1_MID_MOVE(Command):
+    can_solve_rune = False
     SELF_POSITION = (0.476, 0.256)
     NEXT_POSITION = (0.770, 0.262)
     def main(self):
@@ -767,6 +769,7 @@ class NIGHT_ROAD_1_MID_MOVE(Command):
 
 
 class NIGHT_ROAD_1_RIGHT(Command):
+    can_solve_rune = False
     SELF_POSITION = (0.770, 0.262)
     NEXT_POSITION = (0.182, 0.267)
     def main(self):
@@ -780,6 +783,7 @@ class NIGHT_ROAD_1_RIGHT(Command):
 
 
 class NIGHT_ROAD_1_LEFT(Command):
+    can_solve_rune = False
     SELF_POSITION = (0.182, 0.267)
     NEXT_POSITION = (0.476, 0.256)
 
