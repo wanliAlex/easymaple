@@ -13,13 +13,6 @@ class Component:
     id = 'Routine Component'
     PRIMITIVES = {int, str, bool, float}
 
-    # If True, the bot may cut into rune-solving when this command finishes
-    # (or break out mid-execution if the command itself checks rune_active).
-    # Set to False on commands that must always run to completion — e.g.,
-    # transitions between farming positions where interrupting would leave
-    # the player out of place.
-    can_solve_rune = True
-
     def __init__(self, *args, **kwargs):
         if len(args) > 1:
             raise TypeError('Component superclass __init__ only accepts 1 (optional) argument: LOCALS')
@@ -92,13 +85,6 @@ class Point(Component):
                 adjust(*self.location).execute()
             for command in self.commands:
                 command.execute()
-                # If a rune appeared and this command allows it, bail out so
-                # the bot's main loop can solve the rune before we run the
-                # next command. Commands with can_solve_rune=False (e.g.
-                # transitional movement) are kept atomic — we wait until
-                # we hit a can_solve_rune=True command before yielding.
-                if config.bot.rune_active and command.can_solve_rune:
-                    break
         self._increment_counter()
 
     @utils.run_if_enabled

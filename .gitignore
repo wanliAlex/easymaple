@@ -4,3 +4,4 @@ CLAUDE.md
 ./resources/.cache.json
 training_data/
 private_scripts/rune_debug/
+.data/

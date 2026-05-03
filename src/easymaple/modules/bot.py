@@ -179,13 +179,28 @@ class Bot(Configurable):
 
         print(f'[~] Rune detected at {self.rune_pos}; moving to solve')
 
-        try:
+        # Loosen adjust tolerance for the rune approach — exact alignment
+        # to the rune-pos minimap pixel isn't necessary, and tighter
+        # tolerances cause the bot to thrash trying to reach a sub-pixel
+        # target. Restored on every exit path below.
+        from src.easymaple.common import settings
+        original_adjust_tolerance = settings.adjust_tolerance
+        settings.adjust_tolerance = max(original_adjust_tolerance, 0.02)
+
+        def _navigate_to_rune():
             move = self.command_book['move']
+            print('[~] Moving to rune')
             move(*self.rune_pos).execute()
             adjust = self.command_book['adjust']
+            print(f'[~] Adjusting to rune (tolerance {settings.adjust_tolerance})')
             adjust(*self.rune_pos).execute()
+            return move, adjust
+
+        try:
+            move, adjust = _navigate_to_rune()
         except Exception as e:
             print(f'[!] Failed to navigate to rune: {e}')
+            settings.adjust_tolerance = original_adjust_tolerance
             self.rune_active = False
             self._record_solve_failure()
             return
@@ -193,7 +208,10 @@ class Bot(Configurable):
         # Move/Adjust press arrows + jump (space) during navigation; release
         # everything we know about so nothing bleeds into the rune-solve presses
         self._release_solver_keys()
-        if not self._interruptible_sleep(0.5):
+        # Stand still for 1s so the player settles before pressing Interact.
+        print('[~] Standing still 1s before Interact')
+        if not self._interruptible_sleep(1.0):
+            settings.adjust_tolerance = original_adjust_tolerance
             self.rune_active = False
             return
 
@@ -208,20 +226,23 @@ class Bot(Configurable):
 
                 # Failed solves often involve drift; re-navigate before retry.
                 try:
+                    print('[~] Re-navigating to rune')
                     move(*self.rune_pos).execute()
+                    print(f'[~] Re-adjusting to rune (tolerance {settings.adjust_tolerance})')
                     adjust(*self.rune_pos).execute()
                 except Exception as e:
                     print(f'[!] Failed to re-navigate to rune: {e}')
                     break
                 self._release_solver_keys()
-                if not self._interruptible_sleep(0.5):
+                print('[~] Standing still 1s before Interact')
+                if not self._interruptible_sleep(1.0):
                     break
 
-            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 1s for rune UI')
+            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 2s for rune UI')
             press(self.config['Interact'], 1, down_time=0.2)
-            # 1s is generous — the rune UI animates in over ~500ms and we
-            # need it fully rendered before the first inference frame.
-            if not self._interruptible_sleep(1.0):
+            # 2s gives the rune UI plenty of time to fully render before
+            # we start sampling frames for inference.
+            if not self._interruptible_sleep(2.0):
                 break
 
             # Snapshot the rune UI for training-data collection. Saved here
@@ -234,6 +255,10 @@ class Bot(Configurable):
                 print(f'[~] Rune solve SUCCESS (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD})')
                 break
             print(f'[!] Rune solve attempt {attempt}/{self.RUNE_FAIL_THRESHOLD} did not confirm a buff')
+
+        # Restore the global adjust_tolerance we widened at the start so it
+        # doesn't bleed into subsequent routine commands.
+        settings.adjust_tolerance = original_adjust_tolerance
 
         self.rune_active = False
         if not config.enabled:
@@ -267,25 +292,30 @@ class Bot(Configurable):
 
     @staticmethod
     def _save_training_frame(suffix=''):
-        """Save just the rune-puzzle band of the current capture frame to
-        training_data/ for later use as labeled training data. Optional
-        `suffix` (e.g. '_failed') is appended before the extension so hard
-        cases can be filtered out for retraining."""
+        """Save the full game frame plus the cropped band that gets fed
+        into the rune classifier, as a paired set under training_data/.
+        The pair makes it easy to (a) verify the crop region is correct
+        for the current window size and (b) re-crop differently later
+        without re-running the bot. Optional `suffix` (e.g. '_failed')
+        is appended before the extension so hard cases can be filtered
+        out for retraining."""
         try:
             frame = config.capture.frame
             if frame is None:
                 return
-            h, w = frame.shape[:2]
-            # Proportional crop so it scales with game window size.
-            # Tuned against a 528x300 sample where the arrows occupied
-            # roughly 30-90% horizontally and 40-70% vertically.
-            y0, y1 = int(h * 0.24), int(h * 0.45)
-            x0, x1 = int(w * 0.30), int(w * 0.74)
-            cropped = frame[y0:y1, x0:x1]
+            from src.easymaple.detection.detection import _crop_rune_band
+            cropped = _crop_rune_band(frame)
+            full = frame
+            if full.shape[2] == 4:
+                full = cv2.cvtColor(full, cv2.COLOR_BGRA2BGR)
             os.makedirs('training_data', exist_ok=True)
             ts = time.strftime('%Y%m%d_%H%M%S')
             ms = int(time.time() * 1000) % 1000
-            cv2.imwrite(os.path.join('training_data', f'rune_{ts}_{ms:03d}{suffix}.png'), cropped)
+            base = os.path.join('training_data', f'rune_{ts}_{ms:03d}{suffix}')
+            # Cropped (classifier input) keeps the original filename pattern
+            # so existing labels.json entries continue to resolve.
+            cv2.imwrite(f'{base}.png', cropped)
+            cv2.imwrite(f'{base}_full.png', full)
         except Exception as e:
             print(f'[!] Failed to save training frame: {e}')
 
@@ -334,6 +364,39 @@ class Bot(Configurable):
             return False
 
         print(f'[~] Entering solution: {", ".join(solution)}')
+
+        # Debug session id: lets us correlate the pre/post crops we save
+        # with the printed match positions for a single solve attempt.
+        debug_session = f'{time.strftime("%Y%m%d_%H%M%S")}_{int(time.time() * 1000) % 1000:03d}'
+        debug_dir = os.path.join('.data', 'rune_debug')
+        os.makedirs(debug_dir, exist_ok=True)
+
+        def _buff_positions_and_crop():
+            f = config.capture.frame
+            if f is None:
+                return [], None
+            top = f[:f.shape[0] // 8, :]
+            return (utils.multi_match(top, RUNE_BUFF_TEMPLATE, threshold=0.9) or []), top
+
+        # 5px tolerance buckets — the buff bar shifts a few pixels as
+        # neighboring buffs tick down, but a fresh icon lands in a
+        # noticeably different slot.
+        def _bucketed(matches):
+            return {(p[0] // 5, p[1] // 5) for p in matches}
+
+        def _save_crop(crop, label):
+            if crop is None:
+                return
+            try:
+                cv2.imwrite(os.path.join(debug_dir, f'{debug_session}_{label}.png'), crop)
+            except Exception as e:
+                print(f'[!] Failed to save debug crop {label}: {e}')
+
+        pre_matches, pre_crop = _buff_positions_and_crop()
+        pre_buckets = _bucketed(pre_matches)
+        _save_crop(pre_crop, 'pre')
+        print(f'[debug] pre  matches={pre_matches} buckets={sorted(pre_buckets)}')
+
         self._release_solver_keys()
         if not self._interruptible_sleep(0.1):
             return False
@@ -343,21 +406,31 @@ class Bot(Configurable):
             press(arrow, 1, down_time=0.15, up_time=0.15)
         if not self._interruptible_sleep(1):
             return False
-        for _ in range(3):
+
+        for poll in range(1, 4):
             if not self._interruptible_sleep(0.3):
                 return False
-            frame = config.capture.frame
-            rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                          RUNE_BUFF_TEMPLATE,
-                                          threshold=0.9)
-            if rune_buff:
-                rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-                target = (
-                    round(rune_buff_pos[0] + config.capture.window['left']),
-                    round(rune_buff_pos[1] + config.capture.window['top'])
-                )
-                click(target, button='right')
-                return True
+            rune_buff, post_crop = _buff_positions_and_crop()
+            post_buckets = _bucketed(rune_buff)
+            _save_crop(post_crop, f'post{poll}')
+            print(f'[debug] post{poll} matches={rune_buff} buckets={sorted(post_buckets)} '
+                  f'fresh={sorted(post_buckets - pre_buckets)}')
+            if not rune_buff:
+                continue
+            # New or repositioned buff icon ⇒ a rune was just applied.
+            # Identical sets ⇒ leftover from a prior solve, not a fresh
+            # success.
+            if post_buckets <= pre_buckets:
+                continue
+
+            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
+            target = (
+                round(rune_buff_pos[0] + config.capture.window['left']),
+                round(rune_buff_pos[1] + config.capture.window['top'])
+            )
+            click(target, button='right')
+            return True
+
         return False
 
     def _kick_off_model_load(self):

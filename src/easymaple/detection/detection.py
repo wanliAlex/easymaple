@@ -36,12 +36,16 @@ def load_model():
 def _crop_rune_band(frame: np.ndarray) -> np.ndarray:
     """Crop the band of the game frame where the rune puzzle appears.
 
-    Matches the crop used by ``Bot._save_training_frame`` so the solver runs
-    on the same region of the screen it was trained on.
+    Mirrors the upstream auto-maple crop pattern: a fixed 120 px below the
+    top UI bar, halfway down the frame, with the middle 50% of the width.
+    The panel detector inside ``RuneSolver`` finds the actual oval within
+    this band, so the band only needs to be permissive enough to always
+    contain the full panel — tighter percentage crops were clipping arrow
+    tops on some window sizes.
     """
     h, w = frame.shape[:2]
-    y0, y1 = int(h * 0.24), int(h * 0.45)
-    x0, x1 = int(w * 0.30), int(w * 0.74)
+    y0, y1 = 120, h // 2
+    x0, x1 = w // 4, 3 * w // 4
     cropped = frame[y0:y1, x0:x1]
     if cropped.shape[2] == 4:    # mss returns BGRA
         cropped = cv2.cvtColor(cropped, cv2.COLOR_BGRA2BGR)
