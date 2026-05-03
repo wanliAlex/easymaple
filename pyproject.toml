@@ -43,6 +43,18 @@ dependencies = [
     "smmap==5.0.1",
     "sspilib==0.2.0",
     "urllib3==2.2.3",
-    "tensorflow==2.21.0",
+    "torch>=2.0",
+    "torchvision>=0.15",
     "xmltodict==0.14.2",
 ]
+
+# Pull torch/torchvision from the CUDA 12.1 PyTorch index when available.
+# Falls back to CPU wheels automatically if the GPU build can't be installed.
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true

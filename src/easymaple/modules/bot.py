@@ -343,38 +343,21 @@ class Bot(Configurable):
 
     def _kick_off_model_load(self):
         """Loads the rune detection model in a background daemon thread, then
-        runs warmup inferences for each input shape merge_detection uses so
-        the first real solve doesn't pay TF JIT cost."""
+        runs a warmup inference so the first real solve doesn't pay
+        torch/CUDA JIT cost."""
         def loader():
             try:
                 print('\n[~] Loading rune detection model...')
                 self.model = detection.load_model()
 
-                import numpy as np
-
-                # Wait briefly for capture to expose a real frame so we warm
-                # up with the user's actual game-window dimensions
-                frame = None
-                for _ in range(50):
-                    if config.capture is not None and getattr(config.capture, 'frame', None) is not None:
-                        frame = config.capture.frame
-                        break
-                    time.sleep(0.1)
-                if frame is None:
-                    frame = np.zeros((768, 1366, 3), dtype=np.uint8)
-
-                # Inference 1: get_boxes on the cannied frame (shape varies with window)
-                h, w = frame.shape[:2]
-                cropped = frame[120:h//2, w//4:3*w//4]
-                if cropped.shape[2] == 4:    # mss returns BGRA; filter_color expects 3 chans
-                    cropped = cv2.cvtColor(cropped, cv2.COLOR_BGRA2BGR)
-                filtered = detection.filter_color(cropped)
-                cannied = detection.canny(filtered)
-                detection.get_boxes(self.model, cannied)
-
-                # Inferences 2 & 3: fixed shapes used after a successful box detection
-                detection.sort_by_confidence(self.model, np.zeros((384, 455, 3), dtype=np.uint8))
-                detection.sort_by_confidence(self.model, np.zeros((455, 384, 3), dtype=np.uint8))
+                # Warmup: one forward pass through the classifier so the
+                # first real solve doesn't pay CUDA/cuDNN tuning cost.
+                # Bypass detect_panel (it'd return "no_image" on a blank
+                # frame and skip the model entirely).
+                import torch
+                dummy = torch.zeros(4, 3, 96, 96, device=self.model.device)
+                with torch.no_grad():
+                    self.model.model(dummy)
 
                 print('[~] Rune detection model ready')
             except Exception as e:
