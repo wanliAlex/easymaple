@@ -18,8 +18,11 @@ from src.easymaple.common.interfaces import Configurable
 from src.easymaple.common.vkeys import press, key_down, key_up
 
 
-# The rune's buff icon
-RUNE_BUFF_TEMPLATE = utils.load_image('assets/rune_buff_template.jpg', cv2.IMREAD_GRAYSCALE)
+# The rune's buff icon — two visual variants both indicate a solved rune.
+RUNE_BUFF_TEMPLATES = [
+    utils.load_image('assets/rune_buff_template.jpg', cv2.IMREAD_GRAYSCALE),
+    utils.load_image('assets/rune_buff_template_2.jpg', cv2.IMREAD_GRAYSCALE),
+]
 
 
 class Bot(Configurable):
@@ -367,7 +370,10 @@ class Bot(Configurable):
             if f is None:
                 return []
             top = f[:f.shape[0] // 8, :]
-            return utils.multi_match(top, RUNE_BUFF_TEMPLATE, threshold=0.9) or []
+            matches = []
+            for template in RUNE_BUFF_TEMPLATES:
+                matches.extend(utils.multi_match(top, template, threshold=0.9) or [])
+            return matches
 
         # 5px tolerance buckets — the buff bar shifts a few pixels as
         # neighboring buffs tick down, but a fresh icon lands in a
