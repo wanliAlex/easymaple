@@ -241,13 +241,13 @@ class Bot(Configurable):
                 if not self._interruptible_sleep(1.0):
                     break
 
-            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 3s for rune UI')
+            print(f'[~] Pressing Interact (attempt {attempt}/{self.RUNE_FAIL_THRESHOLD}); waiting 1s for rune UI')
             press(self.config['Interact'], 1, down_time=0.2)
-            # 3s gives the rune UI time to fully render. We then wait a
+            # 1s gives the rune UI time to fully render. We then wait a
             # bit more inside _attempt_solve_once for the band to settle
             # — damage numbers from in-flight attacks animate for a
             # couple of seconds and obscure the arrows.
-            if not self._interruptible_sleep(3.0):
+            if not self._interruptible_sleep(1.0):
                 break
 
             if self._attempt_solve_once(model):
@@ -290,7 +290,7 @@ class Bot(Configurable):
             self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
             print(f'[!] Rune solve batch failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
 
-    def _wait_for_stable_band(self, timeout=3.0, diff_threshold=5.0, sample_interval=0.2):
+    def _wait_for_stable_band(self, timeout=1.0, diff_threshold=5.0, sample_interval=0.2):
         """Block until the rune-band crop is visually stable frame-to-frame,
         or until ``timeout`` seconds elapse. 'Stable' = mean absolute pixel
         diff between two consecutive band crops below ``diff_threshold``.
