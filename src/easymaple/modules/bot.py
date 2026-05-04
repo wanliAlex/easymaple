@@ -369,10 +369,20 @@ class Bot(Configurable):
             f = config.capture.frame
             if f is None:
                 return []
-            top = f[:f.shape[0] // 8, :]
+            # Top-right quadrant of the screen: top 1/3 vertically and
+            # right 1/2 horizontally. The buff icons sometimes land outside
+            # the old narrow top-1/8 strip, especially when several buffs
+            # are already active and the bar wraps onto a second row.
+            h, w = f.shape[:2]
+            top_right = f[:h // 3, w // 2:]
+            x_offset = w // 2
             matches = []
             for template in RUNE_BUFF_TEMPLATES:
-                matches.extend(utils.multi_match(top, template, threshold=0.9) or [])
+                hits = utils.multi_match(top_right, template, threshold=0.9) or []
+                # multi_match returns coords relative to the cropped region.
+                # Shift back to full-frame coords so the click target later
+                # in this method lands on the right pixel.
+                matches.extend([(x + x_offset, y) for (x, y) in hits])
             return matches
 
         # 5px tolerance buckets — the buff bar shifts a few pixels as
