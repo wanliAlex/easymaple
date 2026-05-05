@@ -415,7 +415,10 @@ class Bot(Configurable):
         for arrow in solution:
             if not config.enabled:
                 return False
-            press(arrow, 1, down_time=0.15, up_time=0.15)
+            # Slower per-arrow cadence: longer hold + larger gap between
+            # arrows. Some servers/clients drop arrows that come in too
+            # fast back-to-back, breaking the solve.
+            press(arrow, 1, down_time=0.3, up_time=0.3)
         # Initial wait shortened from 1.0s -> 0.5s so the first poll catches
         # the buff right as it appears (it usually renders within ~500ms).
         if not self._interruptible_sleep(0.5):
