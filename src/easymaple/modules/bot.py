@@ -317,11 +317,15 @@ class Bot(Configurable):
         return False
 
     def _release_solver_keys(self):
-        """Release every key the rune solver or command book might be holding."""
+        """Release every key the rune solver or command book might be
+        holding, except the Interact key. A key_up on Interact has been
+        observed to register as a brief press in some keyboard-hook
+        setups, which closes the puzzle UI and destroys the rune.
+        """
         keys = ['left', 'right', 'up', 'down', 'space', 'shift', 'ctrl', 'alt']
         interact = self.config.get('Interact')
-        if interact and interact not in keys:
-            keys.append(interact)
+        if interact and interact in keys:
+            keys.remove(interact)
         for k in keys:
             key_up(k)
 
