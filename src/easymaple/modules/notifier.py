@@ -7,6 +7,7 @@ import time
 import os
 import cv2
 import pygame
+import queue
 import threading
 import numpy as np
 import keyboard as kb
