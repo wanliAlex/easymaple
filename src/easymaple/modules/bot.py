@@ -412,13 +412,18 @@ class Bot(Configurable):
         self._release_solver_keys()
         if not self._interruptible_sleep(0.1):
             return False
-        for arrow in solution:
+        # Human-ish cadence: vary the hold and gap times per arrow, and
+        # occasionally pause as if hesitating. Keeps inputs from looking
+        # mechanically uniform while still landing inside the rune timer.
+        for i, arrow in enumerate(solution):
             if not config.enabled:
                 return False
-            # Slower per-arrow cadence: longer hold + larger gap between
-            # arrows. Some servers/clients drop arrows that come in too
-            # fast back-to-back, breaking the solve.
-            press(arrow, 1, down_time=0.3, up_time=0.3)
+            down_time = utils.rand_float(0.08, 0.18)
+            up_time = utils.rand_float(0.15, 0.40)
+            # ~15% chance to "hesitate" before the next arrow.
+            if i < len(solution) - 1 and utils.bernoulli(0.15):
+                up_time += utils.rand_float(0.30, 0.60)
+            press(arrow, 1, down_time=down_time, up_time=up_time)
         # Initial wait shortened from 1.0s -> 0.5s so the first poll catches
         # the buff right as it appears (it usually renders within ~500ms).
         if not self._interruptible_sleep(0.5):
