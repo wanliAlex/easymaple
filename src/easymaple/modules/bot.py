@@ -369,7 +369,12 @@ class Bot(Configurable):
 
         print(f'[~] Entering solution: {", ".join(solution)}')
 
-        def _buff_positions():
+        def _buff_positions(label=''):
+            """Match both rune-buff templates against the top-right quadrant.
+            Logs the best correlation score for each template so we can see
+            why a match did or didn't fire, then returns positions that
+            cleared the 0.9 threshold (shifted to full-frame coords).
+            """
             f = config.capture.frame
             if f is None:
                 return []
@@ -380,13 +385,28 @@ class Bot(Configurable):
             h, w = f.shape[:2]
             top_right = f[:h // 3, w // 2:]
             x_offset = w // 2
+
+            gray = cv2.cvtColor(top_right, cv2.COLOR_BGR2GRAY) if len(top_right.shape) == 3 else top_right
+            threshold = 0.9
             matches = []
-            for template in RUNE_BUFF_TEMPLATES:
-                hits = utils.multi_match(top_right, template, threshold=0.9) or []
-                # multi_match returns coords relative to the cropped region.
-                # Shift back to full-frame coords so the click target later
-                # in this method lands on the right pixel.
+            scores = []
+            for idx, template in enumerate(RUNE_BUFF_TEMPLATES):
+                try:
+                    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+                    best_score = float(result.max())
+                except cv2.error as e:
+                    best_score = 0.0
+                    print(f'[!] template {idx} match failed: {e}')
+                    scores.append(best_score)
+                    continue
+                scores.append(best_score)
+
+                hits = utils.multi_match(top_right, template, threshold=threshold) or []
                 matches.extend([(x + x_offset, y) for (x, y) in hits])
+
+            score_str = ', '.join(f'tpl{i}={s:.3f}' for i, s in enumerate(scores))
+            verdict = 'FOUND' if matches else 'NO MATCH'
+            print(f'[~] Rune buff {label}: {verdict} (threshold={threshold}; scores: {score_str})')
             return matches
 
         # 5px tolerance buckets — the buff bar shifts a few pixels as
@@ -395,7 +415,7 @@ class Bot(Configurable):
         def _bucketed(matches):
             return {(p[0] // 5, p[1] // 5) for p in matches}
 
-        pre_matches = _buff_positions()
+        pre_matches = _buff_positions(label='pre')
         pre_buckets = _bucketed(pre_matches)
         print(f'[debug] pre  matches={pre_matches} buckets={sorted(pre_buckets)}')
 
@@ -416,7 +436,7 @@ class Bot(Configurable):
         for poll in range(1, 6):
             if not self._interruptible_sleep(0.3):
                 return False
-            rune_buff = _buff_positions()
+            rune_buff = _buff_positions(label=f'post{poll}')
             post_buckets = _bucketed(rune_buff)
             print(f'[debug] post{poll} matches={rune_buff} buckets={sorted(post_buckets)} '
                   f'fresh={sorted(post_buckets - pre_buckets)}')
