@@ -402,10 +402,14 @@ class Bot(Configurable):
             if not config.enabled:
                 return False
             press(arrow, 1, down_time=0.15, up_time=0.15)
-        if not self._interruptible_sleep(1):
+        # Initial wait shortened from 1.0s -> 0.5s so the first poll catches
+        # the buff right as it appears (it usually renders within ~500ms).
+        if not self._interruptible_sleep(0.5):
             return False
 
-        for poll in range(1, 4):
+        # 5 polls instead of 3: gives the buff icon more chances to match
+        # in case the first poll lands during the icon's fade-in animation.
+        for poll in range(1, 6):
             if not self._interruptible_sleep(0.3):
                 return False
             rune_buff = _buff_positions()
