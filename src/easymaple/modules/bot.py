@@ -409,16 +409,6 @@ class Bot(Configurable):
             print(f'[~] Rune buff {label}: {verdict} (threshold={threshold}; scores: {score_str})')
             return matches
 
-        # 5px tolerance buckets — the buff bar shifts a few pixels as
-        # neighboring buffs tick down, but a fresh icon lands in a
-        # noticeably different slot.
-        def _bucketed(matches):
-            return {(p[0] // 5, p[1] // 5) for p in matches}
-
-        pre_matches = _buff_positions(label='pre')
-        pre_buckets = _bucketed(pre_matches)
-        print(f'[debug] pre  matches={pre_matches} buckets={sorted(pre_buckets)}')
-
         self._release_solver_keys()
         if not self._interruptible_sleep(0.1):
             return False
@@ -431,23 +421,16 @@ class Bot(Configurable):
         if not self._interruptible_sleep(0.5):
             return False
 
-        # 5 polls instead of 3: gives the buff icon more chances to match
-        # in case the first poll lands during the icon's fade-in animation.
+        # 5 polls at 0.3s intervals: gives the buff icon multiple chances
+        # to match through its fade-in animation. Rune cooldown (10 min)
+        # is longer than the buff duration (5 min), so there can never be
+        # a leftover buff from a prior solve — any match here is fresh.
         for poll in range(1, 6):
             if not self._interruptible_sleep(0.3):
                 return False
             rune_buff = _buff_positions(label=f'post{poll}')
-            post_buckets = _bucketed(rune_buff)
-            print(f'[debug] post{poll} matches={rune_buff} buckets={sorted(post_buckets)} '
-                  f'fresh={sorted(post_buckets - pre_buckets)}')
             if not rune_buff:
                 continue
-            # New or repositioned buff icon ⇒ a rune was just applied.
-            # Identical sets ⇒ leftover from a prior solve, not a fresh
-            # success.
-            if post_buckets <= pre_buckets:
-                continue
-
             rune_buff_pos = min(rune_buff, key=lambda p: p[0])
             target = (
                 round(rune_buff_pos[0] + config.capture.window['left']),
