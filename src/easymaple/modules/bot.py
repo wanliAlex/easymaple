@@ -387,7 +387,7 @@ class Bot(Configurable):
         for i, arrow in enumerate(solution):
             if not config.enabled:
                 return False
-            down_time = utils.rand_float(0.08, 0.18)
+            down_time = 0.05
             up_time = utils.rand_float(0.15, 0.40)
             # ~15% chance to "hesitate" before the next arrow.
             if i < len(solution) - 1 and utils.bernoulli(0.15):
