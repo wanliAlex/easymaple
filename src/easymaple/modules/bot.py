@@ -290,32 +290,6 @@ class Bot(Configurable):
             self.rune_solve_cooldown_until = time.time() + self.RUNE_COOLDOWN_AFTER_FAIL
             print(f'[!] Rune solve batch failed; suppressing further attempts for {self.RUNE_COOLDOWN_AFTER_FAIL}s')
 
-    def _wait_for_stable_band(self, timeout=1.0, diff_threshold=5.0, sample_interval=0.2):
-        """Block until the rune-band crop is visually stable frame-to-frame,
-        or until ``timeout`` seconds elapse. 'Stable' = mean absolute pixel
-        diff between two consecutive band crops below ``diff_threshold``.
-        Returns True if stability was reached, False on timeout."""
-        from src.easymaple.detection.detection import _crop_rune_band
-        deadline = time.time() + timeout
-        prev = None
-        while time.time() < deadline:
-            if not config.enabled:
-                return False
-            frame = config.capture.frame
-            if frame is None:
-                time.sleep(0.05)
-                continue
-            curr = _crop_rune_band(frame)
-            if prev is not None and curr.shape == prev.shape:
-                diff = float(cv2.absdiff(prev, curr).mean())
-                if diff < diff_threshold:
-                    print(f'[~] Rune band stable (frame-diff {diff:.2f}); starting inference')
-                    return True
-            prev = curr
-            time.sleep(sample_interval)
-        print(f'[!] Rune band did not stabilize within {timeout}s; running inference anyway')
-        return False
-
     def _release_solver_keys(self):
         """Release every key the rune solver or command book might be
         holding, except the Interact key. A key_up on Interact has been
@@ -332,11 +306,6 @@ class Bot(Configurable):
     def _attempt_solve_once(self, model):
         """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
-
-        # Damage numbers from in-flight attacks animate over the rune band
-        # for a couple of seconds after Interact and confuse both panel
-        # detection and arrow classification. Wait for the band to settle.
-        self._wait_for_stable_band(timeout=3.0)
 
         # Take the first inference that returns a complete 4-arrow solution.
         # If we get nothing for several consecutive iterations the rune likely
