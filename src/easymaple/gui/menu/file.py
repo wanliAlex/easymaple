@@ -127,7 +127,7 @@ class File(MenuBarItem):
     @utils.run_if_disabled('\n[!] Cannot load command books while Auto Maple is enabled')
     def _open_recent_book(file_path):
         if not os.path.exists(file_path):
-            showerror('Open Recent', f'File not found:\n{file_path}\n\nRemoved from recent list.')
+            showerror('Open Recent', f'File not found:\n{file_path}\n\nIt will be hidden from this list.')
             # The next get_recent_command_books() will already filter it out — no action needed.
             return
         if config.routine.dirty:
@@ -144,7 +144,8 @@ class File(MenuBarItem):
     @utils.run_if_disabled('\n[!] Cannot load routines while Auto Maple is enabled')
     def _open_recent_routine(file_path):
         if not os.path.exists(file_path):
-            showerror('Open Recent', f'File not found:\n{file_path}\n\nRemoved from recent list.')
+            showerror('Open Recent', f'File not found:\n{file_path}\n\nIt will be hidden from this list.')
+            # The next get_recent_routines() will already filter it out — no action needed.
             return
         if config.routine.dirty:
             if not askyesno(title='Load Routine',
