@@ -56,6 +56,21 @@ RUNE_DETECT_FREQUENCY = 40
 
 DEATH_DETECT_FREQUENCY = 400
 
+NOTIFIER_LOOP_SLEEP_S = 0.05
+
+
+def rune_detect_poll_count():
+    """Resolve how often (in poll iterations) the notifier should run rune
+    detection. Reads `rune_detect_interval_seconds` from advanced settings
+    so changes take effect live; falls back to RUNE_DETECT_FREQUENCY when
+    the panel isn't loaded yet (early startup, tests).
+    """
+    if config.advanced is None:
+        return RUNE_DETECT_FREQUENCY
+    interval = config.advanced.get('rune_detect_interval_seconds')
+    return max(1, round(interval / NOTIFIER_LOOP_SLEEP_S))
+
+
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
 
@@ -126,7 +141,7 @@ class Notifier:
                     # Check for rune. Notifications for rune appearance are intentionally
                     # silent — the bot solves it automatically. The notifier only alerts
                     # via alert_rune_unsolvable() when the solver actually fails.
-                    if self.rune_counter >= RUNE_DETECT_FREQUENCY or self.rune_counter == 0:
+                    if self.rune_counter >= rune_detect_poll_count() or self.rune_counter == 0:
                         self.rune_counter = 1
                         filtered = utils.filter_color(minimap, RUNE_RANGES)
                         rune_threshold = (
@@ -155,7 +170,7 @@ class Notifier:
                     self.death_counter += 1
             except Exception as e:
                 log.exception("Notifier loop iteration failed; continuing: %s", e)
-            time.sleep(0.05)
+            time.sleep(NOTIFIER_LOOP_SLEEP_S)
 
     def _alert(self, name, volume=0.75):
         """
