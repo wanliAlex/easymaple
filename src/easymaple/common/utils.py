@@ -146,6 +146,29 @@ def multi_match(frame, template, threshold=0.95):
     return results
 
 
+def match_score(frame, template):
+    """
+    Returns the maximum normalized template-match score for TEMPLATE in FRAME.
+    Useful for live-tuning detection thresholds: shows how close the best match is
+    regardless of whether it exceeds any threshold.
+
+    :param frame:       The image in which to search.
+    :param template:    The template to match with.
+    :return:            A float in [-1.0, 1.0]. Higher = better match.
+    """
+
+    if len(frame.shape) != 2:
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = frame
+
+    try:
+        result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+    except cv2.error:
+        return 0.0
+    return float(result.max())
+
+
 def convert_to_relative(point, frame):
     """
     Converts POINT into relative coordinates in the range [0, 1] based on FRAME.
