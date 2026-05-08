@@ -128,7 +128,15 @@ class Notifier:
                 if self.rune_counter >= RUNE_DETECT_FREQUENCY or self.rune_counter == 0:
                     self.rune_counter = 1
                     filtered = utils.filter_color(minimap, RUNE_RANGES)
-                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.75)
+                    rune_threshold = (
+                        config.advanced.get('rune_map_threshold')
+                        if config.advanced is not None else 0.75
+                    )
+                    config.last_rune_map_score = (
+                        utils.match_score(filtered, RUNE_TEMPLATE),
+                        time.time(),
+                    )
+                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=rune_threshold)
                     if matches:
                         # On first detection, record the rune's minimap position
                         if not config.bot.rune_active:
