@@ -3,6 +3,7 @@
 import ctypes
 import threading
 import time
+from collections import deque
 from ctypes import wintypes
 
 import cv2
@@ -62,11 +63,22 @@ class Capture:
             'width': 1366,
             'height': 768
         }
+        self._frame_times = deque(maxlen=30)
 
         self.ready = False
         self.calibrated = False
         self.thread = threading.Thread(target=self._main)
         self.thread.daemon = True
+
+    @property
+    def fps(self):
+        """Rolling average frames-per-second over the last 30 captured frames."""
+        if len(self._frame_times) < 2:
+            return 0.0
+        span = self._frame_times[-1] - self._frame_times[0]
+        if span <= 0:
+            return 0.0
+        return (len(self._frame_times) - 1) / span
 
     def start(self):
         """Starts this Capture's thread."""
@@ -145,6 +157,7 @@ class Capture:
                     self.frame = self.screenshot()
                     if self.frame is None:
                         continue
+                    self._frame_times.append(time.time())
 
                     # Crop the frame to only show the minimap
                     minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]
