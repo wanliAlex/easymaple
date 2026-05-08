@@ -21,8 +21,8 @@ def update(func):
     return f
 
 
-def dirty(func):
-    """Decorator function that sets the dirty bit for mutative Routine operations."""
+def _mark_dirty(func):
+    """Decorator: sets the dirty bit on the wrapped Routine method's instance."""
 
     def f(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
@@ -35,26 +35,37 @@ class Routine:
     """Describes a routine file in Auto Maple's custom 'machine code'."""
 
     def __init__(self):
-        self.dirty = False
+        self._dirty = False
         self.path = ''
         self.labels = {}
         self.index = 0
         self.sequence = []
         self.display = []       # Updated alongside sequence
 
-    @dirty
+    @property
+    def dirty(self):
+        return self._dirty
+
+    @dirty.setter
+    def dirty(self, value):
+        if self._dirty != bool(value):
+            self._dirty = bool(value)
+            if config.gui is not None:
+                config.gui.update_title()
+
+    @_mark_dirty
     @update
     def set(self, arr):
         self.sequence = arr
         self.display = [str(x) for x in arr]
 
-    @dirty
+    @_mark_dirty
     @update
     def append_component(self, p):
         self.sequence.append(p)
         self.display.append(str(p))
 
-    @dirty
+    @_mark_dirty
     @update
     def append_command(self, i, c):
         """Appends Command object C to the Point at index I in the sequence."""
@@ -62,7 +73,7 @@ class Routine:
         target = self.sequence[i]
         target.commands.append(c)
 
-    @dirty
+    @_mark_dirty
     @update
     def move_component_up(self, i):
         """Moves the component at index I upward if possible."""
@@ -77,7 +88,7 @@ class Routine:
             return i - 1
         return i
 
-    @dirty
+    @_mark_dirty
     @update
     def move_component_down(self, i):
         if i < len(self.sequence) - 1:
@@ -90,7 +101,7 @@ class Routine:
             return i + 1
         return i
 
-    @dirty
+    @_mark_dirty
     @update
     def move_command_up(self, i, j):
         """
@@ -106,7 +117,7 @@ class Routine:
             return j - 1
         return j
 
-    @dirty
+    @_mark_dirty
     @update
     def move_command_down(self, i, j):
         point = self.sequence[i]
@@ -117,7 +128,7 @@ class Routine:
             return j + 1
         return j
 
-    @dirty
+    @_mark_dirty
     @update
     def delete_component(self, i):
         """Deletes the Component at index I."""
@@ -125,7 +136,7 @@ class Routine:
         self.sequence.pop(i)
         self.display.pop(i)
 
-    @dirty
+    @_mark_dirty
     @update
     def delete_command(self, i, j):
         """Within the Point at routine index I, deletes the Command at index J."""
