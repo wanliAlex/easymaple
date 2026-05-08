@@ -717,6 +717,12 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
                 time.sleep(0.5)
                 break
 
+            # Yield to the rune solver if a rune appeared during this point.
+            # The bot's main loop will solve the rune before stepping to the
+            # next routine point, then resume the routine.
+            if config.bot.rune_active:
+                break
+
             if self.ball_time == 0 or time.time() - self.ball_time > 117 and time.time() - self.placed_time > 59:
                 self.ball_time = time.time()
                 self.placed = False
@@ -766,11 +772,20 @@ class NIGHT_ROAD_1_RIGHT(Command):
     def main(self):
         press(Key.BALL, 2, 0.1, 0.2)
         press(Key.DARK_FLARE, 2, 0.1, 0.5)
-        for _ in range(10):
-            press("up", 1, 0.05, 0.01)
-
-            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.03:
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
                 break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
 
 
 class NIGHT_ROAD_1_LEFT(Command):
@@ -780,10 +795,19 @@ class NIGHT_ROAD_1_LEFT(Command):
     def main(self):
         press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.5)
         press(Key.BALL, 2, 0.1, 0.2)
-        for _ in range(10):
-            press("up", 1, 0.05, 0.01)
-
-            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.03:
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
                 break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
 
         press(Key.BALL, 2, 0.1, 0.2)
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value

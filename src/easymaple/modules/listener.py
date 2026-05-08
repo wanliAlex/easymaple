@@ -79,6 +79,11 @@ class Listener(Configurable):
         config.enabled = not config.enabled
         utils.print_state()
 
+        # If the user just took over (F8 toggled OFF), stop any rune-failure
+        # siren that may still be playing so they can solve in peace
+        if not config.enabled and config.notifier is not None:
+            config.notifier.stop_alerts()
+
         if config.enabled:
             winsound.Beep(784, 333)     # G5
         else:
