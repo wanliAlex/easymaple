@@ -87,3 +87,38 @@ def auto_load_last_files():
                 print(f"[Cache] Auto-loaded routine: {os.path.basename(last_routine)}")
             except Exception as e:
                 print(f"[Cache] Failed to auto-load routine: {e}")
+
+
+RECENT_LIMIT = 5
+
+
+def _add_recent(key, file_path):
+    cache_data = load_cache()
+    items = list(cache_data.get(key, []))
+    if file_path in items:
+        items.remove(file_path)
+    items.insert(0, file_path)
+    cache_data[key] = items[:RECENT_LIMIT]
+    save_cache(cache_data)
+
+
+def _get_recent(key):
+    cache_data = load_cache()
+    items = cache_data.get(key, [])
+    return [p for p in items if isinstance(p, str) and os.path.exists(p)]
+
+
+def get_recent_command_books():
+    return _get_recent('recent_command_books')
+
+
+def add_recent_command_book(file_path):
+    _add_recent('recent_command_books', file_path)
+
+
+def get_recent_routines():
+    return _get_recent('recent_routines')
+
+
+def add_recent_routine(file_path):
+    _add_recent('recent_routines', file_path)
