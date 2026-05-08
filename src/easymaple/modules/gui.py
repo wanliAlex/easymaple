@@ -1,5 +1,6 @@
 """User friendly GUI to interact with Auto Maple."""
 
+import os
 import time
 import threading
 import tkinter as tk
@@ -40,7 +41,69 @@ class GUI:
 
         self.navigation.pack(expand=True, fill='both')
         self.navigation.bind('<<NotebookTabChanged>>', self._resize_window)
+
+        # Status bar — pack AFTER notebook so it sits at the bottom of the window
+        self._build_status_bar()
+
         self.root.focus()
+
+    def _build_status_bar(self):
+        bar = tk.Frame(self.root, relief=tk.SUNKEN, borderwidth=1)
+        bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self._book_label = tk.Label(bar, text='Book: —', anchor='w')
+        self._book_label.pack(side=tk.LEFT, padx=(6, 6))
+
+        tk.Label(bar, text='|').pack(side=tk.LEFT)
+
+        self._routine_label = tk.Label(bar, text='Routine: —', anchor='w')
+        self._routine_label.pack(side=tk.LEFT, padx=(6, 6))
+
+        tk.Label(bar, text='|').pack(side=tk.LEFT)
+
+        self._bot_label = tk.Label(bar, text='Bot: —', anchor='w', fg='gray')
+        self._bot_label.pack(side=tk.LEFT, padx=(6, 6))
+
+        tk.Label(bar, text='|').pack(side=tk.LEFT)
+
+        self._fps_label = tk.Label(bar, text='FPS: —', anchor='w')
+        self._fps_label.pack(side=tk.LEFT, padx=(6, 6))
+
+    def _refresh_status_bar(self):
+        # Book
+        book = getattr(config.bot, 'module_name', None) if config.bot else None
+        self._book_label.configure(text=f"Book: {book or '—'}")
+
+        # Routine + dirty
+        routine = config.routine
+        if routine and routine.path:
+            name = os.path.basename(routine.path)
+            suffix = '*' if routine.dirty else ''
+            self._routine_label.configure(text=f"Routine: {name}{suffix}")
+        else:
+            self._routine_label.configure(text='Routine: —')
+
+        # Bot enabled state
+        if config.enabled:
+            self._bot_label.configure(text='Bot: ENABLED', fg='green')
+        else:
+            self._bot_label.configure(text='Bot: DISABLED', fg='gray')
+
+        # FPS
+        fps = getattr(config.capture, 'fps', 0.0) if config.capture else 0.0
+        self._fps_label.configure(text=f"FPS: {fps:.1f}" if fps else 'FPS: —')
+
+        self.root.after(500, self._refresh_status_bar)
+
+    def update_title(self):
+        """Rebuilds the window title string from current routine state."""
+        routine = config.routine
+        if routine and routine.path:
+            name = os.path.basename(routine.path)
+            suffix = ' *' if routine.dirty else ''
+            self.root.title(f"Auto Maple — {name}{suffix}")
+        else:
+            self.root.title('Auto Maple')
 
     def set_routine(self, arr):
         self.routine_var.set(arr)
@@ -85,6 +148,9 @@ class GUI:
 
         # Auto-load last used files from cache after GUI is fully initialized
         self.root.after(100, cache.auto_load_last_files)
+
+        # Status bar refresh loop
+        self.root.after(500, self._refresh_status_bar)
 
         self.root.mainloop()
 
