@@ -22,3 +22,17 @@ def test_match_score_returns_float_in_range():
     score = utils.match_score(frame, template)
     assert isinstance(score, float)
     assert -1.0 <= score <= 1.0
+
+
+def test_match_score_never_raises_on_degenerate_inputs():
+    """Must never raise on degenerate inputs — returns 0.0. Long-lived loops in the
+    notifier and bot threads call this every cycle; an exception here would silently
+    kill the thread."""
+    template = np.zeros((9, 9), dtype=np.uint8)
+    # Empty array (1D shape (0,)) — would crash cv2.cvtColor in the old impl
+    assert utils.match_score(np.array([]), template) == 0.0
+    # 1D array — also invalid channel input to cvtColor
+    assert utils.match_score(np.array([1, 2, 3], dtype=np.uint8), template) == 0.0
+    # None — wouldn't even reach cv2 calls in old impl, but tested for safety
+    assert utils.match_score(None, template) == 0.0
+    assert utils.match_score(np.zeros((10, 10), dtype=np.uint8), None) == 0.0

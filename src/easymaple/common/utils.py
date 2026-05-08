@@ -150,23 +150,28 @@ def match_score(frame, template):
     """
     Returns the maximum normalized template-match score for TEMPLATE in FRAME.
     Useful for live-tuning detection thresholds: shows how close the best match is
-    regardless of whether it exceeds any threshold.
+    regardless of whether it exceeds any threshold. Never raises — returns 0.0 on
+    any error path so callers in long-lived loops don't get killed by a degenerate
+    frame.
 
     :param frame:       The image in which to search.
     :param template:    The template to match with.
     :return:            A float in [-1.0, 1.0]. Higher = better match.
     """
 
-    if len(frame.shape) != 2:
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    else:
-        gray = frame
-
     try:
+        if frame is None or template is None:
+            return 0.0
+        if len(frame.shape) == 2:
+            gray = frame
+        elif len(frame.shape) == 3:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        else:
+            return 0.0
         result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
-    except cv2.error:
+        return float(result.max())
+    except (cv2.error, ValueError, AttributeError):
         return 0.0
-    return float(result.max())
 
 
 def convert_to_relative(point, frame):
