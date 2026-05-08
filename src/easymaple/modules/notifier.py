@@ -8,7 +8,26 @@ import pygame
 import threading
 import numpy as np
 import keyboard as kb
+import requests
+from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
+
+
+print(find_dotenv())
+load_dotenv()
+
+# Discord webhook for notifications
+WEB_HOOK = os.environ.get("DISCORD_WEBHOOK", "")
+DISCORD_USER_ID = os.environ.get("DISCORD_USER_ID", "")
+
+print(f"Successfully loaded WEB_HOOK = {WEB_HOOK}, DISCORD_USER_ID={DISCORD_USER_ID}")
+
+def notify(message):
+    """Sends a message to the Discord webhook."""
+    try:
+        requests.post(WEB_HOOK, json={"content": message})
+    except requests.RequestException:
+        pass
 
 
 # A rune's symbol on the minimap
@@ -61,6 +80,7 @@ class Notifier:
         self.rune_warning_thread = None
 
         self.death_counter = 0
+        self.rune_notifying = False
 
     def start(self):
         """Starts this Notifier's thread."""
@@ -81,6 +101,8 @@ class Notifier:
                 # white room
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
+                    for _ in range(5):
+                        notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
                     self._alert('siren')
 
                 # Check for elite warning
@@ -109,6 +131,10 @@ class Notifier:
                         if time.time() - report_time > 10 or report_time == 0:
                             self._ping("rune_appeared", volume=0.75)
                             report_time = time.time()
+                        if not self.rune_notifying:
+                            self.rune_notifying = True
+                            t = threading.Thread(target=self._rune_discord_loop, daemon=True)
+                            t.start()
 
                 if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
                     self.death_counter = 1
@@ -143,6 +169,20 @@ class Notifier:
         self.mixer.load(get_alert_path(name))
         self.mixer.set_volume(volume)
         self.mixer.play()
+
+    def _rune_discord_loop(self):
+        """
+        Sends bursts of 3 Discord notifications for rune detection.
+        Repeats every 30 seconds until the rune is resolved.
+        """
+
+        try:
+            while config.bot.rune_active:
+                notify(f"<@{DISCORD_USER_ID}> 符文出现了，快去解！")
+                # Wait 30s
+                time.sleep(30)
+        finally:
+            self.rune_notifying = False
 
 
 #################################

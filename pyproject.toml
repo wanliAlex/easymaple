@@ -32,6 +32,7 @@ dependencies = [
     "pyscreeze==1.0.1",
     "pyspnego==0.11.1",
     "pytesseract==0.3.13",
+    "python-dotenv>=1.0.0",
     "python-levenshtein==0.26.1",
     "pytweening==1.2.0",
     "pywin32==306",
