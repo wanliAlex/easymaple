@@ -2,8 +2,17 @@
 
 import math
 import time
+import cv2
 from src.easymaple.common import config, settings, utils
 from src.easymaple.common.vkeys import key_down, key_up, press
+
+
+# Warning popups MapleStory shows when a buff key is pressed while the
+# corresponding effect is still active. Press Esc to dismiss either of them.
+BUFF_ACTIVE_POPUP_TEMPLATES = [
+    utils.load_image('assets/buff_template.png', cv2.IMREAD_GRAYSCALE),
+    utils.load_image('assets/buff_template_2.png', cv2.IMREAD_GRAYSCALE),
+]
 
 
 #################################
@@ -56,6 +65,29 @@ class Component:
             if key != 'id' and type(self.kwargs[key]) in Component.PRIMITIVES:
                 arr.append(f'{key}={value}')
         return ', '.join(arr)
+
+    def dismiss_buff_active_popup(self, threshold=0.9):
+        """If a 'buff already active' / 'same potion still in effect' warning
+        popup is currently on screen, press Esc to dismiss it. Silently no-op
+        if no popup matches or the capture frame isn't available yet.
+        """
+        frame = config.capture.frame
+        if frame is None:
+            return
+        try:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if len(frame.shape) == 3 else frame
+        except cv2.error:
+            return
+        for idx, template in enumerate(BUFF_ACTIVE_POPUP_TEMPLATES):
+            try:
+                result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+                score = float(result.max())
+            except cv2.error:
+                continue
+            if score >= threshold:
+                print(f'[~] Buff-active popup tpl{idx} detected (score={score:.3f}); pressing Esc')
+                press('esc', 1)
+                return
 
 
 class Point(Component):

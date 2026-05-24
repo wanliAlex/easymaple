@@ -228,16 +228,30 @@ class StraightJumpAttack(Command):
 
 
 class Buff(Command):
-    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
+    """Presses each configured buff key once its cooldown elapses.
+
+    BUFFS maps a key (entry from `Key`) to its cooldown in seconds. Each
+    press is followed by `dismiss_buff_active_popup()` so any "buff still
+    active" / "same potion in effect" dialog is cleared before the routine
+    resumes.
+    """
+
+    BUFFS = {
+        Key.BUFF: 30 * 60 + 10,
+    }
 
     def __init__(self):
         super().__init__(locals())
-        self.buff_time = 0
+        self.last_pressed = {key: 0.0 for key in self.BUFFS}
 
     def main(self):
-        if self.buff_time == 0 or time.time() - self.buff_time > 30 * 60 + 10:
-            press(Key.BUFF, 1, 0.1, 0.5)
-            self.buff_time = time.time()
+        now = time.time()
+        for key, cooldown in self.BUFFS.items():
+            last = self.last_pressed.get(key, 0.0)
+            if last == 0.0 or now - last > cooldown:
+                press(key, 1, 0.1, 0.5)
+                self.dismiss_buff_active_popup()
+                self.last_pressed[key] = now
 
 
 class UpJump(Command):
