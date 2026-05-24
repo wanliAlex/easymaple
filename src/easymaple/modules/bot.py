@@ -13,7 +13,6 @@ from src.easymaple.detection import detection
 from src.easymaple.routine import components
 from src.easymaple.routine.routine import Routine
 from src.easymaple.routine.components import Point
-from src.easymaple.common.vkeys import press, click
 from src.easymaple.common.interfaces import Configurable
 from src.easymaple.common.vkeys import press, key_down, key_up
 
@@ -406,15 +405,8 @@ class Bot(Configurable):
             if not self._interruptible_sleep(0.3):
                 return False
             rune_buff = _buff_positions(label=f'post{poll}')
-            if not rune_buff:
-                continue
-            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-            target = (
-                round(rune_buff_pos[0] + config.capture.window['left']),
-                round(rune_buff_pos[1] + config.capture.window['top'])
-            )
-            click(target, button='right')
-            return True
+            if rune_buff:
+                return True
 
         return False
 
