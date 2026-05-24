@@ -122,7 +122,7 @@ KEY_MAP = {
     'backspace': Key.backspace,      # Special keys
     'tab': Key.tab,
     'enter': Key.enter,
-    'shift': Key.shift,
+    'shift': Key.shift_l,
     'ctrl': Key.ctrl,
     'alt': Key.alt,
     'caps lock': Key.caps_lock,

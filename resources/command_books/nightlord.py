@@ -28,6 +28,7 @@ class Key:
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
+    BUFF = "shift"
 
 
 #########################
@@ -234,7 +235,9 @@ class Buff(Command):
         self.buff_time = 0
 
     def main(self):
-        pass
+        if self.buff_time == 0 or time.time() - self.buff_time > 30 * 60 + 10:
+            press(Key.BUFF, 1, 0.1, 0.5)
+            self.buff_time = time.time()
 
 
 class UpJump(Command):

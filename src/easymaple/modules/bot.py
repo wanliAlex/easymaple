@@ -13,7 +13,6 @@ from src.easymaple.detection import detection
 from src.easymaple.routine import components
 from src.easymaple.routine.routine import Routine
 from src.easymaple.routine.components import Point
-from src.easymaple.common.vkeys import press, click
 from src.easymaple.common.interfaces import Configurable
 from src.easymaple.common.vkeys import press, key_down, key_up
 
@@ -23,6 +22,12 @@ RUNE_BUFF_TEMPLATES = [
     utils.load_image('assets/rune_buff_template.jpg', cv2.IMREAD_GRAYSCALE),
     utils.load_image('assets/rune_buff_template_2.jpg', cv2.IMREAD_GRAYSCALE),
 ]
+
+# "This item still has time remaining..." warning popup that appears when a
+# buff key is pressed while the buff is already active. Press Esc to dismiss.
+BUFF_ACTIVE_POPUP_TEMPLATE = utils.load_image(
+    'assets/buff_template.png', cv2.IMREAD_GRAYSCALE
+)
 
 
 class Bot(Configurable):
@@ -136,6 +141,7 @@ class Bot(Configurable):
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
                 self.buff.main()
+                self._dismiss_buff_active_popup()
                 pet_settings = config.gui.settings.pets
                 auto_feed = pet_settings.auto_feed.get()
                 num_pets = pet_settings.num_pets.get()
@@ -303,6 +309,24 @@ class Bot(Configurable):
         for k in keys:
             key_up(k)
 
+    def _dismiss_buff_active_popup(self, threshold=0.9):
+        """If the 'buff effect will disappear' warning popup is on screen,
+        press Esc to dismiss it so the routine isn't blocked. Silently no-op
+        otherwise.
+        """
+        frame = config.capture.frame
+        if frame is None:
+            return
+        try:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            result = cv2.matchTemplate(gray, BUFF_ACTIVE_POPUP_TEMPLATE, cv2.TM_CCOEFF_NORMED)
+            score = float(result.max())
+        except cv2.error:
+            return
+        if score >= threshold:
+            print(f'[~] Buff-active popup detected (score={score:.3f}); pressing Esc')
+            press('esc', 1)
+
     def _attempt_solve_once(self, model):
         """One end-to-end solve attempt. Returns True iff the rune buff was confirmed."""
         print('\nSolving rune:')
@@ -411,15 +435,8 @@ class Bot(Configurable):
             if not self._interruptible_sleep(0.3):
                 return False
             rune_buff = _buff_positions(label=f'post{poll}')
-            if not rune_buff:
-                continue
-            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-            target = (
-                round(rune_buff_pos[0] + config.capture.window['left']),
-                round(rune_buff_pos[1] + config.capture.window['top'])
-            )
-            click(target, button='right')
-            return True
+            if rune_buff:
+                return True
 
         return False
 
