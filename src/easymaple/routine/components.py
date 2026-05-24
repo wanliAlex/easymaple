@@ -8,10 +8,11 @@ from src.easymaple.common.vkeys import key_down, key_up, press
 
 
 # Warning popups MapleStory shows when a buff key is pressed while the
-# corresponding effect is still active. Press Esc to dismiss either of them.
+# corresponding effect is still active. Press Esc to dismiss any of them.
 BUFF_ACTIVE_POPUP_TEMPLATES = [
     utils.load_image('assets/buff_template.png', cv2.IMREAD_GRAYSCALE),
     utils.load_image('assets/buff_template_2.png', cv2.IMREAD_GRAYSCALE),
+    utils.load_image('assets/buff_template_3.png', cv2.IMREAD_GRAYSCALE),
 ]
 
 
