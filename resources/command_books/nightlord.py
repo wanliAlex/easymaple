@@ -28,6 +28,7 @@ class Key:
 
     ERDA_FOUNTAIN = "c"
     ROPE  = "s"
+    BUFF = "shift"
 
 
 #########################
@@ -227,17 +228,16 @@ class StraightJumpAttack(Command):
 
 
 class Buff(Command):
-    """Presses the Night Lord buff hotkey (left shift) on a cooldown."""
+    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
 
     def __init__(self):
         super().__init__(locals())
         self.buff_time = 0
 
     def main(self):
-        now = time.time()
-        if self.buff_time == 0 or now - self.buff_time > settings.buff_cooldown:
-            press('shift', 1)
-            self.buff_time = now
+        if self.buff_time == 0 or time.time() - self.buff_time > 30 * 60 + 10:
+            press(Key.BUFF, 1, 0.1, 0.5)
+            self.buff_time = time.time()
 
 
 class UpJump(Command):
