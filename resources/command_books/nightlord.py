@@ -227,14 +227,17 @@ class StraightJumpAttack(Command):
 
 
 class Buff(Command):
-    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
+    """Presses the Night Lord buff hotkey (left shift) on a cooldown."""
 
     def __init__(self):
         super().__init__(locals())
         self.buff_time = 0
 
     def main(self):
-        pass
+        now = time.time()
+        if self.buff_time == 0 or now - self.buff_time > settings.buff_cooldown:
+            press('shift', 1)
+            self.buff_time = now
 
 
 class UpJump(Command):
