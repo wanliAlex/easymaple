@@ -16,10 +16,13 @@ class Configurable:
         self.load_config()
 
     def load_config(self):
+        # Merge over defaults rather than replacing, so saved pickles from
+        # before a new DEFAULT_CONFIG key was added still load (the new key
+        # picks up its default).
         path = os.path.join(SETTINGS_DIR, self.TARGET)
         if os.path.isfile(path):
             with open(path, 'rb') as file:
-                self.config = pickle.load(file)
+                self.config.update(pickle.load(file))
         else:
             self.save_config()
 

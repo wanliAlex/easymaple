@@ -356,7 +356,10 @@ class Bot(Configurable):
             x_offset = w // 2
 
             gray = cv2.cvtColor(top_right, cv2.COLOR_BGR2GRAY) if len(top_right.shape) == 3 else top_right
-            threshold = 0.9
+            threshold = (
+                config.advanced.get('rune_buff_threshold')
+                if config.advanced is not None else 0.9
+            )
             matches = []
             scores = []
             for idx, template in enumerate(RUNE_BUFF_TEMPLATES):
@@ -376,6 +379,8 @@ class Bot(Configurable):
             score_str = ', '.join(f'tpl{i}={s:.3f}' for i, s in enumerate(scores))
             verdict = 'FOUND' if matches else 'NO MATCH'
             print(f'[~] Rune buff {label}: {verdict} (threshold={threshold}; scores: {score_str})')
+            if scores:
+                config.last_rune_buff_score = (max(scores), time.time())
             return matches
 
         self._release_solver_keys()

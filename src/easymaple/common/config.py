@@ -46,3 +46,14 @@ notifier = None
 
 # Shares the gui to all modules
 gui = None
+
+
+# AdvancedSettings instance — populated by the GUI on init. Worker threads read
+# detection thresholds from here. Stays None until GUI initializes it.
+advanced = None
+
+# Live match scores for the rune templates: (score, timestamp). Updated by the
+# notifier (map score) and bot (buff score) loops; read by the Advanced UI for
+# live preview. Stale (>2s) values display as "—".
+last_rune_map_score = (0.0, 0.0)
+last_rune_buff_score = (0.0, 0.0)

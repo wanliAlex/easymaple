@@ -56,6 +56,21 @@ RUNE_DETECT_FREQUENCY = 40
 
 DEATH_DETECT_FREQUENCY = 400
 
+NOTIFIER_LOOP_SLEEP_S = 0.05
+
+
+def rune_detect_poll_count():
+    """Resolve how often (in poll iterations) the notifier should run rune
+    detection. Reads `rune_detect_interval_seconds` from advanced settings
+    so changes take effect live; falls back to RUNE_DETECT_FREQUENCY when
+    the panel isn't loaded yet (early startup, tests).
+    """
+    if config.advanced is None:
+        return RUNE_DETECT_FREQUENCY
+    interval = config.advanced.get('rune_detect_interval_seconds')
+    return max(1, round(interval / NOTIFIER_LOOP_SLEEP_S))
+
+
 def get_alert_path(name):
     return os.path.join(Notifier.ALERTS_DIR, f'{name}.mp3')
 
@@ -93,58 +108,69 @@ class Notifier:
     def _main(self):
         self.ready = True
         while True:
-            if config.enabled:
-                frame = config.capture.frame
-                height, width, _ = frame.shape
-                minimap = config.capture.minimap['minimap']
+            try:
+                if config.enabled:
+                    frame = config.capture.frame
+                    height, width, _ = frame.shape
+                    minimap = config.capture.minimap['minimap']
 
-                # Check for unexpected black screen
-                # white room
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
-                    for _ in range(5):
-                        self._enqueue_notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
-                    self._alert('siren')
+                    # Check for unexpected black screen
+                    # white room
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
+                        for _ in range(5):
+                            self._enqueue_notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
+                        self._alert('siren')
 
-                # Check for elite warning
-                #elite_frame = frame[height // 4:3 * height // 4, width // 4:3 * width // 4]
-                #elite = utils.multi_match(elite_frame, ELITE_TEMPLATE, threshold=0.9)
-                #if len(elite) > 0:
-                #    self._alert('siren')
+                    # Check for elite warning
+                    #elite_frame = frame[height // 4:3 * height // 4, width // 4:3 * width // 4]
+                    #elite = utils.multi_match(elite_frame, ELITE_TEMPLATE, threshold=0.9)
+                    #if len(elite) > 0:
+                    #    self._alert('siren')
 
-                # Disable check for players
-                # Check for other players entering the map
-                # filtered = utils.filter_color(minimap, OTHER_RANGES)
-                # others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
-                # config.stage_fright = others > 0
-                # if others != prev_others:
-                #     if others > prev_others:
-                #         self._ping('ding')
-                #     prev_others = others
+                    # Disable check for players
+                    # Check for other players entering the map
+                    # filtered = utils.filter_color(minimap, OTHER_RANGES)
+                    # others = len(utils.multi_match(filtered, OTHER_TEMPLATE, threshold=0.5))
+                    # config.stage_fright = others > 0
+                    # if others != prev_others:
+                    #     if others > prev_others:
+                    #         self._ping('ding')
+                    #     prev_others = others
 
-                # Check for rune. Notifications for rune appearance are intentionally
-                # silent — the bot solves it automatically. The notifier only alerts
-                # via alert_rune_unsolvable() when the solver actually fails.
-                if self.rune_counter >= RUNE_DETECT_FREQUENCY or self.rune_counter == 0:
-                    self.rune_counter = 1
-                    filtered = utils.filter_color(minimap, RUNE_RANGES)
-                    matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=0.75)
-                    if matches:
-                        # On first detection, record the rune's minimap position
-                        if not config.bot.rune_active:
-                            abs_rune_pos = (matches[0][0], matches[0][1])
-                            config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
-                        config.bot.rune_active = True
+                    # Check for rune. Notifications for rune appearance are intentionally
+                    # silent — the bot solves it automatically. The notifier only alerts
+                    # via alert_rune_unsolvable() when the solver actually fails.
+                    if self.rune_counter >= rune_detect_poll_count() or self.rune_counter == 0:
+                        self.rune_counter = 1
+                        filtered = utils.filter_color(minimap, RUNE_RANGES)
+                        rune_threshold = (
+                            config.advanced.get('rune_map_threshold')
+                            if config.advanced is not None else 0.75
+                        )
+                        config.last_rune_map_score = (
+                            utils.match_score(filtered, RUNE_TEMPLATE),
+                            time.time(),
+                        )
+                        matches = utils.multi_match(filtered, RUNE_TEMPLATE, threshold=rune_threshold)
+                        if matches:
+                            # On first detection, record the rune's minimap position
+                            if not config.bot.rune_active:
+                                abs_rune_pos = (matches[0][0], matches[0][1])
+                                config.bot.rune_pos = utils.convert_to_relative(abs_rune_pos, minimap)
+                            config.bot.rune_active = True
 
-                if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
-                    self.death_counter = 1
-                    matches = utils.multi_match(frame=gray, template=DEATH_TEMPLATE, threshold=0.60)
-                    if matches:
-                        self._ping("ding", volume=0.75)
+                    if self.death_counter >= DEATH_DETECT_FREQUENCY or self.death_counter == 0:
+                        self.death_counter = 1
+                        matches = utils.multi_match(frame=gray, template=DEATH_TEMPLATE, threshold=0.60)
+                        if matches:
+                            self._ping("ding", volume=0.75)
 
-                self.rune_counter += 1
-                self.death_counter += 1
-            time.sleep(0.05)
+                    self.rune_counter += 1
+                    self.death_counter += 1
+            except Exception as e:
+                log.exception("Notifier loop iteration failed; continuing: %s", e)
+            time.sleep(NOTIFIER_LOOP_SLEEP_S)
 
     def _alert(self, name, volume=0.75):
         """
