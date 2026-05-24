@@ -237,7 +237,8 @@ class Buff(Command):
     """
 
     BUFFS = {
-        Key.BUFF: 30 * 60 + 10,
+        "shift": 30 * 60 + 1,
+        "f5": 120 * 60 + 1,
     }
 
     def __init__(self):
