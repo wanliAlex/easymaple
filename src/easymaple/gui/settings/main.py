@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from src.easymaple.gui.settings.advanced import Advanced
+from src.easymaple.gui.settings.buffs import Buffs
 from src.easymaple.gui.settings.keybindings import KeyBindings
 from src.easymaple.gui.settings.pets import Pets
 from src.easymaple.gui.settings.rune import Rune
@@ -30,5 +31,7 @@ class Settings(Tab):
         self.key_bindings.pack(side=tk.TOP, fill='x', expand=True)
         self.pets = Pets(column2)
         self.pets.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
+        self.buffs = Buffs(column2)
+        self.buffs.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
         self.advanced = Advanced(column2)
         self.advanced.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
