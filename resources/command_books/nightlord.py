@@ -250,8 +250,9 @@ class Buff(Command):
         for key, cooldown in self.BUFFS.items():
             last = self.last_pressed.get(key, 0.0)
             if last == 0.0 or now - last > cooldown:
-                press(key, 1, 0.1, 0.5)
+                press(key, 1, 0.1, 2)
                 self.dismiss_buff_active_popup()
+                time.sleep(1)
                 self.last_pressed[key] = now
 
 
