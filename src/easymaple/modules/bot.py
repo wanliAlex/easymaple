@@ -134,7 +134,8 @@ class Bot(Configurable):
 
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
-                self.buff.main()
+                if config.gui.settings.buffs.auto_buff.get():
+                    self.buff.main()
                 pet_settings = config.gui.settings.pets
                 auto_feed = pet_settings.auto_feed.get()
                 num_pets = pet_settings.num_pets.get()
