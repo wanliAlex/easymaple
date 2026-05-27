@@ -236,9 +236,11 @@ class Buff(Command):
     resumes.
     """
 
+    BUFF_BUFFER = 10
+
     BUFFS = {
-        "shift": 30 * 60 + 1,
-        "f5": 120 * 60 + 1,
+        "shift": 30 * 60,
+        "f5": 120 * 60
     }
 
     def __init__(self):
@@ -249,7 +251,7 @@ class Buff(Command):
         now = time.time()
         for key, cooldown in self.BUFFS.items():
             last = self.last_pressed.get(key, 0.0)
-            if last == 0.0 or now - last > cooldown:
+            if last == 0.0 or now - last > cooldown + self.BUFF_BUFFER:
                 press(key, 1, 0.1, 2)
                 self.dismiss_buff_active_popup()
                 time.sleep(1)
