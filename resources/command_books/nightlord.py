@@ -239,7 +239,7 @@ class Buff(Command):
     BUFF_BUFFER = 10
 
     BUFFS = {
-        "shift": 30 * 60,
+        "f1": 30 * 60,
         "f5": 120 * 60
     }
 
