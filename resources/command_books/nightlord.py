@@ -755,7 +755,7 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
                 self.placed_time = time.time()
                 self.place()
             
-            seed = random.randint(0.1)
+            seed = random.randint(0, 1)
 
             if seed < 0.25:
                 press(Key.SHOW_DOWN, 1, 0.1, 1)
