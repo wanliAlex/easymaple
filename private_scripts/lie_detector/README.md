@@ -7,6 +7,9 @@ shape that appears in a camouflage field and fades as it moves.
 - Runtime driver (moves the mouse): `src/easymaple/modules/lie_detector_player.py`
 - Offline eval + demo renderer: `private_scripts/lie_detector/eval_solver.py`
 - Tests (synthetic, no clips needed): `tests/test_lie_detector_solver.py`
+- **Kalman tracker investigation**: `private_scripts/lie_detector/kalman/`
+  (`findings.md`, `kalman_tracker.py`, `demo_velocity.py`) — why the drift was
+  over-fast motion and how the velocity-bounded robust update fixes it.
 
 ## How the mini-game works (from the recorded clips)
 
