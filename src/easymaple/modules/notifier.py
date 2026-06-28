@@ -14,6 +14,7 @@ import keyboard as kb
 import requests
 from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
+from src.easymaple.modules import recorder
 
 log = logging.getLogger(__name__)
 
@@ -186,6 +187,7 @@ class Notifier:
                         prog_hit = utils.match_score(gray, LIE_DETECTOR_PROGRESS_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
                         if prep_hit or prog_hit:
                             phase = "准备阶段" if prep_hit else "进行中"
+                            recorder.record_clip()
                             for _ in range(5):
                                 self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏 ({phase})！快手动接管")
                             self._alert('siren')
