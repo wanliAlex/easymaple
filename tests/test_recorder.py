@@ -63,3 +63,26 @@ def test_record_clip_returns_false_when_no_frame(tmp_path):
     )
     assert started is False
     assert recorder.is_recording() is False
+
+
+def test_second_clip_is_noop_while_recording(tmp_path):
+    out_dir = str(tmp_path / "clips")
+
+    def get_frame():
+        return _frame(1)
+
+    first = recorder.record_clip(
+        duration_s=0.5, fps=20, out_dir=out_dir, get_frame=get_frame
+    )
+    assert first is True
+    assert _wait_until(lambda: recorder.is_recording())
+
+    # Second call while the first is still running must be rejected.
+    second = recorder.record_clip(
+        duration_s=0.5, fps=20, out_dir=out_dir, get_frame=get_frame
+    )
+    assert second is False
+
+    assert _wait_until(lambda: not recorder.is_recording())
+    files = [f for f in os.listdir(out_dir) if f.endswith(".mp4")]
+    assert len(files) == 1
