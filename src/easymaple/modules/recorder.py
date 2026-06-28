@@ -22,7 +22,8 @@ _recording = False
 
 def is_recording():
     """True while a clip is currently being written."""
-    return _recording
+    with _lock:
+        return _recording
 
 
 def _default_get_frame():
@@ -32,17 +33,6 @@ def _default_get_frame():
     return getattr(cap, "frame", None) if cap is not None else None
 
 
-def _wait_for_frame(get_frame, timeout=2.0):
-    """Polls get_frame until it returns a valid frame or timeout elapses."""
-    end = time.time() + timeout
-    while time.time() < end:
-        frame = get_frame()
-        if frame is not None:
-            return frame
-        time.sleep(0.05)
-    return None
-
-
 def _to_bgr(frame):
     """Converts an mss BGRA frame to BGR; passes BGR through unchanged."""
     if frame.ndim == 3 and frame.shape[2] == 4:
@@ -50,15 +40,11 @@ def _to_bgr(frame):
     return frame
 
 
-def _record(duration_s, fps, out_dir, get_frame):
+def _record(duration_s, fps, out_dir, get_frame, first_frame):
     global _recording
     writer = None
     try:
-        first = _wait_for_frame(get_frame)
-        if first is None:
-            log.warning("Recorder: no frame available; aborting clip")
-            return
-        first = _to_bgr(first)
+        first = _to_bgr(first_frame)
         height, width = first.shape[:2]
 
         os.makedirs(out_dir, exist_ok=True)
@@ -93,7 +79,8 @@ def _record(duration_s, fps, out_dir, get_frame):
 
 def record_clip(duration_s=30, fps=30, out_dir=DEFAULT_OUT_DIR, get_frame=None):
     """Starts recording a clip in a background daemon thread and returns
-    immediately. No-op (returns False) if a recording is already running."""
+    immediately. No-op (returns False) if a recording is already running or
+    no frame is available."""
     global _recording
     if get_frame is None:
         get_frame = _default_get_frame
@@ -101,10 +88,14 @@ def record_clip(duration_s=30, fps=30, out_dir=DEFAULT_OUT_DIR, get_frame=None):
         if _recording:
             log.info("Recorder: recording already in progress; skipping")
             return False
+        first = get_frame()
+        if first is None:
+            log.warning("Recorder: no frame available; aborting clip")
+            return False
         _recording = True
     thread = threading.Thread(
         target=_record,
-        args=(duration_s, fps, out_dir, get_frame),
+        args=(duration_s, fps, out_dir, get_frame, first),
         daemon=True,
     )
     thread.start()

@@ -54,3 +54,12 @@ def test_record_clip_writes_playable_mp4(tmp_path):
         assert frame.shape == (48, 64, 3)  # BGRA -> BGR
     finally:
         cap.release()
+
+
+def test_record_clip_returns_false_when_no_frame(tmp_path):
+    started = recorder.record_clip(
+        duration_s=0.2, fps=20, out_dir=str(tmp_path / "clips"),
+        get_frame=lambda: None,
+    )
+    assert started is False
+    assert recorder.is_recording() is False
