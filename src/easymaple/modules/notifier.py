@@ -52,9 +52,20 @@ RUNE_COOLDOWN_TEMPLATE_1 = utils.load_image('assets/rune_cd_template_1.jpg', cv2
 
 DEATH_TEMPLATE = utils.load_image('assets/death_template.png', cv2.IMREAD_GRAYSCALE)
 
+# The Lie Detector anti-bot mini-game. Two distinct full-screen banners: the
+# "prep" countdown shown ~6s before the test, and the "in progress" banner shown
+# while the test runs. The bot cannot solve it, so detection hands control back
+# to the human via a siren, like the white-room safeguard.
+LIE_DETECTOR_PREP_TEMPLATE = utils.load_image('assets/lie_detector_prep.png', cv2.IMREAD_GRAYSCALE)
+LIE_DETECTOR_PROGRESS_TEMPLATE = utils.load_image('assets/lie_detector_in_progress.png', cv2.IMREAD_GRAYSCALE)
+LIE_DETECTOR_THRESHOLD = 0.9
+
 RUNE_DETECT_FREQUENCY = 40
 
 DEATH_DETECT_FREQUENCY = 400
+
+# ~0.5s at 0.05s/loop; reliably catches the ~6s prep window.
+LIE_DETECTOR_DETECT_FREQUENCY = 10
 
 NOTIFIER_LOOP_SLEEP_S = 0.05
 
@@ -95,6 +106,7 @@ class Notifier:
 
         self.rune_counter = 0
         self.death_counter = 0
+        self.lie_detector_counter = 0
 
         self._discord_queue = queue.Queue()
 
@@ -166,8 +178,21 @@ class Notifier:
                         if matches:
                             self._ping("ding", volume=0.75)
 
+                    # Check for the Lie Detector mini-game. The bot can't solve it,
+                    # so notify and siren so the user can take over manually.
+                    if self.lie_detector_counter >= LIE_DETECTOR_DETECT_FREQUENCY or self.lie_detector_counter == 0:
+                        self.lie_detector_counter = 1
+                        prep_hit = utils.match_score(gray, LIE_DETECTOR_PREP_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
+                        prog_hit = utils.match_score(gray, LIE_DETECTOR_PROGRESS_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
+                        if prep_hit or prog_hit:
+                            phase = "准备阶段" if prep_hit else "进行中"
+                            for _ in range(5):
+                                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏 ({phase})！快手动接管")
+                            self._alert('siren')
+
                     self.rune_counter += 1
                     self.death_counter += 1
+                    self.lie_detector_counter += 1
             except Exception as e:
                 log.exception("Notifier loop iteration failed; continuing: %s", e)
             time.sleep(NOTIFIER_LOOP_SLEEP_S)

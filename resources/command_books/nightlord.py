@@ -16,6 +16,7 @@ class Key:
 
     # Skills
     SHOW_DOWN = "1"
+    QUAD_STAR = "2"
     DARK_FLARE = "g"
     LEAP = "z"
     SUDDEN_RAID = "w"
@@ -753,13 +754,19 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
                 self.placed = True
                 self.placed_time = time.time()
                 self.place()
+            
+            seed = random.uniform(0, 1)
 
-            if random.randint(0, 1) < 0.5:
-                press(Key.SHOW_DOWN, 1, 0.1, 1)
-            else:
+            if seed < 0.1:
+                press(random.choice([Key.SUDDEN_RAID, Key.DEATH_STAR, Key.SHURI])[0], 1, 0.1, 0.01)
+            elif 0.1<= seed <0.25:
+                press(Key.SHOW_DOWN, 1, 0.1, .01)
+            elif 0.25 <= seed < 0.75:
                 press(Key.JUMP, 1, 0.05, 0.05)
                 press(random.choice(["left", "right"]), 1, 0.01, 0.01)
                 press(Key.SHOW_DOWN, 1, 0.1, 0.01)
+            else:
+                press(Key.QUAD_STAR, 1, 0.1, 0.01)
 
             time.sleep(np.random.uniform(1, 1.5))
             Adjust(self.SELF_POSITION[0], self.SELF_POSITION[1]).main()
@@ -791,8 +798,8 @@ class NIGHT_ROAD_1_RIGHT(Command):
     SELF_POSITION = (0.770, 0.262)
     NEXT_POSITION = (0.182, 0.267)
     def main(self):
-        press(Key.BALL, 2, 0.1, 0.2)
-        press(Key.DARK_FLARE, 2, 0.1, 0.5)
+        press(Key.BALL, 2, 0.1, 0.3)
+        press(Key.DARK_FLARE, 1, 0.1, 0.5)
         for _ in range(100):
             if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
                 press("up", 1, 0.05, 0.01)
@@ -814,7 +821,7 @@ class NIGHT_ROAD_1_LEFT(Command):
     NEXT_POSITION = (0.476, 0.256)
 
     def main(self):
-        press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.5)
+        press(Key.ERDA_FOUNTAIN, 1, 0.1, 0.7)
         press(Key.BALL, 2, 0.1, 0.2)
         for _ in range(100):
             if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
