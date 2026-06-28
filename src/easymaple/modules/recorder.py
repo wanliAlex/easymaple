@@ -10,7 +10,6 @@ import time
 from datetime import datetime
 
 import cv2
-import numpy as np
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +76,7 @@ def _record(duration_s, fps, out_dir, get_frame, first_frame):
             _recording = False
 
 
-def record_clip(duration_s=30, fps=30, out_dir=DEFAULT_OUT_DIR, get_frame=None):
+def record_clip(duration_s: float = 30, fps: float = 30, out_dir: str = DEFAULT_OUT_DIR, get_frame=None) -> bool:
     """Starts recording a clip in a background daemon thread and returns
     immediately. No-op (returns False) if a recording is already running or
     no frame is available."""
