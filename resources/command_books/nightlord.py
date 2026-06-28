@@ -758,7 +758,7 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
             seed = random.uniform(0, 1)
 
             if seed < 0.1:
-                press(random.choice[Key.SUDDEN_RAID, Key.DEATH_STAR, Key.SHURI], 1, 0.1, 0.01)
+                press(random.choice([Key.SUDDEN_RAID, Key.DEATH_STAR, Key.SHURI])[0], 1, 0.1, 0.01)
             elif 0.1<= seed <0.25:
                 press(Key.SHOW_DOWN, 1, 0.1, .01)
             elif 0.25 <= seed < 0.75:
