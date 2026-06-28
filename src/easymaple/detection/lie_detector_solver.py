@@ -82,21 +82,29 @@ PLATE_REBUILD_EVERY = 30       # rebuild cadence (frames) while the buffer grows
 STARTSPOT_RADIUS = 55          # px disc around the settled shape masked from the
                                # plate (the stationary opaque shape sat there)
 
-# --- Tracker (constant-velocity Kalman; tuned offline vs cursor ground truth)-
-# The shape moves smoothly but fades to near-invisible, especially while it hugs
-# the box edges. A constant-velocity Kalman coasts on velocity through low-signal
-# stretches (rather than holding position), and the measurement noise is scaled
-# by detection confidence so weak/edge evidence nudges rather than yanks.
+# --- Tracker (robust constant-velocity Kalman; tuned offline vs ground truth)-
+# The shape moves smoothly and slowly (GT: ~2.5 px/frame avg, never > ~23) but
+# fades to near-invisible, especially while it hugs the box edges. The filter
+# coasts on velocity through low-signal stretches and uses a ROBUST update: every
+# measurement's noise is inflated both by low detection confidence and by its
+# innovation distance, so a single fast jump onto a texture distractor is
+# down-weighted (the estimate never moves faster than the shape can) while a run
+# of consistent measurements can still pull it back. A hard reject was tried and
+# rejected — it locks in drift by also discarding the corrective measurement.
 DEV_BLUR = 7
 DEV_NAVG = 3
-PRIOR_SIGMA = 60.0             # Gaussian motion-prior width around the prediction
+PRIOR_SIGMA = 40.0             # Gaussian motion-prior width around the prediction
 RELTHR = 0.6                   # posterior threshold for the centroid blob
 MEASURE_EPS = 0.3              # posterior peak below this -> no measurement (coast)
 KF_Q_POS = 1.0                 # process noise: position
-KF_Q_VEL = 5.0                 # process noise: velocity (allows smooth turns)
-KF_R_MIN = 30.0               # measurement noise at full confidence (trust it)
-KF_R_MAX = 400.0               # measurement noise at low confidence (trust velocity)
+KF_Q_VEL = 5.0                 # process noise: velocity (smooth, allows gentle turns)
+KF_R_MIN = 40.0                # measurement noise at full confidence (trust it)
+KF_R_MAX = 600.0               # measurement noise at low confidence (trust velocity)
 KF_CONF_SCALE = 8.0            # posterior peak that counts as "full confidence"
+INNOV_SCALE = 18.0             # robust down-weighting: R *= 1 + (innov/INNOV_SCALE)^2
+MAX_SPEED = 24.0               # px/frame hard velocity cap (GT max ~23)
+EDGE_MARGIN = 12               # px from a wall that counts as "at the edge"
+EDGE_BOUNCE = 0.6              # fraction of outward velocity reflected inward
 
 
 def detect_play_box(frame_bgr):
@@ -212,6 +220,15 @@ class ShapeTracker:
         kf.statePost = np.array([[seed_xy[0]], [seed_xy[1]], [0], [0]], np.float32)
         self.kf = kf
 
+    @property
+    def pos(self):
+        return (float(self.kf.statePost[0, 0]), float(self.kf.statePost[1, 0]))
+
+    @property
+    def vel(self):
+        """Current velocity estimate (px/frame) — exposed for diagnostics."""
+        return (float(self.kf.statePost[2, 0]), float(self.kf.statePost[3, 0]))
+
     def _dev_map(self, box_gray, green):
         raw = cv2.GaussianBlur(np.clip(box_gray - self.plate, 0, None), (0, 0), DEV_BLUR)
         self._raw.append(raw)
@@ -238,18 +255,46 @@ class ShapeTracker:
         return np.array([(xs * wts).sum() / wts.sum() + x0,
                          (ys * wts).sum() / wts.sum() + y0]), peak
 
+    def _reflect_at_edges(self):
+        """Soft-bounce: if the prediction is past a wall with outward velocity,
+        reflect (and damp) that velocity component instead of clamping it dead."""
+        x, y = self.kf.statePre[0, 0], self.kf.statePre[1, 0]
+        vx, vy = self.kf.statePre[2, 0], self.kf.statePre[3, 0]
+        if x <= EDGE_MARGIN and vx < 0:
+            vx = -vx * EDGE_BOUNCE
+        elif x >= self.w - 1 - EDGE_MARGIN and vx > 0:
+            vx = -vx * EDGE_BOUNCE
+        if y <= EDGE_MARGIN and vy < 0:
+            vy = -vy * EDGE_BOUNCE
+        elif y >= self.h - 1 - EDGE_MARGIN and vy > 0:
+            vy = -vy * EDGE_BOUNCE
+        self.kf.statePre[0, 0] = np.clip(x, 0, self.w - 1)
+        self.kf.statePre[1, 0] = np.clip(y, 0, self.h - 1)
+        self.kf.statePre[2, 0] = vx
+        self.kf.statePre[3, 0] = vy
+
     def update(self, box_gray, green):
         """Advance the tracker by one frame; return the estimated ``(x, y)``."""
         d = self._dev_map(box_gray, green)
-        pred = self.kf.predict()
-        meas, peak = self._measure(d, float(pred[0, 0]), float(pred[1, 0]))
+        self.kf.predict()
+        self._reflect_at_edges()
+        px, py = float(self.kf.statePre[0, 0]), float(self.kf.statePre[1, 0])
+        meas, peak = self._measure(d, px, py)
         if meas is not None:
+            innov = float(np.hypot(meas[0] - px, meas[1] - py))
             conf = min(1.0, peak / KF_CONF_SCALE)
-            r = KF_R_MAX - (KF_R_MAX - KF_R_MIN) * conf
+            # Robust update: low confidence OR a large jump both inflate the
+            # measurement noise, so the filter leans on its smooth velocity.
+            r = (KF_R_MAX - (KF_R_MAX - KF_R_MIN) * conf) * (1 + (innov / INNOV_SCALE) ** 2)
             self.kf.measurementNoiseCov = np.array([[r, 0], [0, r]], np.float32)
             self.kf.correct(np.array([[meas[0]], [meas[1]]], np.float32))
         else:                       # no signal: coast on velocity
             self.kf.statePost = self.kf.statePre.copy()
+        vx, vy = self.kf.statePost[2, 0], self.kf.statePost[3, 0]
+        sp = np.hypot(vx, vy)
+        if sp > MAX_SPEED:          # never move faster than the shape can
+            self.kf.statePost[2, 0] = vx * MAX_SPEED / sp
+            self.kf.statePost[3, 0] = vy * MAX_SPEED / sp
         x = float(np.clip(self.kf.statePost[0, 0], 0, self.w - 1))
         y = float(np.clip(self.kf.statePost[1, 0], 0, self.h - 1))
         self.kf.statePost[0, 0] = x
