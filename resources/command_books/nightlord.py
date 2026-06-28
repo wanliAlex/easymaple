@@ -755,16 +755,18 @@ class NIGHT_ROAD_1_MID_STANDSTILL(Command):
                 self.placed_time = time.time()
                 self.place()
             
-            seed = random.randint(0, 1)
+            seed = random.uniform(0, 1)
 
-            if seed < 0.25:
-                press(Key.SHOW_DOWN, 1, 0.1, 1)
-            elif 0.25 < seed < 0.75:
+            if seed < 0.1:
+                press(random.choice[Key.SUDDEN_RAID, Key.DEATH_STAR, Key.SHURI], 1, 0.1, 0.01)
+            elif 0.1<= seed <0.25:
+                press(Key.SHOW_DOWN, 1, 0.1, .01)
+            elif 0.25 <= seed < 0.75:
                 press(Key.JUMP, 1, 0.05, 0.05)
                 press(random.choice(["left", "right"]), 1, 0.01, 0.01)
                 press(Key.SHOW_DOWN, 1, 0.1, 0.01)
             else:
-                press(Key.QUAD_STAR, 1, 0.1, 0.3)
+                press(Key.QUAD_STAR, 1, 0.1, 0.01)
 
             time.sleep(np.random.uniform(1, 1.5))
             Adjust(self.SELF_POSITION[0], self.SELF_POSITION[1]).main()
