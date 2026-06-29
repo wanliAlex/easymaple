@@ -63,13 +63,42 @@ MAX_SPEED=24, EDGE_BOUNCE=0.6`.
 
 The motion now obeys the shape's real dynamics — the jumpy fast drift is gone and
 the velocity is smooth (see `demo_velocity.py`, which draws solver vs truth
-velocity). Coverage and longest-lock are essentially unchanged: bounding the
-speed removes the *catastrophic* drift but does not, on its own, break the
-underlying signal ceiling (the shape is invisible for long edge-hugging
-stretches and turns while invisible). Sustaining a full-duration lock still needs
-a stronger per-frame signal — higher-fps capture or a learned detector.
+velocity). But coverage and longest-lock were essentially unchanged: bounding the
+speed removed the *catastrophic* drift without breaking the apparent signal
+ceiling. At this point the luminance solver plateaued at ~30–36 % coverage.
+
+## 6. The real fix was chromatic, not kinematic
+
+The "signal ceiling" was a property of **luminance**, not of the clips. The shape
+is a cool/white disc on a warm/tan texture. As it fades its *brightness* drops
+into the texture's (and the ~17 grey-level/frame luminance shimmer buries it),
+but its *hue* does not: it stays measurably cooler than its surroundings the
+whole way down. Measured on the clips:
+
+| signal | faded-shape detection (late frames) |
+|--------|-------------------------------------|
+| luminance | ~40 % |
+| **B − R (blue − red)** | **~87–99 %** (local) / **81–96 %** (global) |
+
+Switching the plate, deviation and tracking from grayscale to the **B − R
+channel** — keeping the same robust Kalman, motion-compensation and z-gating —
+plus seeding at the shape's current position (the acquisition seed goes stale
+once the shape fades) and a **global re-acquisition** step (now reliable, because
+the global cool-max *is* the shape), took it to a full-duration solve:
+
+| metric | luminance | **chromatic (B − R)** |
+|--------|-----------|----------------------|
+| coverage <60px (clip 1 / clip 2) | 35 % / 36 % | **64 % / 75 %** |
+| coverage <80px | 35 % / 37 % | **69 % / 78 %** |
+| longest lock | ~2.0 s | **2.6–5.5 s** |
+
+All from the **same 30 fps clips** — no higher-rate capture, no learned detector.
+The earlier "needs a stronger per-frame signal" conclusion was right that the
+luminance signal was exhausted, and wrong that the answer was more pixels: the
+answer was a *different channel* of the pixels we already had.
 
 ## Files
-- `kalman_tracker.py` — the tracker (mirrored in `src/.../lie_detector_solver.py`)
-- `demo_velocity.py` — renders the velocity-vector demo
-- `../eval_solver.py` — end-to-end evaluation
+- `../../../src/easymaple/detection/lie_detector_solver.py` — the tracker
+  (`ShapeTracker`) and full solver
+- `demo_velocity.py` — renders the velocity-vector demo (solver vs truth)
+- `../eval_solver.py` — end-to-end evaluation + demo renderer

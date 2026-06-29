@@ -33,15 +33,23 @@ def _texture():
     return TEXTURE
 
 
+# The shape is a bright *cool* disc (high blue, low red) over the warm tan
+# texture — like the real game, where the shape stays chromatically cool even as
+# its brightness fades into the texture. ``DISC_BGR`` is bright enough to be
+# acquired by luminance while opaque, and cooler than tan (B-R positive) so the
+# tracker's B-R signal isolates it.
+DISC_BGR = (255, 235, 175)                          # bright, cool (B=255 >> R=175)
+
+
 def make_frame(disc_xy, alpha):
-    """Build a frame: dark background, tan textured box, and a bright disc of
-    opacity ``alpha`` (0..1) composited at ``disc_xy`` (box-interior coords)."""
+    """Build a frame: dark background, tan textured box, and a bright cool disc
+    of opacity ``alpha`` (0..1) composited at ``disc_xy`` (box-interior coords)."""
     frame = np.full((FRAME_H, FRAME_W, 3), 20, np.uint8)
     x, y, w, h = BOX
     box = _texture().copy()
     if alpha > 0:
         overlay = box.copy()
-        cv2.circle(overlay, (int(disc_xy[0]), int(disc_xy[1])), 34, (245, 245, 245), -1)
+        cv2.circle(overlay, (int(disc_xy[0]), int(disc_xy[1])), 34, DISC_BGR, -1)
         box = cv2.addWeighted(overlay, alpha, box, 1 - alpha, 0)
     frame[y:y + h, x:x + w] = box
     return frame
@@ -119,6 +127,34 @@ def test_solver_tracks_shape_while_signal_present():
     # While the shape is reasonably visible, stay within ~one shape width.
     assert np.median(errs) < 70, f"median error {np.median(errs):.0f}px too high"
     assert np.mean(errs < 80) > 0.6, f"only {100*np.mean(errs<80):.0f}% within 80px"
+
+
+def test_cool_channel_isolates_cool_shape_over_warm_texture():
+    """The B-R signal must be clearly positive on a cool shape and ~zero on the
+    warm texture — the contrast the tracker relies on."""
+    frame = make_frame((300, 300), 0.6)
+    x, y, w, h = BOX
+    m = S.BOX_INNER_MARGIN
+    crop = frame[y + m:y + h - m, x + m:x + w - m]
+    cool = S.cool_channel(crop)
+    shape = cool[300 - m, 300 - m]                     # at the disc centre
+    bg = np.median(cool)                               # texture dominates the box
+    assert shape - bg > 25, f"cool contrast {shape - bg:.0f} too weak"
+
+
+def test_solver_tracks_cool_shape_through_deep_fade():
+    """The chromatic signal must keep the lock as the shape fades to near the
+    texture's brightness — where luminance tracking collapses. Asserts coverage
+    deep into the fade (alpha < 0.3)."""
+    solver = S.LieDetectorSolver()
+    deep, locked = [], []
+    for frame, truth_xy, alpha in synth_sequence():
+        target = solver.process(frame)
+        if solver.state == "TRACK" and target is not None and alpha < 0.3:
+            deep.append(alpha)
+            locked.append(np.hypot(target[0] - truth_xy[0], target[1] - truth_xy[1]) < 60)
+    assert len(deep) >= 10, "sequence did not reach the deep-fade phase under TRACK"
+    assert np.mean(locked) > 0.6, f"only {100*np.mean(locked):.0f}% locked in deep fade"
 
 
 def test_green_cursor_is_masked_from_tracking():
