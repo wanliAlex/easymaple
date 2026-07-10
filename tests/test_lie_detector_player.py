@@ -45,7 +45,8 @@ def test_player_parks_at_center_then_follows_to_the_end_without_teleports():
     n_countdown = 35
     countdown = [make_frame((0, 0), 0.0) for _ in range(n_countdown)]  # box, no shape
     seq = synth_sequence()
-    game_over = [DARK.copy() for _ in range(30)]
+    # a bright, box-less aftermath: the normal (passed) end of a game
+    game_over = [np.full((FRAME_H, FRAME_W, 3), 90, np.uint8) for _ in range(30)]
     result, moves = _play(countdown + [f for f, _, _ in seq] + game_over)
 
     assert result["outcome"] == "completed", result
@@ -72,6 +73,19 @@ def test_player_parks_at_center_then_follows_to_the_end_without_teleports():
     end_moves = moves[n_countdown + len(seq) - 3:n_countdown + len(seq)]
     end_err = min(np.hypot(*(m - truth_end)) for m in end_moves)
     assert end_err < 90, f"lost the shape at the end ({end_err:.0f}px off)"
+
+
+def test_player_reports_failed_when_the_jail_room_follows_the_game():
+    """The Lie Detector failure state (observed live 2026-07-10): right after
+    the play-box vanishes the character is in a near-black punishment room.
+    The player must report outcome='failed' so the notifier keeps the bot
+    paused instead of celebrating and resuming inside the jail."""
+    countdown = [make_frame((0, 0), 0.0) for _ in range(30)]
+    seq = synth_sequence()
+    jail = [np.full((FRAME_H, FRAME_W, 3), 5, np.uint8) for _ in range(40)]
+    result, moves = _play(countdown + [f for f, _, _ in seq] + jail)
+    assert result["outcome"] == "failed", result
+    assert result["reached_track"]
 
 
 def test_player_reports_no_box_when_game_never_appears():

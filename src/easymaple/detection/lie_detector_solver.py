@@ -176,6 +176,24 @@ REWARD_CAP = 8.0               # cap a peak's z reward so a lone strong distract
                                # cannot outweigh a smooth, decently-strong path
 FLOOR_Z = 2.0                  # min robust z for a peak to be a candidate at all
 
+# --- Own-cursor masking (learned from the live failure 2026-07-10_14-34-09;
+# see kalman/findings.md §10) -------------------------------------------------
+# Live, our own reticle leaks a cool halo past the green mask (~5x the texture
+# floor). Whenever the shape's signal dips below that, the strongest stable
+# blob in the box is wherever the cursor already is — the tracker locks onto
+# itself and the cursor freezes (that is exactly how the first live game was
+# lost). The caller knows where it commanded the cursor, so a disc around that
+# position is masked from every search: a tracker must never track itself.
+#
+# Two guards were tried on top of this and REMOVED after the corpus falsified
+# them (details in findings §10): a border ring against combat-effect bleed
+# (real shapes end hugging the wall — the ring cost more end-lock than the
+# bleed ever did) and blind-phase coasting (real texture noise is not iid;
+# static plate residuals chain as smoothly as a real path, so no path-quality
+# gate separates "blind" from "weak shape" — and every gate tried threw away
+# genuinely trackable weak endgames).
+CURSOR_MASK_R = 32             # px disc masked around our own commanded cursor
+
 
 def detect_play_box(frame_bgr):
     """Return the camouflage play-box as ``(x, y, w, h)`` in frame pixels, or
@@ -317,13 +335,19 @@ class ShapeTracker:
         """Per-frame output step (px/frame) — exposed for diagnostics."""
         return (self._out[0] - self._prev[0], self._out[1] - self._prev[1])
 
-    def _dev(self, box_sig, green):
-        """Blurred positive B-R deviation from the plate, with the green cursor
-        and the start-spot masked out. The start-spot (where the opaque shape sat
-        still) can carry a fading plate artifact, so it is excluded from the
-        search; the shape has moved off it by the time tracking starts."""
+    def _dev(self, box_sig, green, cursor_xy=None):
+        """Blurred positive B-R deviation from the plate, with everything that
+        is *known not to be the shape* masked out: the green cursor pixels, a
+        ``CURSOR_MASK_R`` disc around the cursor position we commanded (the
+        reticle's anti-aliased glow leaks cool signal past the green mask — at
+        ~5x the texture floor it out-shines a deeply faded shape, and a tracker
+        must never track itself), and the start-spot (it carries a fading
+        plate artifact from where the opaque shape sat)."""
         d = cv2.GaussianBlur(np.clip(box_sig - self.plate, 0, None), (0, 0), DEV_BLUR)
         d[green > 0] = 0.0
+        if cursor_xy is not None:
+            cv2.circle(d, (int(cursor_xy[0]), int(cursor_xy[1])),
+                       CURSOR_MASK_R, 0.0, -1)
         if self._startspot is not None:
             cv2.circle(d, (int(self._startspot[0]), int(self._startspot[1])),
                        STARTSPOT_RADIUS, 0.0, -1)
@@ -351,10 +375,12 @@ class ShapeTracker:
             cv2.circle(dd, loc, SMOOTH_SUPPRESS, 0.0, -1)
         return cand
 
-    def update(self, box_sig, green):
+    def update(self, box_sig, green, cursor_xy=None):
         """Advance the smoother by one frame; return the estimated ``(x, y)``
-        (lagged ``SMOOTH_LAG`` frames). ``box_sig`` is the B-R signal channel."""
-        cand = self._candidates(self._dev(box_sig, green))
+        (lagged ``SMOOTH_LAG`` frames). ``box_sig`` is the B-R signal channel;
+        ``cursor_xy`` is our own commanded cursor position (interior coords),
+        masked from the search so the tracker can never track itself."""
+        cand = self._candidates(self._dev(box_sig, green, cursor_xy))
         if not cand:                       # nothing above the floor: hold last output
             cand = [(self._out[0], self._out[1], 0.0)]
         self._buf.append(cand)
@@ -528,7 +554,7 @@ class LieDetectorSolver:
     def _to_frame(self, xy):
         return (self.inner[0] + xy[0], self.inner[1] + xy[1])
 
-    def _start_tracking(self, seed_xy, cool, green):
+    def _start_tracking(self, seed_xy, cool, green, cursor_xy=None):
         plate = build_plate(list(self._sig_buf))
         # The acquisition seed (last bright-blob position) goes stale the moment
         # the shape fades: by now the shape has moved off the start-spot. Re-seed
@@ -536,7 +562,7 @@ class LieDetectorSolver:
         # start-spot disc excluded (it carries a fading plate artifact from where
         # the opaque shape sat). The chromatic signal is strong enough that this
         # global pick is reliable; fall back to the acquisition seed if weak.
-        seed = self._locate_in_deviation(cool, plate, green) or seed_xy
+        seed = self._locate_in_deviation(cool, plate, green, cursor_xy) or seed_xy
         self.tracker = ShapeTracker(plate, seed, startspot=self._init_blob)
         self._plate_n = len(self._sig_buf)
         self._since_rebuild = 0
@@ -544,11 +570,15 @@ class LieDetectorSolver:
         log.info("LieDetectorSolver: initial plate (%d frames), seed=%s, switching to TRACK",
                  self._plate_n, tuple(round(v) for v in seed))
 
-    def _locate_in_deviation(self, cool, plate, green):
-        """Strongest cool-deviation blob in the whole box (start-spot excluded),
-        used to seed/re-acquire the tracker. Returns ``(x, y)`` or None."""
+    def _locate_in_deviation(self, cool, plate, green, cursor_xy=None):
+        """Strongest cool-deviation blob in the whole box (start-spot and our
+        own cursor excluded), used to seed/re-acquire the tracker.
+        Returns ``(x, y)`` or None."""
         dev = cv2.GaussianBlur(np.clip(cool - plate, 0, None), (0, 0), DEV_BLUR)
         dev[green > 0] = 0.0
+        if cursor_xy is not None:
+            cv2.circle(dev, (int(cursor_xy[0]), int(cursor_xy[1])),
+                       CURSOR_MASK_R, 0.0, -1)
         if self._init_blob is not None:
             cv2.circle(dev, (int(self._init_blob[0]), int(self._init_blob[1])),
                        STARTSPOT_RADIUS, 0.0, -1)
@@ -568,11 +598,14 @@ class LieDetectorSolver:
             self._plate_n = len(self._sig_buf)
             self._since_rebuild = 0
 
-    def process(self, frame_bgr):
+    def process(self, frame_bgr, cursor_xy=None):
         """Process one frame; return the target ``(x, y)`` in frame coords or None.
 
         Accepts BGR (the recorded clips) or BGRA (the live mss capture); the
-        alpha plane is dropped."""
+        alpha plane is dropped. ``cursor_xy`` is our own cursor's position in
+        frame coords (the caller commanded it, so it knows); it is masked from
+        the shape search — the reticle's glow leaks past the green mask and a
+        tracker must never track itself."""
         if frame_bgr.ndim == 3 and frame_bgr.shape[2] == 4:
             frame_bgr = np.ascontiguousarray(frame_bgr[:, :, :3])
         crop = self._interior(frame_bgr)
@@ -582,15 +615,18 @@ class LieDetectorSolver:
                 self.reset()
             return None
         gray, cool, green = crop
-        return self._step(gray, cool, green)
+        if cursor_xy is not None:
+            cursor_xy = (cursor_xy[0] - self.inner[0], cursor_xy[1] - self.inner[1])
+        return self._step(gray, cool, green, cursor_xy)
 
-    def _step(self, gray, cool, green):
+    def _step(self, gray, cool, green, cursor_xy=None):
         """Advance the state machine on one frame's box-interior signals.
 
         Split out from :meth:`process` so the state machine can be driven
         directly on pre-cropped interior signals (unit tests, offline tuning)
         without repeating play-box detection and cropping each call. ``gray`` is
-        luminance (float32), ``cool`` the B-R channel, ``green`` the cursor mask.
+        luminance (float32), ``cool`` the B-R channel, ``green`` the cursor
+        mask, ``cursor_xy`` our own commanded cursor in interior coords.
         """
         if self.state in ("WAIT", "ACQUIRE"):
             blob, area = _bright_blob(gray)
@@ -642,14 +678,14 @@ class LieDetectorSolver:
                 if self._post_onset_n >= PLATE_MIN_FRAMES and self.last_target is not None:
                     seed = (self.last_target[0] - self.inner[0],
                             self.last_target[1] - self.inner[1])
-                    self._start_tracking(seed, cool, green)
+                    self._start_tracking(seed, cool, green, cursor_xy)
             return self.last_target
 
         if self.state == "TRACK":
             # Keep growing the rolling plate buffer and refine the plate.
             self._sig_buf.append(cool)
             self._maybe_rebuild_plate()
-            xy = self.tracker.update(cool, green)
+            xy = self.tracker.update(cool, green, cursor_xy)
             self.last_target = self._to_frame(xy)
             return self.last_target
 

@@ -237,6 +237,10 @@ class Notifier:
         elif result["outcome"] == "no_box":
             self._enqueue_notify("测谎仪：未出现游戏窗口（可能误报），继续挂机")
             config.enabled = True
+        elif result["outcome"] == "failed":
+            self._enqueue_notify(f"<@{DISCORD_USER_ID}> ❌ 测谎仪未通过（检测到小黑屋），"
+                                 f"机器人保持暂停，请手动处理")
+            self._ping('siren', volume=0.75)
         else:
             self._enqueue_notify(f"<@{DISCORD_USER_ID}> ⚠️ 测谎仪自动求解结果不确定"
                                  f"（{result['outcome']}），机器人保持暂停，请手动检查")

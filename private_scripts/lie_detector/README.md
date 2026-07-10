@@ -83,9 +83,14 @@ below is on the **piloted cursor** — what the game actually sees.
    own — capped at a few dozen frames, so a rebuild stays well under one frame
    time (the earlier green-masked `nanmedian` took ~2.7 s, which would freeze the
    live cursor for dozens of frames).
-4. **Track** with the **fixed-lag trajectory smoother** (see key #2). Green is
-   always masked so our own cursor is never tracked; the shape's start-spot is
-   masked from the search (it carries a fading plate artifact).
+4. **Track** with the **fixed-lag trajectory smoother** (see key #2). Masked
+   from the search: green pixels, a disc around our own **commanded cursor**
+   (the reticle's glow leaks past the green mask at ~5× the texture floor — a
+   tracker must never track itself; learned from the first live failure), and
+   the shape's start-spot (fading plate artifact). Nothing else: border
+   guards and blind-phase coasting were both tried and removed after the clip
+   corpus showed they cost more end-lock than they saved (see
+   `kalman/findings.md` §10).
 5. **Drive the mouse** through the **`CursorPilot`** (see key #3): park at the
    box centre during the countdown, then glide after the tracker's target under
    human speed/acceleration caps — continuous motion whatever the tracker does.
@@ -120,12 +125,20 @@ a human hand) pays a few frames of catch-up glide and misses the 50% bar.
 
 ## Remaining limits
 
-- The sustained end-fade distractor above. Cleaner per-frame background
+- **The fade-to-zero variant** (first seen live, `2026-07-10_14-34-09`): some
+  games fade the shape *below the texture noise floor* with seconds left —
+  verified unrecoverable from the pixels (alternative channels and velocity-
+  integrated track-before-detect all come up empty; see
+  `kalman/findings.md` §10). The cursor mask guarantees the tracker at least
+  never locks onto its own reticle there (the live failure mode), but on this
+  variant a pass cannot be guaranteed by any tracker — human players are
+  extrapolating there too.
+- The sustained end-fade distractor (`22-31-07`). Cleaner per-frame background
   subtraction (the causal plate is noisier than an oracle) would recover most
   of it; faster catch-up would not (it would need visibly non-human speeds).
-- Tuned and validated on 19 clips. More recordings (the `recorder` feature
-  gathers them — including during every auto-solve) would harden the
-  colour/box/acquisition gates against new shape/texture variants.
+- Tuned and validated on 19 human-played clips. More recordings (the
+  `recorder` feature gathers them — including during every auto-solve) keep
+  hardening the gates against new shape/texture variants.
 
 ## Running
 
@@ -149,9 +162,11 @@ Fully wired into the notifier, gated by a **Settings → Lie Detector →
   frames from the capture thread (BGRA accepted), cursor via
   `win32api.SetCursorPos`, motion through the `CursorPilot`. When the play-box
   disappears after a tracked game the bot **resumes automatically** and Discord
-  gets a ✅; an unsure outcome (timeout/error) keeps the bot paused with a ⚠️
-  Discord ping and a single non-blocking siren sound. A detection that never
-  produces a play-box (false positive) resumes quietly.
+  gets a ✅ — unless the near-black punishment room ("Time Remaining" jail)
+  follows, which means the test was **failed**: ❌ Discord ping, bot stays
+  paused. An unsure outcome (timeout/error) also keeps the bot paused with a
+  ⚠️ ping. A detection that never produces a play-box (false positive) resumes
+  quietly.
 - **Disabled:** one Discord message (no siren — deliberately) and the bot
   pauses for manual takeover.
 - Either way a 90 s detection cooldown stops the lingering banner from

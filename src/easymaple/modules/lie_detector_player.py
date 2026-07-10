@@ -15,21 +15,40 @@ the class is importable and unit-testable on any platform. The defaults use
 
 ``solve()`` returns a structured outcome the notifier acts on::
 
-    {"outcome": "completed" | "timeout" | "no_box",
+    {"outcome": "completed" | "failed" | "timeout" | "no_box",
      "reached_track": bool,          # the tracker followed the fading shape
      "frames_moved": int}            # frames on which the mouse was driven
 
 ``completed`` + ``reached_track`` means the game was followed until the
-play-box disappeared — the normal end of a passed game.
+play-box disappeared — the normal end of a passed game. ``failed`` means the
+near-black punishment room (with its "Time Remaining" timer) followed the
+game instead: the character is jailed and the bot must stay paused.
 """
 
 import logging
 import time
+from collections import deque
+
+import cv2
+import numpy as np
 
 from src.easymaple.common import config
 from src.easymaple.detection.lie_detector_solver import CursorPilot, LieDetectorSolver
 
 log = logging.getLogger(__name__)
+
+# The Lie Detector FAILURE state: the character is teleported to a near-black
+# jail room showing a "Time Remaining" timer (observed live 2026-07-10). If the
+# frames right after the play-box vanished are overwhelmingly dark, we failed.
+JAIL_DARK_GRAY = 20            # pixel counts as dark below this grayscale value
+JAIL_DARK_FRAC = 0.70          # frame is "jail-dark" above this dark fraction
+
+
+def _dark_fraction(frame):
+    if frame.ndim == 3 and frame.shape[2] == 4:
+        frame = frame[:, :, :3]
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    return float(np.mean(gray < JAIL_DARK_GRAY))
 
 
 def _default_move_mouse(screen_xy):
@@ -106,11 +125,15 @@ class LieDetectorPlayer:
         moved = 0
         outcome = "timeout"
         last_frame = None
+        dark_hist = deque(maxlen=8)     # darkness of recent box-less frames
         while time.time() < deadline:
             frame = self._get_frame()
             if frame is not None and frame is not last_frame:
                 last_frame = frame
-                target = self.solver.process(frame)
+                # Tell the solver where our own cursor is — the reticle's glow
+                # leaks past its green mask and must never be tracked.
+                cursor = tuple(self.pilot.pos) if self.pilot is not None else None
+                target = self.solver.process(frame, cursor_xy=cursor)
                 reached_track = reached_track or self.solver.state == "TRACK"
                 # Park at the centre (where the shape spawns) until there is a
                 # shape to follow; box_center goes None once the box is gone.
@@ -118,14 +141,20 @@ class LieDetectorPlayer:
                 if desired is not None:
                     had_box = True
                     last_seen = time.time()
-                    if self.pilot is None:
-                        self._start_pilot((ox, oy), desired)
+                else:
+                    dark_hist.append(_dark_fraction(frame))
+                if desired is not None and self.pilot is None:
+                    self._start_pilot((ox, oy), desired)
                 if self.pilot is not None:
                     x, y = self.pilot.step(desired)
                     self._move((ox + x, oy + y))
                     moved += 1
             if had_box and time.time() - last_seen > lost_grace:
-                outcome = "completed"
+                # Game over. A near-black aftermath is the punishment room —
+                # the test was FAILED; anything else is the normal end.
+                jailed = (len(dark_hist) >= 4
+                          and float(np.median(dark_hist)) > JAIL_DARK_FRAC)
+                outcome = "failed" if jailed else "completed"
                 break
             time.sleep(self._dt)
         if not had_box:

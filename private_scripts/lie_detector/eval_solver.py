@@ -22,6 +22,10 @@ from src.easymaple.detection import lie_detector_solver as S
 VID_DIR = "training_data/lie_detector"
 OUT_DIR = "training_data/lie_detector/demo"
 
+# Clips recorded while the BOT was playing: their green reticle is our own
+# cursor, not a human's — there is no ground truth. Rendered, never scored.
+BOT_PLAYED = {"2026-07-10_14-34-09.mp4"}
+
 
 def gt_cursor(frame_bgr):
     """Ground-truth green-cursor centroid in frame coords, or None."""
@@ -42,7 +46,15 @@ def gt_cursor(frame_bgr):
     return (x + m + M["m10"] / M["m00"], y + m + M["m01"] / M["m00"])
 
 
-def run(vid):
+def run(vid, mask_own_cursor=False):
+    """Run the solver + pilot over a clip.
+
+    ``mask_own_cursor`` passes the simulated pilot position into the solver as
+    ``cursor_xy`` — ONLY correct for bot-played clips. On human-played clips
+    the shape already carries the human's (green-masked) reticle hole; the
+    virtual pilot rides the same shape, so masking it too would punch a second
+    hole runtime never sees and misread the recordings.
+    """
     cap = cv2.VideoCapture(os.path.join(VID_DIR, vid))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
     solver = S.LieDetectorSolver()
@@ -50,13 +62,14 @@ def run(vid):
     rows = []          # (frame_idx, state, target, cursor, gt)
     frames = []
     f = 0
+    cursor = None
     while True:
         ok, fr = cap.read()
         if not ok:
             break
-        target = solver.process(fr)
         # Same policy as the live player: park at the box centre until there
         # is a shape to follow, then chase the tracker's target.
+        target = solver.process(fr, cursor_xy=cursor if mask_own_cursor else None)
         desired = target if target is not None else solver.box_center
         if desired is not None and pilot is None:
             h, w = fr.shape[:2]
@@ -206,7 +219,11 @@ if __name__ == "__main__":
     for vid in sorted(os.listdir(VID_DIR)):
         if not vid.endswith(".mp4"):
             continue
-        frames, rows, fps = run(vid)
+        frames, rows, fps = run(vid, mask_own_cursor=vid in BOT_PLAYED)
+        if vid in BOT_PLAYED:
+            print(f"\n=== {vid} === (bot-played: no ground truth, render only)")
+            render(vid, frames, rows, fps)
+            continue
         m60 = metrics(rows, tol=60)                    # piloted cursor (the game's view)
         m80 = metrics(rows, tol=80)
         raw80 = metrics(rows, tol=80, col=2)           # raw tracker, reference

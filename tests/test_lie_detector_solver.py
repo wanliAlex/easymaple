@@ -286,6 +286,85 @@ def test_pilot_glides_to_a_stop_when_target_vanishes():
     assert _steps(coast)[-1] < 0.5, "still moving long after target vanished"
 
 
+def _run_fadeout_game(cursor_follows=True, reappear_at=None, noise_sigma=2.0):
+    """Synthetic game modelled on the 2026-07-10_14-34-09 live failure: the
+    shape fades to COMPLETE invisibility mid-game (and may reappear). A cool
+    'reticle halo' ring is painted at the commanded cursor position each frame
+    (the live capture contains our own cursor; its anti-aliased glow leaks past
+    the green mask). Returns (targets, truths, phases) per moving frame; phase
+    is 'visible', 'blind' or 'reappeared'."""
+    rng = np.random.RandomState(11)
+    solver = S.LieDetectorSolver()
+    x, y, w, h = BOX
+    cursor = None
+
+    def process(frame, disc_xy):
+        nonlocal cursor
+        if cursor is not None:
+            # our own reticle: green core + a leaky cool halo ring around it
+            c = (int(cursor[0] - x), int(cursor[1] - y))
+            cv2.circle(frame[y:y + h, x:x + w], c, 16, (230, 200, 170), 3)
+            cv2.circle(frame[y:y + h, x:x + w], c, 9, (0, 255, 0), -1)
+        noisy = np.clip(frame.astype(np.float32)
+                        + rng.normal(0, noise_sigma, frame.shape), 0, 255
+                        ).astype(np.uint8)
+        t = solver.process(noisy, cursor_xy=cursor)
+        if t is not None and cursor_follows:
+            cursor = t                       # the player parks the cursor on the target
+        return t
+
+    for _ in range(25):
+        process(make_frame((250, 230), 1.0), (250, 230))
+    pos = np.array([250.0, 230.0])
+    vel = np.array([3.0, 1.7])
+    out = []
+    for i in range(110):
+        pos = pos + vel
+        if not (55 < pos[0] < w - 55):
+            vel[0] *= -1
+        if not (55 < pos[1] < h - 55):
+            vel[1] *= -1
+        # The shape stays trackable well past TRACK start (like the real game,
+        # where the deep fade comes seconds into tracking), then vanishes.
+        if i < 60:
+            alpha, phase = max(0.35, 1.0 - i / 55.0), "visible"
+        elif reappear_at is not None and i >= reappear_at:
+            alpha, phase = 0.5, "reappeared"
+        else:
+            alpha, phase = 0.0, "blind"      # completely gone, like the real clip
+        t = process(make_frame(tuple(pos), alpha), tuple(pos))
+        if solver.state == "TRACK" and t is not None:
+            out.append((t, (x + pos[0], y + pos[1]), phase))
+    return out
+
+
+def test_tracker_does_not_lock_onto_its_own_cursor_halo():
+    """THE live failure of 2026-07-10_14-34-09: once the shape faded to
+    nothing, the strongest stable cool blob was our own reticle's halo, so the
+    tracker froze on itself. With the commanded cursor position masked, the
+    blind-phase output must NOT sit parked on the cursor halo."""
+    out = _run_fadeout_game(cursor_follows=True)
+    blind = [(t, tr) for t, tr, ph in out if ph == "blind"]
+    assert len(blind) >= 30, "game never reached the blind phase under TRACK"
+    # A self-locked tracker emits (almost) the same point forever. Require the
+    # blind-phase output to keep moving initially (coast), i.e. not frozen.
+    pts = np.array([t for t, _ in blind[:20]])
+    travel = np.linalg.norm(np.diff(pts, axis=0), axis=1).sum()
+    assert travel > 40, f"tracker froze on its own cursor (travel {travel:.0f}px)"
+
+
+def test_tracker_relocks_when_the_shape_reappears():
+    """A blind stretch must not be a one-way door: when the shape comes back
+    above the noise floor, the smoother's best path switches to it and the
+    tracker follows again."""
+    out = _run_fadeout_game(cursor_follows=False, reappear_at=75)
+    re = [(t, tr) for t, tr, ph in out if ph == "reappeared"]
+    assert len(re) >= 20, "no reappeared phase captured"
+    errs = [np.hypot(t[0] - tr[0], t[1] - tr[1]) for t, tr in re[8:]]
+    assert np.mean(np.array(errs) < 80) > 0.7, \
+        f"failed to re-lock after reappearance (median err {np.median(errs):.0f}px)"
+
+
 def test_smoother_rejects_transient_distractors_and_holds_to_the_end():
     """End-tracking (the pass criterion): the fixed-lag smoother must keep the
     lock on the smoothly moving, fading shape through the finish while *transient*

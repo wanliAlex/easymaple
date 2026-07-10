@@ -89,6 +89,20 @@ def test_enabled_solver_failure_stays_paused_with_single_ping(env, monkeypatch):
     assert len(msgs) == 2
 
 
+def test_enabled_solver_jail_failure_stays_paused(env, monkeypatch):
+    """outcome='failed' = the near-black punishment room was detected after
+    the game: definitely lost. The bot must NOT resume (it would farm inside
+    the jail) and the user is pinged once."""
+    n, msgs, pings, _ = env
+    monkeypatch.setattr(config, 'lie_detector', FakeSettings(True), raising=False)
+    FakePlayer.result = {"outcome": "failed", "frames_moved": 400,
+                         "reached_track": True}
+    n._handle_lie_detector("进行中")
+    assert config.enabled is False
+    assert pings == ['siren']
+    assert len(msgs) == 2
+
+
 def test_enabled_solver_false_positive_resumes_quietly(env, monkeypatch):
     n, msgs, pings, _ = env
     monkeypatch.setattr(config, 'lie_detector', FakeSettings(True), raising=False)

@@ -156,8 +156,72 @@ point snaps back instantly (a lucky "locked"), while any physical cursor pays a
 few frames of catch-up — the remaining failure is the tracker's, not the
 pilot's.
 
+## 10. First live failure: a variant that fades to zero, and a tracker that tracked itself
+
+The first live run (clip `2026-07-10_14-34-09`, white diamond on a crumpled-
+paper texture) ended in the punishment room. The recording — where the green
+reticle is **our own** cursor — exposed two things no human-played clip could:
+
+1. **The reticle's own halo is a trap.** The green mask removes the reticle's
+   core, but a ring 12–25 px outside it still carries **~5× the texture floor**
+   in cool (B−R) deviation — the reticle's anti-aliased white/blue glow. In
+   every prior clip this never mattered: the shape's ~20-σ signal always
+   out-shone it (and the human's cursor rode *on* the shape). Here, the moment
+   the shape faded below z≈8, the strongest stable blob in the box became the
+   halo around wherever our cursor already was — the tracker locked onto
+   itself and the cursor froze mid-box from ~15 s to the end.
+2. **This variant fades the shape to *nothing*.** Unlike all 19 human-played
+   clips (shape detectable at z≈20 to the finish), the deviation peak here
+   sinks below the noise floor at 14.6 s — with half the game left. This was
+   verified exhaustively: cursor-excluded argmax timeline (z≈5–6, random
+   locations), luminance / desaturation channels, and velocity-integrated
+   track-before-detect over ±20-frame windows (best hypothesis ≈ zero velocity
+   at z≈5, i.e. static noise self-aligning). **The information is not in the
+   pixels.** A human passes this variant by extrapolating the remembered
+   motion and hovering — not by seeing.
+
+What shipped, and what the corpus killed:
+
+- **`CURSOR_MASK_R` (shipped)** — the player tells the solver where it just
+  put the cursor (`process(frame, cursor_xy=...)`), and a disc around it is
+  masked from every search. A tracker must never be able to track itself.
+  *This is the fix for the live death-spiral.*
+- **The jail is now a signal (shipped)** — the near-black "Time Remaining"
+  room right after the box vanishes means the test was *failed*: the player
+  reports `outcome="failed"` and the notifier keeps the bot paused instead of
+  resuming (previously it would have counted the vanished box as success).
+- **Border ring (killed by data)** — combat-effect colour does bleed over the
+  box border, but real shapes also *end* hugging the wall: a 24 px ring cost
+  `11-52-25` its end-lock and even 10 px cut `23-11-27` from 83 % to 53 %.
+  The DP's smoothness already refuses transient border blobs; the ring was
+  removed.
+- **Blind-phase coasting (killed by data, twice)** — design 1 coasted when
+  the best peak's *per-frame z* fell below ~7 and broke half the corpus
+  (17/19 → 11/19): several clips end with the shape at z ≈ 5–7, beneath any
+  single-frame confidence yet perfectly trackable, because weak peaks chain
+  into a smooth path and the DP accumulates that evidence — per-frame
+  confidence gates away this tracker's entire advantage. Design 2 gated on
+  *path quality* (mean net path score: "noise cannot chain") and its premise
+  died on real data too: real texture noise is **not** i.i.d. — static
+  plate-residual blobs chain as smoothly as a real path (a truly blind
+  phase still scores ≈ +5, median, on the failed clip), while genuinely
+  trackable flickering endgames (`23-11-27`) dip *below* any workable
+  threshold. There is no signal that separates "blind" from "weak shape"
+  here, and in real blind phases the plain DP already does the sane thing —
+  it hovers on a static residual, which is as good as any dead reckoning
+  when the pixels contain nothing. Removed entirely; the masks carry the
+  catastrophic modes.
+
+No offline metric exists for this clip (its green cursor is the bot, not
+ground truth), and passing the fade-to-zero variant cannot be guaranteed by
+any tracker — the masks prevent it from being *lost to our own cursor*, which
+is what actually happened. The 19 human-played clips are the regression suite
+for these changes, and the final design scores identically to the pre-fix
+baseline on them (17/19 locked at end) while closing the live failure modes.
+
 ## Files
 - `../../../src/easymaple/detection/lie_detector_solver.py` — the tracker
-  (`ShapeTracker`, a fixed-lag smoother), the `CursorPilot`, and the full solver
+  (`ShapeTracker`, a fixed-lag smoother with blind-phase coasting), the
+  `CursorPilot`, and the full solver
 - `demo_velocity.py` — renders the velocity-vector demo (solver vs truth)
 - `../eval_solver.py` — end-to-end evaluation + demo renderer
