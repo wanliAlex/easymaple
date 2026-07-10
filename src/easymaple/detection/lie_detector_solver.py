@@ -64,6 +64,8 @@ from collections import deque
 import cv2
 import numpy as np
 
+from src.easymaple.detection import lie_detector_net as net_mod
+
 log = logging.getLogger(__name__)
 
 # --- Play-box detection (tan camouflage region) -----------------------------
@@ -174,6 +176,11 @@ SMOOTH_SCALE = 220.0           # smoothness: per-frame step penalty = dist^2 / t
 SMOOTH_STEP_PEN = 50.0         # extra penalty for a path step above SMOOTH_MAXSTEP
 REWARD_CAP = 8.0               # cap a peak's z reward so a lone strong distractor
                                # cannot outweigh a smooth, decently-strong path
+NET_REWARD_CAP = 10.0          # the learned detector's peaks may exceed the
+                               # classical cap: validated at ~12px on held-out
+                               # clips, they must out-vote plate-residual junk
+                               # chains, which pay no step penalty and would
+                               # otherwise win every reward tie on smoothness
 FLOOR_Z = 2.0                  # min robust z for a peak to be a candidate at all
 
 # --- Own-cursor masking (learned from the live failure 2026-07-10_14-34-09;
@@ -375,12 +382,27 @@ class ShapeTracker:
             cv2.circle(dd, loc, SMOOTH_SUPPRESS, 0.0, -1)
         return cand
 
-    def update(self, box_sig, green, cursor_xy=None):
+    def update(self, box_sig, green, cursor_xy=None, extra=None):
         """Advance the smoother by one frame; return the estimated ``(x, y)``
         (lagged ``SMOOTH_LAG`` frames). ``box_sig`` is the B-R signal channel;
         ``cursor_xy`` is our own commanded cursor position (interior coords),
-        masked from the search so the tracker can never track itself."""
+        masked from the search so the tracker can never track itself.
+
+        ``extra`` is an optional list of ``(x, y, reward)`` candidates from
+        another detector (the learned shape net) — they enter the same DP on
+        the same reward scale, so whichever source carries signal on a given
+        frame wins the smooth-path competition."""
         cand = self._candidates(self._dev(box_sig, green, cursor_xy))
+        if extra:
+            ex = [(float(x), float(y), min(float(r), NET_REWARD_CAP))
+                  for (x, y, r) in extra]
+            # Dedupe in the net's favour: a classical candidate that roughly
+            # coincides with a (better-calibrated) net peak is its offset twin
+            # — keeping both makes the path alternate between them and wobble.
+            cand = [c for c in cand
+                    if all(np.hypot(c[0] - e[0], c[1] - e[1]) > SMOOTH_SUPPRESS
+                           for e in ex)]
+            cand = cand + ex
         if not cand:                       # nothing above the floor: hold last output
             cand = [(self._out[0], self._out[1], 0.0)]
         self._buf.append(cand)
@@ -484,12 +506,24 @@ class LieDetectorSolver:
     window origin before calling ``SetCursorPos``.
     """
 
-    def __init__(self):
+    def __init__(self, use_net=False):
+        # The learned shape detector (see lie_detector_net) is opt-in: the
+        # runtime player and offline eval enable it; unit tests and synthetic
+        # runs stay classical. The model object survives reset() — only its
+        # frame buffer is cleared.
+        self.use_net = use_net
+        self._net = None
+        self._net_failed = False
+        self._net_bgr = deque(maxlen=PLATE_BUF_MAX)   # NET-size BGR, for its plate
         self.reset()
 
     BOX_LOST_FRAMES = 15             # consecutive misses before declaring game over
+    NET_PLATE_FRAMES = 32            # frames sampled into the net's BGR plate
 
     def reset(self):
+        if self._net is not None:
+            self._net.reset()
+        self._net_bgr.clear()
         self.state = "WAIT"
         self.box = None              # locked (x, y, w, h) of the play-box
         self.inner = None            # (ix0, iy0) interior origin in frame coords
@@ -549,7 +583,7 @@ class LieDetectorSolver:
         self.inner = (ix0, iy0)
         crop = frame_bgr[iy0:y + h - m, ix0:x + w - m]
         gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY).astype(np.float32)
-        return gray, cool_channel(crop), green_cursor_mask(crop)
+        return crop, gray, cool_channel(crop), green_cursor_mask(crop)
 
     def _to_frame(self, xy):
         return (self.inner[0] + xy[0], self.inner[1] + xy[1])
@@ -566,6 +600,7 @@ class LieDetectorSolver:
         self.tracker = ShapeTracker(plate, seed, startspot=self._init_blob)
         self._plate_n = len(self._sig_buf)
         self._since_rebuild = 0
+        self._refresh_net_plate()
         self.state = "TRACK"
         log.info("LieDetectorSolver: initial plate (%d frames), seed=%s, switching to TRACK",
                  self._plate_n, tuple(round(v) for v in seed))
@@ -597,6 +632,7 @@ class LieDetectorSolver:
             self.tracker.plate = build_plate(list(self._sig_buf))
             self._plate_n = len(self._sig_buf)
             self._since_rebuild = 0
+            self._refresh_net_plate()
 
     def process(self, frame_bgr, cursor_xy=None):
         """Process one frame; return the target ``(x, y)`` in frame coords or None.
@@ -614,19 +650,71 @@ class LieDetectorSolver:
             if self.state == "TRACK":
                 self.reset()
             return None
-        gray, cool, green = crop
+        bgr, gray, cool, green = crop
         if cursor_xy is not None:
             cursor_xy = (cursor_xy[0] - self.inner[0], cursor_xy[1] - self.inner[1])
-        return self._step(gray, cool, green, cursor_xy)
+        return self._step(bgr, gray, cool, green, cursor_xy)
 
-    def _step(self, gray, cool, green, cursor_xy=None):
+    def _get_net(self):
+        """The learned detector, constructed on first use (or None: opted out,
+        weights missing, torch unavailable — tracking degrades gracefully to
+        the classical channel)."""
+        if not self.use_net or self._net_failed:
+            return None
+        if self._net is None:
+            try:
+                from src.easymaple.detection.lie_detector_net import ShapeNetDetector
+                self._net = ShapeNetDetector()
+                log.info("LieDetectorSolver: shape net loaded (%s)", self._net.device)
+            except Exception as e:
+                self._net_failed = True
+                log.warning("LieDetectorSolver: shape net unavailable (%s); "
+                            "tracking classically", e)
+        return self._net
+
+    def _refresh_net_plate(self):
+        """(Re)build the net's NET-scale BGR plate from the same rolling
+        window the classical plate uses."""
+        net = self._get_net()
+        if net is None or not self._net_bgr:
+            return
+        stack = list(self._net_bgr)
+        if len(stack) > self.NET_PLATE_FRAMES:
+            stack = [stack[i] for i in
+                     np.linspace(0, len(stack) - 1, self.NET_PLATE_FRAMES).astype(int)]
+        net.set_plate(np.median(np.asarray(stack), axis=0).astype(np.uint8))
+
+    def _net_candidates(self, bgr, cursor_xy):
+        """Push this frame through the shape net; return smoother candidates
+        ``(x, y, reward)`` in interior coords — never at our own cursor."""
+        net = self._get_net()
+        if net is None:
+            return None
+        hm = net.push(bgr)
+        if hm is None:
+            return None
+        extra = []
+        for (px, py, sc) in net.peaks(hm):
+            if cursor_xy is not None and \
+                    np.hypot(px - cursor_xy[0], py - cursor_xy[1]) <= CURSOR_MASK_R:
+                continue
+            # Focal-trained heatmap confidences are conservative (a correct
+            # peak often reads ~0.2-0.5); saturate at 0.35 so a moderately
+            # confident net peak reaches NET_REWARD_CAP — above the classical
+            # cap, because a static plate-residual junk chain pays no step
+            # penalty and would win every reward tie on smoothness alone.
+            extra.append((px, py, NET_REWARD_CAP * min(1.0, sc / 0.35)))
+        return extra
+
+    def _step(self, bgr, gray, cool, green, cursor_xy=None):
         """Advance the state machine on one frame's box-interior signals.
 
         Split out from :meth:`process` so the state machine can be driven
         directly on pre-cropped interior signals (unit tests, offline tuning)
-        without repeating play-box detection and cropping each call. ``gray`` is
-        luminance (float32), ``cool`` the B-R channel, ``green`` the cursor
-        mask, ``cursor_xy`` our own commanded cursor in interior coords.
+        without repeating play-box detection and cropping each call. ``bgr``
+        is the interior crop, ``gray`` its luminance (float32), ``cool`` the
+        B-R channel, ``green`` the cursor mask, ``cursor_xy`` our own
+        commanded cursor in interior coords.
         """
         if self.state in ("WAIT", "ACQUIRE"):
             blob, area = _bright_blob(gray)
@@ -672,6 +760,8 @@ class LieDetectorSolver:
             # for a few frames, but the tracker masks the start-spot from its
             # search anyway, so no explicit exclusion is needed here.
             self._sig_buf.append(cool)
+            if self.use_net:
+                self._net_bgr.append(net_mod.resize_net(bgr))
 
             if self._onset:
                 self._post_onset_n += 1
@@ -684,8 +774,11 @@ class LieDetectorSolver:
         if self.state == "TRACK":
             # Keep growing the rolling plate buffer and refine the plate.
             self._sig_buf.append(cool)
+            if self.use_net:
+                self._net_bgr.append(net_mod.resize_net(bgr))
             self._maybe_rebuild_plate()
-            xy = self.tracker.update(cool, green, cursor_xy)
+            xy = self.tracker.update(cool, green, cursor_xy,
+                                     extra=self._net_candidates(bgr, cursor_xy))
             self.last_target = self._to_frame(xy)
             return self.last_target
 

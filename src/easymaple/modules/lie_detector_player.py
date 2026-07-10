@@ -81,8 +81,13 @@ class LieDetectorPlayer:
         ``win32api.GetCursorPos``.
     """
 
-    def __init__(self, move_mouse=None, get_frame=None, get_cursor=None, fps=30):
-        self.solver = LieDetectorSolver()
+    def __init__(self, move_mouse=None, get_frame=None, get_cursor=None, fps=30,
+                 use_net=True):
+        # use_net: the learned shape detector handles the fade-to-invisible
+        # variants; the solver degrades to classical tracking if the model
+        # or torch is unavailable. Tests inject use_net=False to stay
+        # deterministic on synthetic frames.
+        self.solver = LieDetectorSolver(use_net=use_net)
         self.pilot = None
         self._move = move_mouse or _default_move_mouse
         self._get_frame = get_frame or _default_get_frame
@@ -125,11 +130,14 @@ class LieDetectorPlayer:
         moved = 0
         outcome = "timeout"
         last_frame = None
-        dark_hist = deque(maxlen=8)     # darkness of recent box-less frames
+        dark_hist = deque(maxlen=8)     # darkness of the most recent frames
         while time.time() < deadline:
             frame = self._get_frame()
             if frame is not None and frame is not last_frame:
                 last_frame = frame
+                # Track recent frame darkness: at game-over time this window
+                # holds the aftermath, and near-black means the jail.
+                dark_hist.append(_dark_fraction(frame))
                 # Tell the solver where our own cursor is — the reticle's glow
                 # leaks past its green mask and must never be tracked.
                 cursor = tuple(self.pilot.pos) if self.pilot is not None else None
@@ -141,8 +149,6 @@ class LieDetectorPlayer:
                 if desired is not None:
                     had_box = True
                     last_seen = time.time()
-                else:
-                    dark_hist.append(_dark_fraction(frame))
                 if desired is not None and self.pilot is None:
                     self._start_pilot((ox, oy), desired)
                 if self.pilot is not None:

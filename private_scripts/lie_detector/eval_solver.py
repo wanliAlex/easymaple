@@ -23,8 +23,9 @@ VID_DIR = "training_data/lie_detector"
 OUT_DIR = "training_data/lie_detector/demo"
 
 # Clips recorded while the BOT was playing: their green reticle is our own
-# cursor, not a human's — there is no ground truth. Rendered, never scored.
-BOT_PLAYED = {"2026-07-10_14-34-09.mp4"}
+# cursor, not a human's — there is no ground truth. Rendered, never scored,
+# and never used as training labels.
+BOT_PLAYED = {"2026-07-10_14-34-09.mp4", "2026-07-10_20-48-16.mp4"}
 
 
 def gt_cursor(frame_bgr):
@@ -46,7 +47,7 @@ def gt_cursor(frame_bgr):
     return (x + m + M["m10"] / M["m00"], y + m + M["m01"] / M["m00"])
 
 
-def run(vid, mask_own_cursor=False):
+def run(vid, mask_own_cursor=False, use_net=True):
     """Run the solver + pilot over a clip.
 
     ``mask_own_cursor`` passes the simulated pilot position into the solver as
@@ -54,10 +55,13 @@ def run(vid, mask_own_cursor=False):
     the shape already carries the human's (green-masked) reticle hole; the
     virtual pilot rides the same shape, so masking it too would punch a second
     hole runtime never sees and misread the recordings.
+
+    ``use_net`` runs the deployment config (learned detector fused into the
+    smoother); it degrades to classical automatically if weights are missing.
     """
     cap = cv2.VideoCapture(os.path.join(VID_DIR, vid))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
-    solver = S.LieDetectorSolver()
+    solver = S.LieDetectorSolver(use_net=use_net)
     pilot = None
     rows = []          # (frame_idx, state, target, cursor, gt)
     frames = []

@@ -36,6 +36,7 @@ def _play(frames, start=(30.0, 40.0), max_seconds=30):
         get_frame=FrameFeed(frames),
         get_cursor=lambda: start,
         fps=240,                                        # fast-forward the loop
+        use_net=False,                                  # synthetic frames: classical
     )
     result = player.solve(max_seconds=max_seconds, lost_grace=0.05)
     return result, np.array(moves, float) if moves else np.zeros((0, 2))
@@ -113,6 +114,7 @@ def test_player_seeds_at_target_when_cursor_position_unavailable():
         get_frame=FrameFeed(frames),
         get_cursor=lambda: None,
         fps=240,
+        use_net=False,
     )
     player.solve(max_seconds=0.5, lost_grace=0.05)
     assert len(moves) > 0

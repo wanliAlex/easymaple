@@ -30,7 +30,7 @@ diamond, a pentagon, a cloud, a map-pin / speech-bubble icon, or a multi-point
 *same* motif, so the shape hides among look-alikes. Acquisition therefore cannot
 assume a round shape.
 
-## The three keys
+## The four keys
 
 **1. Track colour, not brightness.** The shape is a cool/white blob; the
 camouflage is warm/tan. While opaque the shape is trivially bright, but as it
@@ -55,7 +55,19 @@ moving shape is followed because the path continues to it. This is the online
 analog of the offline optimal-trajectory search, and it is what keeps the lock to
 the end.
 
-**3. Move the mouse like a human — the `CursorPilot`.** The tracker says *where
+**3. Learn what cannot be hand-crafted — the shape net.** Some variants fade
+the shape to *complete* invisibility for every classical statistic (seven
+detectors measured pure noise), yet human players keep tracking it — so the
+signal is in the captured pixels as a faint spatio-temporal pattern. A small
+CNN (`lie_detector_net.py`, 328k params) learns it from the human recordings:
+8 stacked frames (~0.5 s of motion) in, shape heatmap out, the human's
+reticle as the label (erased from the inputs with a leak-proof plate fill).
+Held-out validation: **12 px median error on a never-seen fade-to-zero clip**
+(82% within 60 px). Its peaks feed the same smoother as extra candidates on
+the same reward scale; everything degrades to classical tracking when the
+model or torch is unavailable. See `kalman/findings.md` §11.
+
+**4. Move the mouse like a human — the `CursorPilot`.** The tracker says *where
 the shape is*; the pilot decides *how the hand gets there*. Raw tracker output
 can step discontinuously (a smoother path-switch or re-acquisition legitimately
 teleports the target — measured up to ~330 px in one frame), and a cursor that
@@ -91,54 +103,50 @@ below is on the **piloted cursor** — what the game actually sees.
    guards and blind-phase coasting were both tried and removed after the clip
    corpus showed they cost more end-lock than they saved (see
    `kalman/findings.md` §10).
-5. **Drive the mouse** through the **`CursorPilot`** (see key #3): park at the
+5. **Fuse the shape net** (see key #3): once tracking starts, every frame is
+   pushed through the learned detector (cursor erased with the same plate
+   fill it was trained on) and its heatmap peaks join the smoother's
+   candidate pool — whichever channel carries signal on a given frame wins
+   the smooth-path competition. ~12 ms/frame on the local GPU.
+6. **Drive the mouse** through the **`CursorPilot`** (see key #4): park at the
    box centre during the countdown, then glide after the tracker's target under
    human speed/acceleration caps — continuous motion whatever the tracker does.
 
 ## Offline results (vs the green-cursor ground truth)
 
 Because passing means tracking **to the end**, the headline metric is
-**locked-at-end** (on the shape over the final ~1 s of the active puzzle) and the
-**longest unbroken lock**. Scored on the **piloted cursor** (what the game sees)
-over all 19 recorded clips:
+**locked-at-end** (on the shape over the final ~1 s of the active puzzle) and
+the **longest unbroken lock**. Scored on the **piloted cursor** (what the game
+sees), with the shape net fused:
 
-| metric (19 clips) | raw tracker | **piloted cursor** |
-|-------------------|-------------|--------------------|
-| **locked at end** | 17/19 | **17/19** |
-| mean end-lock @80px | — | **82%** |
-| max cursor step anywhere | ~330 px/frame | **45 px/frame** (= the cap) |
+| corpus | locked at end |
+|--------|---------------|
+| 19 easy clips | **18/19** (classical-only baseline: 17/19; the net rescues `22-31-07`) |
+| 3 hard fade-to-zero clips (human-passed) | **2/3**, incl. the **held-out** `01-16-11` (53% end-lock, 7.4 s longest run — the classical tracker managed 20%/3.9 s there) |
 
-The human-motion layer costs **zero** locked-at-end clips: feed-forward tracking
-absorbs the pilot's smoothing, and its inertia even *recovers* one clip the raw
-tracker loses (`23-17-58` — a one-frame end flicker the physical cursor glides
-straight through). For history, the greedy Kalman held the end on only 12/18
-clips; the fixed-lag smoother took that to 16/18, and the current build scores
-17/19 (see `kalman/findings.md`). The offline optimal trajectory (non-causal)
-reaches ~96% coverage, so the chromatic signal supports near-perfect tracking.
-
-The two clips that still slip share one failure: the shape fades to near the
-texture in the final seconds while a *sustained* texture distractor is stronger.
-On `11-07-43` both raw and cursor miss. On `22-31-07` the tracker wanders onto a
-distractor for ~1.5 s just before the finish and only snaps back ~0.5 s from the
-end — the raw point scores a lucky "locked", but any *physical* cursor (ours or
-a human hand) pays a few frames of catch-up glide and misses the 50% bar.
+Every cursor step stays inside the 45 px/frame human cap. The two remaining
+misses: `11-07-43` (an easy-corpus endgame with a sustained distractor — the
+long-standing hard case) and `00-20-14` (43% end-lock, just under the bar; its
+final second is the weakest signal in the corpus and is exactly what the next
+data refresh improves). For history: greedy Kalman 12/18 → fixed-lag smoother
+16/18 → chromatic + pilot 17/19 → +shape net 20/22 (see `kalman/findings.md`).
 
 ## Remaining limits
 
-- **The fade-to-zero variant** (first seen live, `2026-07-10_14-34-09`): some
-  games fade the shape *below the texture noise floor* with seconds left —
-  verified unrecoverable from the pixels (alternative channels and velocity-
-  integrated track-before-detect all come up empty; see
-  `kalman/findings.md` §10). The cursor mask guarantees the tracker at least
-  never locks onto its own reticle there (the live failure mode), but on this
-  variant a pass cannot be guaranteed by any tracker — human players are
-  extrapolating there too.
+- **Unseen variants.** The shape net was trained on the variants recorded so
+  far (three textures, several shapes, two fade behaviours). A new variant
+  may need a data refresh: every attempt — bot or human — records a 30 s clip
+  automatically, so the retrain loop is: play/collect → `build_dataset.py` →
+  `train_net.py` → re-run the eval gates. Human-passed recordings of any
+  *failing* variant are the decisive ingredient (that is exactly how the
+  fade-to-zero variant was cracked; see `kalman/findings.md` §11).
 - The sustained end-fade distractor (`22-31-07`). Cleaner per-frame background
   subtraction (the causal plate is noisier than an oracle) would recover most
   of it; faster catch-up would not (it would need visibly non-human speeds).
-- Tuned and validated on 19 human-played clips. More recordings (the
-  `recorder` feature gathers them — including during every auto-solve) keep
-  hardening the gates against new shape/texture variants.
+- The net costs ~12 ms/frame on the local GPU; on a CPU-only machine it is
+  slower than the frame budget — the solver then still works classically
+  (`use_net` degrades gracefully), which handles every variant except
+  fade-to-zero.
 
 ## Running
 
@@ -148,8 +156,12 @@ python private_scripts/lie_detector/eval_solver.py
 # -> prints locked-at-end / longest-lock / coverage per clip and writes
 #    *_demo.mp4 and *_montage.png under training_data/lie_detector/demo/
 
+# Retrain the shape net after collecting new recordings
+python private_scripts/lie_detector/build_dataset.py   # extract + label
+python private_scripts/lie_detector/train_net.py       # train -> assets/models/lie_detector_net.pt
+
 # Tests (no clips required)
-uv run --with pytest pytest tests/test_lie_detector_solver.py -v
+uv run --with pytest pytest tests/test_lie_detector_solver.py tests/test_lie_detector_net.py -v
 ```
 
 ## Runtime integration

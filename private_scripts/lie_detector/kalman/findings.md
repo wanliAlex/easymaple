@@ -219,6 +219,50 @@ is what actually happened. The 19 human-played clips are the regression suite
 for these changes, and the final design scores identically to the pre-fix
 baseline on them (17/19 locked at end) while closing the live failure modes.
 
+## 11. The invisible shape was learnable all along: the shape net
+
+After a second live failure on the fade-to-zero variant (punishment escalated
+1 h → 3 h), the user played it manually — and **passed, visibly tracking the
+"invisible" shape** through the whole blind phase (three recordings, three
+passes, three texture variants). So the signal survives the RDP capture; it
+just isn't any statistic we hand-crafted. Supervised patch analysis at the
+human's cursor confirmed it: every classical feature (two-sided |dev|, B−R,
+gradient deficit, temporal std, optical flow) sits at 47–67 % percentile vs
+background — barely above chance, far below usable. The signal is a faint
+spatio-temporal *pattern*, not a patch statistic.
+
+So it is learned now (`lie_detector_net.py`): a 328k-param CNN takes 8 frames
+(stride 2, ~0.5 s of motion context) as 16 channels (gray + B−R each) and
+outputs a shape heatmap. Labels: the human's reticle across 22 recordings
+(19 easy + 3 hard; the two bot-failure clips are excluded — their reticle is
+the failing bot). Two label-leakage traps were closed before training:
+
+1. the reticle must be erased from inputs (it IS the label), and
+2. the erasure itself must be invisible — an inpaint smudge or a too-static
+   fill at the label position would be learned, and at runtime the net would
+   lock onto *our own* cursor's fill artifact (the self-tracking death spiral,
+   ML edition). Fills are therefore plate + shimmer-matched noise, with decoy
+   fills at random positions during training.
+
+Held-out validation (clips never seen in training):
+
+| held-out clip | variant | median err | within 60 px |
+|---|---|---|---|
+| `2026-07-09_15-09-28` | easy | 11 px | ~90 % |
+| `2026-07-11_01-16-11` | **fade-to-zero** | **12 px** | **82 %** |
+
+Twelve-pixel localization on the variant where seven hand-built detectors
+measured pure noise. Runtime: 12 ms/frame on the local GPU (33 ms budget);
+the net's peaks enter the existing fixed-lag smoother as extra candidates on
+the same reward scale — association, the cursor pilot, jail detection and the
+notifier flow are unchanged, and everything degrades to classical tracking if
+the model is unavailable.
+
+The §6 lesson completes itself: "the information is in the data" was true a
+third time — first the wrong channel, then the wrong decision horizon, now
+the wrong *feature class*. Hand-crafted statistics exhausted is not the same
+as the data exhausted.
+
 ## Files
 - `../../../src/easymaple/detection/lie_detector_solver.py` — the tracker
   (`ShapeTracker`, a fixed-lag smoother with blind-phase coasting), the

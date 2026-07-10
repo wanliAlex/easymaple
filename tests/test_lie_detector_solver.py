@@ -365,6 +365,28 @@ def test_tracker_relocks_when_the_shape_reappears():
         f"failed to re-lock after reappearance (median err {np.median(errs):.0f}px)"
 
 
+def test_tracker_follows_extra_candidates_when_classical_channel_is_blind():
+    """Fusion contract for the learned detector: when the B-R deviation shows
+    nothing (fade-to-invisible variant), candidates injected via ``extra``
+    (the shape net's peaks) must carry the smooth-path DP by themselves."""
+    rng = np.random.RandomState(5)
+    plate = rng.normal(0, 1.5, (404, 684)).astype(np.float32)   # featureless B-R
+    tracker = S.ShapeTracker(plate.copy(), (100.0, 100.0))
+    green = np.zeros((404, 684), np.uint8)
+    pos = np.array([100.0, 100.0])
+    vel = np.array([3.0, 1.5])
+    errs = []
+    for i in range(60):
+        pos = pos + vel
+        sig = plate + rng.normal(0, 1.5, plate.shape).astype(np.float32)
+        out = tracker.update(sig, green,
+                             extra=[(pos[0], pos[1], S.REWARD_CAP)])
+        if i > 20:
+            errs.append(np.hypot(out[0] - pos[0], out[1] - pos[1]))
+    assert np.median(errs) < 40, \
+        f"tracker ignored extra candidates (median err {np.median(errs):.0f}px)"
+
+
 def test_smoother_rejects_transient_distractors_and_holds_to_the_end():
     """End-tracking (the pass criterion): the fixed-lag smoother must keep the
     lock on the smoothly moving, fading shape through the finish while *transient*
