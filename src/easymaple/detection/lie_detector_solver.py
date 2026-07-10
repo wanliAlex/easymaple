@@ -2,36 +2,49 @@
 
 The mini-game shows a rectangular camouflage play-field in which a bright shape
 appears, sits still for a few seconds, then begins moving while fading into the
-texture. The player must keep the mouse cursor on the moving shape; cumulative
-dwell time determines pass/fail.
+texture. The player must keep the mouse cursor on the moving shape **all the way
+to the end** — the game is passed by tracking to the finish, not by a good
+average.
 
 Approach (validated offline against the in-game cursor as ground truth):
 
 1. **Locate the play-box** by its tan camouflage colour.
-2. **Acquire** the shape while it is still a bright opaque blob (trivial).
+2. **Acquire** the opaque shape while it sits still — *shape-agnostically*. The
+   shape is not always a disc (the game uses discs, triangles, diamonds, clouds,
+   map-pin/speech-bubble icons and multi-point stars, and the texture is built
+   from the same motif), so acquisition takes the largest bright blob in the
+   *body* of the box and ignores the countdown digits / "START" glow across the
+   top — no roundness assumption.
 3. **Work in the chromatic "coolness" channel** ``B - R`` (blue minus red), not
-   luminance. This is the key to the whole solver. The shape is a *cool/white*
-   disc over a *warm/tan* texture. As it fades, its brightness drops into the
-   texture's brightness (the per-frame luminance shimmer, ~17 grey-levels,
-   then buries it — luminance detection collapses to ~40% by mid-puzzle). But
-   the texture's *hue* is steady, so the shape stays measurably cooler than its
-   surroundings the whole way down: B-R detects it ~87-99% of late frames vs
-   ~40% for luminance. The texture is static, so a per-pixel **median** of B-R
-   over a rolling buffer recovers the background; ``current - plate`` isolates
-   the shape's cool halo.
-4. **Track** with a constant-velocity Kalman filter: the measurement is the
-   deviation blob inside a Gaussian motion-prior window around the prediction.
-   The deviation is *motion-compensated* (recent frames shifted by the velocity
-   estimate and averaged, so the moving shape reinforces while residual shimmer
-   cancels) and accepted only when it rises a robust *z-score* above the local
-   floor — otherwise the filter coasts on velocity rather than latching a
-   distractor. With the chromatic signal the shape is visible almost throughout,
-   so the filter mostly *measures* rather than coasts.
+   luminance. The shape is *cool/white* over a *warm/tan* texture. As it fades
+   its brightness drops into the texture's (and the per-frame luminance shimmer
+   buries it — luminance detection collapses to ~40% by mid-puzzle), but its
+   *hue* does not: it stays measurably cooler the whole way down. In the B-R
+   channel, with the static background removed by a per-pixel **median** plate,
+   the shape's deviation peak sits ~20 robust-sigma above the texture floor and
+   is the single strongest cool blob in 93-100% of frames. Detection is never the
+   problem.
+4. **Track** with a **fixed-lag trajectory smoother** (see :class:`ShapeTracker`).
+   *Association* is the hard part: on a minority of frames a texture blob briefly
+   out-shines the fading shape, and a greedy per-frame tracker cannot tell a
+   still-moving shape from a distractor and loses the lock right at the finish. So
+   the tracker keeps the top-K deviation peaks over a short window and runs a
+   small dynamic program for the smoothest strong path, emitting the position a
+   few frames back — informed by that many *future* frames. A one-frame distractor
+   never lies on a smooth path; a moving shape is followed because the path
+   continues to it. It is the online analog of the offline optimal-trajectory
+   search.
+5. **Drive the mouse through the** :class:`CursorPilot` — the human-motion
+   layer. Raw tracker output may legitimately step discontinuously (path
+   switch, re-acquisition); the pilot turns it into continuous, speed- and
+   acceleration-bounded cursor movement, parked at the box centre during the
+   countdown (the shape spawns in the middle).
 
-Result (offline vs the green-cursor ground truth, continuous coverage over the
-moving phase): the cursor stays within 60px of the shape ~70-99% of the puzzle.
-The residual loss is brief deep-fade stretches near the box edges where even the
-chromatic contrast thins. See ``private_scripts/lie_detector/README.md``.
+Result (offline vs the green-cursor ground truth, over all 19 recorded clips,
+scored on the piloted cursor — what the game sees): **locked on the shape at
+the finish on 17/19 clips** (mean end-lock ~82% @80px), with every cursor step
+inside the 45 px/frame human cap. See
+``private_scripts/lie_detector/README.md`` and ``kalman/findings.md``.
 
 The in-game mouse cursor is a bright green reticle. Offline that reticle is the
 human's cursor (our ground truth); at runtime it is *our own* cursor, which we
@@ -66,14 +79,21 @@ GREEN_HSV_LO = np.array([40, 80, 80])
 GREEN_HSV_HI = np.array([92, 255, 255])
 
 # --- Acquisition (bright opaque shape) --------------------------------------
-# The opaque shape is a large round disc that sits still for ~4s; the countdown
-# digits are thinner (low circularity), sit at the top of the box, and flicker.
-# Circularity + a settling test (stable position over several frames) isolate
-# the real shape before declaring motion onset.
+# The opaque shape sits still for ~4s, then moves. It is NOT always a disc: the
+# game uses discs, triangles, diamonds, clouds, map-pin/speech-bubble icons and
+# multi-point stars (circularity ranges ~0.18-0.90), and the camouflage texture
+# is built from that same motif. So acquisition is shape-agnostic — no roundness
+# gate. The one thing every shape shares is that it sits in the *body* of the
+# box, while the countdown digits (5..1) and the "START" text glow in a band
+# across the top; a blob centred in the top ACQUIRE_TOP_REJECT fraction is that
+# text and is ignored. Inside the locked box the only bright content is the
+# shape and that top text, so the largest bright blob below the band is the
+# shape. A settling test (stable position over several frames) then locks it.
 ACQUIRE_BRIGHT = 205           # grayscale threshold for the opaque shape
-ACQUIRE_MIN_AREA = 3500        # px, the opaque disc; excludes digits/specks
-ACQUIRE_MAX_AREA = 14000       # px, ignore the large countdown circle / UI
-ACQUIRE_MIN_CIRC = 0.50        # 4*pi*area/perimeter^2; disc ~0.55, digits <0.45
+ACQUIRE_MIN_AREA = 2500        # px, smallest shape (small triangle ~3.1k) minus margin
+ACQUIRE_MAX_AREA = 16000       # px, largest shape (big star ~13k) plus margin
+ACQUIRE_TOP_REJECT = 0.32      # ignore bright blobs centred in the top of the box
+                               # (countdown digits/START sit at cy~0.25H; shapes ~0.55H)
 SETTLE_FRAMES = 12             # stable detections required to lock the shape
 SETTLE_STD = 10.0              # px position std below which the shape is "settled"
 MOTION_ONSET_PX = 14           # displacement from settled pos that marks motion
@@ -88,63 +108,73 @@ ONSET_CONFIRM = 4              # consecutive move/fade frames to confirm onset
 PLATE_MIN_FRAMES = 30          # post-onset frames needed before tracking starts
 PLATE_BUF_MAX = 180            # rolling buffer size (recent static-bg window)
 PLATE_REBUILD_EVERY = 30       # rebuild cadence (frames) while the buffer grows
+PLATE_MEDIAN_MAX = 64          # cap frames per median (static bg saturates fast;
+                               # keeps a rebuild well under one frame time)
 STARTSPOT_RADIUS = 55          # px disc around the settled shape masked from the
                                # plate (the stationary opaque shape sat there)
 SEED_MIN_PEAK = 2.0            # min cool-deviation peak to seed/re-acquire from a
                                # global search (below this the box is just texture)
 
-# --- Tracker (robust constant-velocity Kalman; tuned offline vs ground truth)-
-# Runs on the chromatic B-R deviation (see ``cool_channel``). The shape moves
-# smoothly and slowly (GT: ~2.5 px/frame avg, never > ~23). Two measures add
-# robustness on top of the chromatic signal (both validated offline):
+# --- Cursor pilot (human-like mouse motion) ----------------------------------
+# The tracker's raw target is *where the shape is*; the pilot decides *how the
+# hand moves there*. Raw targets can step discontinuously (smoother path switch,
+# re-acquisition) and a cursor that teleports is an obvious bot tell — and not
+# how a human plays. The pilot is a PD chase with the target's velocity fed
+# forward, under hard speed/acceleration caps:
 #
-#  * Motion-compensated integration — the B-R channel still has some per-frame
-#    shimmer while the shape is a *coherent* moving bump. The last few deviation
-#    frames, each shifted forward by the velocity estimate so the moving shape
-#    lines up, are averaged: the shape reinforces while residual shimmer averages
-#    toward its mean.
-#  * z-score gating — a measurement is accepted only when the prior-window peak
-#    rises a robust z-score (MAD-based) above the local floor. Below that it is
-#    just texture, so the filter coasts on velocity instead of latching a
-#    distractor. The accepted measurement's confidence (hence Kalman gain) scales
-#    with that z-score.
-#
-# The filter uses a ROBUST update: measurement noise is inflated both by low
-# confidence and by innovation distance, so a single fast jump onto a distractor
-# is down-weighted (the estimate never moves faster than the shape can) while a
-# run of consistent measurements can still pull it back. A hard reject was tried
-# and rejected — it locks in drift by discarding the corrective measurement too.
-DEV_BLUR = 7
-DEV_MC_K = 2                   # motion-compensated integration: shift+average the
-                               # current + K previous deviation frames
-PRIOR_SIGMA = 30.0             # Gaussian motion-prior width around the prediction
-RELTHR = 0.6                   # posterior threshold for the centroid blob
-MEASURE_EPS = 0.3              # posterior peak below this -> no measurement (coast)
-MEASURE_Z_LO = 1.8             # min robust z (peak vs local shimmer) to accept
-MEASURE_Z_HI = 3.8             # z at which the measurement is fully trusted
-KF_Q_POS = 1.0                 # process noise: position
-KF_Q_VEL = 4.0                 # process noise: velocity (smooth, allows gentle turns)
-KF_R_MIN = 25.0                # measurement noise at full confidence (trust it)
-KF_R_MAX = 500.0               # measurement noise at low confidence (trust velocity)
-INNOV_SCALE = 16.0             # robust down-weighting: R *= 1 + (innov/INNOV_SCALE)^2
-MAX_SPEED = 24.0               # px/frame hard velocity cap (GT max ~23)
-COAST_DECAY = 0.93             # velocity *= this each blind frame, so a long coast
-                               # through a deep-fade gap (where the shape turns
-                               # unobserved) decays toward a stop instead of
-                               # barrelling off in a straight line and overshooting
-EDGE_MARGIN = 12               # px from a wall that counts as "at the edge"
-EDGE_BOUNCE = 0.6              # fraction of outward velocity reflected inward
+# * feed-forward makes a constant-velocity target (the shape's usual motion)
+#   track with near-zero lag, so smoothing costs no lock;
+# * the acceleration cap yields the bell-shaped speed profile of a human
+#   correction (no instant direction snaps);
+# * the speed cap (~1350 px/s at 30 fps) keeps even a re-acquisition flick
+#   inside brisk-but-human motion, arriving in a few frames.
+PILOT_SPEED = 45.0             # px/frame cap (~2x the shape's max speed)
+PILOT_ACCEL = 6.0              # px/frame^2 cap
+PILOT_KP = 0.14                # spring toward the target
+PILOT_KD = 0.75                # damping on (target velocity - own velocity)
+PILOT_TVEL_EMA = 0.3           # smoothing of the target-velocity estimate
+PILOT_TVEL_CLAMP = 30.0        # px/frame; a target *jump* (re-acquisition) is not
+                               # a velocity — clamp it out of the feed-forward
 
-# --- Global re-acquisition (recover from a lost lock) ------------------------
-# The local prior window cannot recover once the shape drifts out of it. But the
-# chromatic signal is clean enough that the *global* strongest cool-deviation
-# blob is the shape ~81-96% of frames (vs ~25% for luminance), so when the
-# tracker has gone several frames without a confident measurement it searches the
-# whole box (start-spot excluded) and jumps to a strong, significant blob.
-REACQ_CONF = 0.15              # confidence at/below which a frame counts as "lost"
-REACQ_AFTER = 8                # consecutive lost frames before a global re-acquire
-REACQ_MIN_PEAK = 2.0           # min cool-deviation peak to re-acquire from
-REACQ_Z = 3.0                  # robust z above the box floor required to re-acquire
+# --- Tracker (fixed-lag trajectory smoother) ---------------------------------
+# Runs on the chromatic B-R deviation (see ``cool_channel``). The decisive
+# measured fact (private_scripts/lie_detector/kalman/findings.md) is that the
+# faded shape is an *overwhelming* signal in this channel: after the static
+# background is subtracted its deviation peak sits ~20 robust-sigma above the
+# texture floor and is the single strongest ("global") cool blob in ~93-100% of
+# frames. Detection is therefore never the problem — *association* is: on the
+# minority of frames a texture blob out-shines the fading shape, and a greedy
+# frame-by-frame tracker cannot tell "the far strong peak is the shape, still
+# moving" from "it is a distractor, ignore it". Guessing wrong loses the shape
+# right at the finish — and the mini-game is passed by tracking to the END, not
+# by a good average.
+#
+# So instead of a greedy filter this is a FIXED-LAG smoother. Each frame it takes
+# the top ``SMOOTH_K`` deviation peaks (candidates), keeps the last
+# ``SMOOTH_WINDOW`` candidate sets, and runs a tiny dynamic program for the
+# lowest-cost path through them — cost = a per-peak strength reward minus a
+# smoothness penalty (squared step, hard-capped at the shape's max speed). It
+# outputs the path position ``SMOOTH_LAG`` frames back, i.e. informed by that
+# many *future* frames: a one-frame distractor never lies on a smooth path and is
+# dropped, and a genuinely moving shape is followed because the path continues to
+# it. This is the online analog of the offline optimal-trajectory search and,
+# unlike the greedy filters that preceded it, keeps the lock all the way to the
+# end (measured: ~85% locked-at-finish vs ~50%). The ``SMOOTH_LAG`` frame delay
+# (~0.13 s, a few px on the slow shape) is well inside the pass tolerance.
+DEV_BLUR = 7                   # px, Gaussian blur of the deviation map
+SMOOTH_WINDOW = 15             # candidate frames buffered for the trajectory DP
+SMOOTH_LAG = 6                 # output this many frames back (uses that many future
+                               # frames to disambiguate — the key to end-tracking;
+                               # ~0.2 s of lag, a few px on the slow shape)
+SMOOTH_K = 6                   # top deviation peaks kept as candidates per frame
+SMOOTH_SUPPRESS = 30           # px suppression radius between candidate peaks
+SMOOTH_MAXSTEP = 26.0          # px/frame allowed between consecutive path points
+                               # (the shape's measured max ~23)
+SMOOTH_SCALE = 220.0           # smoothness: per-frame step penalty = dist^2 / this
+SMOOTH_STEP_PEN = 50.0         # extra penalty for a path step above SMOOTH_MAXSTEP
+REWARD_CAP = 8.0               # cap a peak's z reward so a lone strong distractor
+                               # cannot outweigh a smooth, decently-strong path
+FLOOR_Z = 2.0                  # min robust z for a peak to be a candidate at all
 
 
 def detect_play_box(frame_bgr):
@@ -195,241 +225,220 @@ def cool_channel(box_bgr):
 
 
 def _bright_blob(box_gray):
-    """Centroid + area of the brightest large round blob, or ``(None, 0)``.
+    """Centroid + area of the largest bright, shape-sized blob below the
+    countdown band, or ``(None, 0)``.
 
-    No green masking: the opaque shape (gray ~245) is far brighter than the
-    green cursor reticle (gray ~150, below threshold), and masking green would
-    punch a hole in the disc when the cursor overlaps it.
+    Shape-agnostic: no roundness gate (the shape may be a disc, triangle, star,
+    diamond, cloud or map-pin icon). Blobs centred in the top ``ACQUIRE_TOP_REJECT``
+    fraction of the box are the countdown digits / "START" text and are skipped;
+    the largest remaining bright blob in the size range is the opaque shape.
+
+    No green masking: the opaque shape (gray ~245) is far brighter than the green
+    cursor reticle (gray ~150, below threshold), and masking green would punch a
+    hole in the shape when the cursor overlaps it.
     """
-    g = box_gray
-    _, m = cv2.threshold(g, ACQUIRE_BRIGHT, 255, cv2.THRESH_BINARY)
+    _, m = cv2.threshold(box_gray, ACQUIRE_BRIGHT, 255, cv2.THRESH_BINARY)
     m = cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
     cnts, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    if not cnts:
-        return None, 0
-    # Largest round blob in the shape's size range: excludes the countdown
-    # circle (too large), digits (low circularity) and specks (too small).
-    cand = []
+    top_cut = ACQUIRE_TOP_REJECT * box_gray.shape[0]
+    best = None
     for c in cnts:
         area = cv2.contourArea(c)
         if not (ACQUIRE_MIN_AREA <= area <= ACQUIRE_MAX_AREA):
             continue
-        per = cv2.arcLength(c, True)
-        circ = 4 * np.pi * area / (per * per + 1e-6)
-        if circ >= ACQUIRE_MIN_CIRC:
-            cand.append((area, c))
-    if not cand:
+        M = cv2.moments(c)
+        cy = M["m01"] / M["m00"]
+        if cy < top_cut:               # countdown digit / START text band
+            continue
+        if best is None or area > best[0]:
+            best = (area, M["m10"] / M["m00"], cy)
+    if best is None:
         return None, 0
-    area, c = max(cand, key=lambda t: t[0])
-    M = cv2.moments(c)
-    return (M["m10"] / M["m00"], M["m01"] / M["m00"]), area
+    area, cx, cy = best
+    return (cx, cy), area
 
 
-def build_plate(sig_buffer, mask_buffer):
-    """Static-background estimate of the signal channel (B-R): per-pixel median
-    over buffered frames with the green cursor excluded. Pixels that were green
-    in *every* frame fall back to a plain median so the plate has no holes."""
-    stack = np.array([np.where(mk > 0, np.nan, g) for g, mk in zip(sig_buffer, mask_buffer)])
-    with np.errstate(all="ignore"):
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=RuntimeWarning)
-            plate = np.nanmedian(stack, axis=0)
-    holes = np.isnan(plate)
-    if holes.any():
-        plate = np.where(holes, np.median(np.array(sig_buffer), axis=0), plate)
-    return plate.astype(np.float32)
+def build_plate(sig_buffer, mask_buffer=None):
+    """Static-background estimate of the signal channel (B-R): a per-pixel
+    median over the buffered frames.
+
+    The green cursor is a *transient* outlier — it tracks the moving shape, so no
+    background pixel stays green for more than a few frames — and a plain median
+    rejects it without explicit masking. Measured on real buffers, the plain
+    median matches the old green-masked ``nanmedian`` to within ~4 B-R levels
+    everywhere while costing ~1/6th as much. ``mask_buffer`` is accepted for
+    backward compatibility but no longer needed.
+
+    A static background saturates the median quickly, so at most
+    ``PLATE_MEDIAN_MAX`` evenly-spaced frames are used. This keeps a rebuild well
+    under one frame time; the previous full-buffer ``nanmedian`` took ~2.7 s,
+    which would freeze the cursor for dozens of frames during live play.
+    """
+    stack = np.asarray(sig_buffer, dtype=np.float32)
+    if len(stack) > PLATE_MEDIAN_MAX:
+        stack = stack[np.linspace(0, len(stack) - 1, PLATE_MEDIAN_MAX).astype(int)]
+    return np.median(stack, axis=0).astype(np.float32)
 
 
 class ShapeTracker:
-    """Constant-velocity Kalman tracker over a static-background deviation map.
+    """Fixed-lag trajectory smoother over the chromatic (B-R) deviation map.
 
-    Each frame: predict the position from velocity; build a motion-compensated
-    deviation map (recent frames shifted by the velocity estimate and averaged
-    to reinforce the coherent shape against random shimmer); search a
-    Gaussian-prior window around the prediction for the deviation blob; accept it
-    only if it rises a robust z-score above the local shimmer floor and correct
-    the filter, its noise scaled by that z-score's confidence. When no blob
-    clears the floor (deep fade / edges) the filter coasts on velocity — which
-    follows a smoothly moving shape far better than holding position, and avoids
-    latching a texture distractor.
+    Each frame it extracts the top ``SMOOTH_K`` deviation peaks (candidates),
+    keeps the last ``SMOOTH_WINDOW`` candidate sets, and runs a small dynamic
+    program for the lowest-cost path through them (a per-peak strength reward
+    minus a squared-step smoothness penalty, hard-capped at the shape's max
+    speed). It returns the path position ``SMOOTH_LAG`` frames back — informed by
+    that many *future* frames — so a one-frame distractor is dropped (it never
+    lies on a smooth path) while a genuinely moving shape is followed to the end.
+    This is the online analog of the offline optimal-trajectory search; unlike the
+    greedy filters that preceded it, it keeps the lock all the way to the finish,
+    which is what passes the mini-game.
 
-    Coordinates are in box-interior pixels. ``update`` is called once per frame
-    with the box-interior B-R signal channel (``cool_channel``) and the
-    green-cursor mask. The plate is the matching B-R background estimate.
+    Coordinates are box-interior pixels. ``update`` is called once per frame with
+    the box-interior B-R signal channel (``cool_channel``) and the green-cursor
+    mask; ``plate`` (settable) is the matching B-R background estimate. ``seed_xy``
+    is only the initial output before the buffer fills.
     """
 
     def __init__(self, plate, seed_xy, startspot=None):
         self.plate = plate
         self.h, self.w = plate.shape
-        self._startspot = startspot   # disc to exclude from global re-acquisition
-        self._lost = 0                # consecutive frames without a confident fix
-        self._raw = deque(maxlen=DEV_MC_K + 1)
-        wsz = int(3 * PRIOR_SIGMA)
-        ax = np.arange(-wsz, wsz + 1)
-        px, py = np.meshgrid(ax, ax)
-        self._wsz = wsz
-        self._prior = np.exp(-(px ** 2 + py ** 2) / (2 * PRIOR_SIGMA ** 2)).astype(np.float32)
-
-        kf = cv2.KalmanFilter(4, 2)
-        kf.transitionMatrix = np.array([[1, 0, 1, 0], [0, 1, 0, 1],
-                                        [0, 0, 1, 0], [0, 0, 0, 1]], np.float32)
-        kf.measurementMatrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0]], np.float32)
-        kf.processNoiseCov = np.diag([KF_Q_POS, KF_Q_POS,
-                                      KF_Q_VEL, KF_Q_VEL]).astype(np.float32)
-        kf.errorCovPost = np.eye(4, dtype=np.float32) * 10.0
-        kf.statePost = np.array([[seed_xy[0]], [seed_xy[1]], [0], [0]], np.float32)
-        self.kf = kf
+        self._startspot = startspot   # disc to mask (fading plate artifact there)
+        self._buf = deque(maxlen=SMOOTH_WINDOW)   # candidate list per buffered frame
+        self._out = (float(seed_xy[0]), float(seed_xy[1]))
+        self._prev = self._out
 
     @property
     def pos(self):
-        return (float(self.kf.statePost[0, 0]), float(self.kf.statePost[1, 0]))
+        return self._out
 
     @property
     def vel(self):
-        """Current velocity estimate (px/frame) — exposed for diagnostics."""
-        return (float(self.kf.statePost[2, 0]), float(self.kf.statePost[3, 0]))
+        """Per-frame output step (px/frame) — exposed for diagnostics."""
+        return (self._out[0] - self._prev[0], self._out[1] - self._prev[1])
 
-    def _dev_map(self, box_sig, green, vel):
-        """Motion-compensated deviation map of the signal channel. The current
-        and previous K deviation frames are averaged after shifting each previous
-        frame forward by ``k * vel`` so the (moving) shape lines up across them:
-        the shape reinforces while the per-frame shimmer averages toward its mean.
-        """
-        raw = cv2.GaussianBlur(np.clip(box_sig - self.plate, 0, None), (0, 0), DEV_BLUR)
-        self._raw.append(raw)
-        vx, vy = vel
-        acc = [self._raw[-1]]
-        for k in range(1, len(self._raw)):
-            past = self._raw[-1 - k]
-            if abs(vx) < 0.05 and abs(vy) < 0.05:
-                acc.append(past)
-            else:
-                m = np.float32([[1, 0, k * vx], [0, 1, k * vy]])
-                acc.append(cv2.warpAffine(past, m, (self.w, self.h),
-                                          flags=cv2.INTER_LINEAR,
-                                          borderMode=cv2.BORDER_REPLICATE))
-        d = np.mean(acc, axis=0)
+    def _dev(self, box_sig, green):
+        """Blurred positive B-R deviation from the plate, with the green cursor
+        and the start-spot masked out. The start-spot (where the opaque shape sat
+        still) can carry a fading plate artifact, so it is excluded from the
+        search; the shape has moved off it by the time tracking starts."""
+        d = cv2.GaussianBlur(np.clip(box_sig - self.plate, 0, None), (0, 0), DEV_BLUR)
         d[green > 0] = 0.0
+        if self._startspot is not None:
+            cv2.circle(d, (int(self._startspot[0]), int(self._startspot[1])),
+                       STARTSPOT_RADIUS, 0.0, -1)
         return d
 
-    def _measure(self, d, px, py):
-        """Confidence-weighted deviation centroid in the prior window around the
-        prediction, gated by a robust z-score. Returns ``(meas_xy, peak, z)``,
-        or ``(None, peak, z)`` when the peak is only shimmer (z below threshold).
-        ``z`` is the peak's deviation in MAD units above the local median — how
-        far the candidate rises above the surrounding texture floor."""
-        ws = self._wsz
-        cx = int(round(np.clip(px, 0, self.w - 1)))
-        cy = int(round(np.clip(py, 0, self.h - 1)))
-        x0, x1 = max(0, cx - ws), min(self.w, cx + ws + 1)
-        y0, y1 = max(0, cy - ws), min(self.h, cy + ws + 1)
-        dloc = d[y0:y1, x0:x1]
-        pr = self._prior[y0 - (cy - ws):y1 - (cy - ws), x0 - (cx - ws):x1 - (cx - ws)]
-        post = dloc * pr
-        peak = float(post.max()) if post.size else 0.0
-        if peak <= MEASURE_EPS:
-            return None, peak, 0.0
-        # Robust z-score of the peak vs the local shimmer floor (median/MAD over
-        # the non-zero window) — separates the coherent shape from texture noise.
-        flat = dloc[dloc > 0]
-        if flat.size > 20:
+    def _candidates(self, d):
+        """Top ``SMOOTH_K`` deviation peaks as ``(x, y, reward)``: iteratively the
+        strongest pixel, non-maximum suppressed by ``SMOOTH_SUPPRESS``, each scored
+        by a robust z above the box floor and capped at ``REWARD_CAP`` so a lone
+        strong distractor cannot outweigh a smooth path."""
+        flat = d[d > 0]
+        if flat.size >= 50:
             med = float(np.median(flat))
-            mad = float(np.median(np.abs(flat - med))) + 1e-3
-            iy, ix = np.unravel_index(int(np.argmax(post)), post.shape)
-            z = (float(dloc[iy, ix]) - med) / (1.4826 * mad)
+            scale = 1.4826 * (float(np.median(np.abs(flat - med))) + 1e-3)
         else:
-            z = 0.0
-        if z < MEASURE_Z_LO:
-            return None, peak, z
-        ys, xs = np.nonzero(post >= RELTHR * peak)
-        wts = post[ys, xs]
-        return (np.array([(xs * wts).sum() / wts.sum() + x0,
-                          (ys * wts).sum() / wts.sum() + y0]), peak, z)
-
-    def _reflect_at_edges(self):
-        """Soft-bounce: if the prediction is past a wall with outward velocity,
-        reflect (and damp) that velocity component instead of clamping it dead."""
-        x, y = self.kf.statePre[0, 0], self.kf.statePre[1, 0]
-        vx, vy = self.kf.statePre[2, 0], self.kf.statePre[3, 0]
-        if x <= EDGE_MARGIN and vx < 0:
-            vx = -vx * EDGE_BOUNCE
-        elif x >= self.w - 1 - EDGE_MARGIN and vx > 0:
-            vx = -vx * EDGE_BOUNCE
-        if y <= EDGE_MARGIN and vy < 0:
-            vy = -vy * EDGE_BOUNCE
-        elif y >= self.h - 1 - EDGE_MARGIN and vy > 0:
-            vy = -vy * EDGE_BOUNCE
-        self.kf.statePre[0, 0] = np.clip(x, 0, self.w - 1)
-        self.kf.statePre[1, 0] = np.clip(y, 0, self.h - 1)
-        self.kf.statePre[2, 0] = vx
-        self.kf.statePre[3, 0] = vy
+            med, scale = 0.0, 1.0
+        dd = d.copy()
+        cand = []
+        for _ in range(SMOOTH_K):
+            _, mx, _, loc = cv2.minMaxLoc(dd)
+            z = (mx - med) / scale
+            if z < FLOOR_Z:
+                break
+            cand.append((float(loc[0]), float(loc[1]), min(z, REWARD_CAP)))
+            cv2.circle(dd, loc, SMOOTH_SUPPRESS, 0.0, -1)
+        return cand
 
     def update(self, box_sig, green):
-        """Advance the tracker by one frame; return the estimated ``(x, y)``.
+        """Advance the smoother by one frame; return the estimated ``(x, y)``
+        (lagged ``SMOOTH_LAG`` frames). ``box_sig`` is the B-R signal channel."""
+        cand = self._candidates(self._dev(box_sig, green))
+        if not cand:                       # nothing above the floor: hold last output
+            cand = [(self._out[0], self._out[1], 0.0)]
+        self._buf.append(cand)
 
-        ``box_sig`` is the box-interior B-R signal channel (``cool_channel``).
-        """
-        # Velocity from the *previous* step drives the motion compensation.
-        vel = (float(self.kf.statePost[2, 0]), float(self.kf.statePost[3, 0]))
-        d = self._dev_map(box_sig, green, vel)
-        self.kf.predict()
-        self._reflect_at_edges()
-        px, py = float(self.kf.statePre[0, 0]), float(self.kf.statePre[1, 0])
-        meas, peak, z = self._measure(d, px, py)
-        conf = 0.0
-        if meas is not None:
-            innov = float(np.hypot(meas[0] - px, meas[1] - py))
-            # Confidence from the z-score: a peak barely above the shimmer floor
-            # is trusted little, a clear coherent blob a lot.
-            conf = float(np.clip((z - MEASURE_Z_LO) / (MEASURE_Z_HI - MEASURE_Z_LO), 0, 1))
-            # Robust update: low confidence OR a large jump both inflate the
-            # measurement noise, so the filter leans on its smooth velocity.
-            r = (KF_R_MAX - (KF_R_MAX - KF_R_MIN) * conf) * (1 + (innov / INNOV_SCALE) ** 2)
-            self.kf.measurementNoiseCov = np.array([[r, 0], [0, r]], np.float32)
-            self.kf.correct(np.array([[meas[0]], [meas[1]]], np.float32))
-        else:                       # no signal: coast on velocity (decaying)
-            self.kf.statePost = self.kf.statePre.copy()
-            self.kf.statePost[2, 0] *= COAST_DECAY
-            self.kf.statePost[3, 0] *= COAST_DECAY
-        vx, vy = self.kf.statePost[2, 0], self.kf.statePost[3, 0]
-        sp = np.hypot(vx, vy)
-        if sp > MAX_SPEED:          # never move faster than the shape can
-            self.kf.statePost[2, 0] = vx * MAX_SPEED / sp
-            self.kf.statePost[3, 0] = vy * MAX_SPEED / sp
-        # Global re-acquisition: after several blind frames the local window is
-        # hopeless, so jump to the box-wide strongest cool blob if it is clearly
-        # significant (the chromatic signal makes this reliable).
-        self._lost = 0 if conf > REACQ_CONF else self._lost + 1
-        if self._lost >= REACQ_AFTER:
-            fix = self._global_reacquire(d)
-            if fix is not None:
-                self.kf.statePost[0, 0], self.kf.statePost[1, 0] = fix
-                self.kf.statePost[2, 0] = self.kf.statePost[3, 0] = 0.0
-                self._lost = 0
-        x = float(np.clip(self.kf.statePost[0, 0], 0, self.w - 1))
-        y = float(np.clip(self.kf.statePost[1, 0], 0, self.h - 1))
-        self.kf.statePost[0, 0] = x
-        self.kf.statePost[1, 0] = y
-        return (x, y)
+        # Forward DP over the buffered candidate sets for the smoothest strong path:
+        # score[t][j] = best cumulative (reward - step penalty) ending at candidate
+        # j of frame t; back[t][j] is the previous frame's chosen candidate.
+        n = len(self._buf)
+        score = [[c[2] for c in self._buf[0]]]
+        back = [[-1] * len(self._buf[0])]
+        for t in range(1, n):
+            cur, prev, pscore = self._buf[t], self._buf[t - 1], score[t - 1]
+            sc, bk = [], []
+            for (x, y, z) in cur:
+                best, bestk = -1e18, 0
+                for k, (pxk, pyk, _) in enumerate(prev):
+                    dist = np.hypot(x - pxk, y - pyk)
+                    pen = dist * dist / SMOOTH_SCALE + (0.0 if dist <= SMOOTH_MAXSTEP
+                                                        else SMOOTH_STEP_PEN)
+                    val = pscore[k] - pen
+                    if val > best:
+                        best, bestk = val, k
+                sc.append(best + z)
+                bk.append(bestk)
+            score.append(sc)
+            back.append(bk)
 
-    def _global_reacquire(self, d):
-        """Whole-box strongest cool-deviation blob (start-spot excluded), if it
-        is both strong and a robust z above the box floor; else None."""
-        dg = d
-        if self._startspot is not None:
-            dg = d.copy()
-            cv2.circle(dg, (int(self._startspot[0]), int(self._startspot[1])),
-                       STARTSPOT_RADIUS, 0.0, -1)
-        _, mx, _, loc = cv2.minMaxLoc(dg)
-        flat = dg[dg > 0]
-        if mx <= REACQ_MIN_PEAK or flat.size < 50:
-            return None
-        med = float(np.median(flat))
-        mad = float(np.median(np.abs(flat - med))) + 1e-3
-        if (mx - med) / (1.4826 * mad) < REACQ_Z:
-            return None
-        return (float(loc[0]), float(loc[1]))
+        # Backtrack the best path and read the position SMOOTH_LAG frames back.
+        j = int(np.argmax(score[-1]))
+        path = [0] * n
+        for t in range(n - 1, -1, -1):
+            path[t] = j
+            if t > 0:
+                j = back[t][j]
+        of = max(0, n - 1 - SMOOTH_LAG)
+        c = self._buf[of][path[of]]
+        self._prev = self._out
+        self._out = (float(np.clip(c[0], 0, self.w - 1)),
+                     float(np.clip(c[1], 0, self.h - 1)))
+        return self._out
+
+
+class CursorPilot:
+    """Human-like cursor motion toward tracker targets (see the ``PILOT_*``
+    constants above for the rationale).
+
+    ``step(target_xy)`` advances one frame and returns the cursor position to
+    set. Feed it a target every frame — pass ``None`` while there is nothing to
+    chase and it brakes smoothly to rest. Motion is guaranteed continuous: per
+    frame the position moves at most ``PILOT_SPEED`` px and the velocity changes
+    at most ``PILOT_ACCEL`` px, whatever the target does. Coordinates are
+    whatever space the targets are in (the caller maps to screen pixels).
+    """
+
+    def __init__(self, start_xy):
+        self.pos = np.array(start_xy, np.float64)
+        self.vel = np.zeros(2)
+        self._tprev = None            # last target, for the velocity estimate
+        self._tvel = np.zeros(2)      # EMA of the target's per-frame velocity
+
+    @staticmethod
+    def _cap(vec, limit):
+        n = float(np.hypot(vec[0], vec[1]))
+        return vec * (limit / n) if n > limit else vec
+
+    def step(self, target_xy):
+        """Advance one frame toward ``target_xy`` (or brake if ``None``);
+        return the new cursor position as ``(x, y)``."""
+        if target_xy is None:
+            self._tprev = None
+            self._tvel[:] = 0.0
+            acc = -PILOT_KD * self.vel                 # brake to rest
+        else:
+            t = np.asarray(target_xy, np.float64)
+            if self._tprev is not None:
+                # A re-acquisition JUMP is not a velocity: clamp the delta so
+                # the feed-forward only ever carries physical shape motion.
+                d = np.clip(t - self._tprev, -PILOT_TVEL_CLAMP, PILOT_TVEL_CLAMP)
+                self._tvel = (1 - PILOT_TVEL_EMA) * self._tvel + PILOT_TVEL_EMA * d
+            self._tprev = t
+            acc = PILOT_KP * (t - self.pos) + PILOT_KD * (self._tvel - self.vel)
+        self.vel = self._cap(self.vel + self._cap(acc, PILOT_ACCEL), PILOT_SPEED)
+        self.pos = self.pos + self.vel
+        return (float(self.pos[0]), float(self.pos[1]))
 
 
 class LieDetectorSolver:
@@ -466,11 +475,22 @@ class LieDetectorSolver:
         self._post_onset_n = 0       # frames buffered since onset
         self._acq_hist = deque(maxlen=SETTLE_FRAMES)
         self._sig_buf = deque(maxlen=PLATE_BUF_MAX)   # B-R signal channel, for the plate
-        self._mask_buf = deque(maxlen=PLATE_BUF_MAX)
         self._since_rebuild = 0
         self._plate_n = 0            # frame count the current plate was built from
         self.tracker = None
         self.last_target = None
+
+    @property
+    def box_center(self):
+        """Centre of the locked play-box in frame coordinates, or ``None``.
+
+        The shape always spawns in the middle of the box, so this is where the
+        cursor should park during the countdown — before there is a shape to
+        follow — arriving on the shape the moment it appears."""
+        if self.box is None:
+            return None
+        x, y, w, h = self.box
+        return (x + w / 2.0, y + h / 2.0)
 
     def _interior(self, frame_bgr):
         """Crop to the box interior; return (gray_f32, cool_f32, green_mask) or None.
@@ -509,7 +529,7 @@ class LieDetectorSolver:
         return (self.inner[0] + xy[0], self.inner[1] + xy[1])
 
     def _start_tracking(self, seed_xy, cool, green):
-        plate = build_plate(list(self._sig_buf), list(self._mask_buf))
+        plate = build_plate(list(self._sig_buf))
         # The acquisition seed (last bright-blob position) goes stale the moment
         # the shape fades: by now the shape has moved off the start-spot. Re-seed
         # at its *current* position — the strongest cool-deviation blob, with the
@@ -537,15 +557,24 @@ class LieDetectorSolver:
 
     def _maybe_rebuild_plate(self):
         """Rebuild the plate from the (now larger) rolling buffer as frames
-        accumulate; a static background means more frames is strictly better."""
+        accumulate. This matters: early in tracking the slow-moving shape has not
+        yet spread across the box, so an early plate is contaminated where the
+        shape lingered; incorporating later frames (the shape now elsewhere)
+        cleans it. Stopping early measurably lowered coverage, so we keep
+        refreshing — the median is fast (``PLATE_MEDIAN_MAX``-capped)."""
         self._since_rebuild += 1
         if self._since_rebuild >= PLATE_REBUILD_EVERY and len(self._sig_buf) > self._plate_n:
-            self.tracker.plate = build_plate(list(self._sig_buf), list(self._mask_buf))
+            self.tracker.plate = build_plate(list(self._sig_buf))
             self._plate_n = len(self._sig_buf)
             self._since_rebuild = 0
 
     def process(self, frame_bgr):
-        """Process one frame; return the target ``(x, y)`` in frame coords or None."""
+        """Process one frame; return the target ``(x, y)`` in frame coords or None.
+
+        Accepts BGR (the recorded clips) or BGRA (the live mss capture); the
+        alpha plane is dropped."""
+        if frame_bgr.ndim == 3 and frame_bgr.shape[2] == 4:
+            frame_bgr = np.ascontiguousarray(frame_bgr[:, :, :3])
         crop = self._interior(frame_bgr)
         if crop is None:
             # Box gone: game not started or already over.
@@ -553,7 +582,16 @@ class LieDetectorSolver:
                 self.reset()
             return None
         gray, cool, green = crop
+        return self._step(gray, cool, green)
 
+    def _step(self, gray, cool, green):
+        """Advance the state machine on one frame's box-interior signals.
+
+        Split out from :meth:`process` so the state machine can be driven
+        directly on pre-cropped interior signals (unit tests, offline tuning)
+        without repeating play-box detection and cropping each call. ``gray`` is
+        luminance (float32), ``cool`` the B-R channel, ``green`` the cursor mask.
+        """
         if self.state in ("WAIT", "ACQUIRE"):
             blob, area = _bright_blob(gray)
             if self.state == "WAIT":
@@ -592,18 +630,12 @@ class LieDetectorSolver:
                 self._onset_cnt += 1
                 self._onset = self._onset or self._onset_cnt >= ONSET_CONFIRM
 
-            # Buffer for the plate from settle onward. Before onset the shape
-            # sits still, so its start-spot disc is masked out (excluded from the
-            # plate); those frames give clean background everywhere else. After
-            # onset the shape has left the start-spot, so unmasked frames fill it
-            # in. The masked median therefore reaches full-window quality fast.
-            mask_eff = green
-            if not self._onset:
-                mask_eff = green.copy()
-                cv2.circle(mask_eff, (int(self._init_blob[0]), int(self._init_blob[1])),
-                           STARTSPOT_RADIUS, 255, -1)
+            # Buffer B-R frames for the plate from settle onward. The plate is a
+            # plain median, which rejects the moving shape (a per-pixel minority)
+            # on its own; the stationary opaque shape at the start-spot survives it
+            # for a few frames, but the tracker masks the start-spot from its
+            # search anyway, so no explicit exclusion is needed here.
             self._sig_buf.append(cool)
-            self._mask_buf.append(mask_eff)
 
             if self._onset:
                 self._post_onset_n += 1
@@ -616,7 +648,6 @@ class LieDetectorSolver:
         if self.state == "TRACK":
             # Keep growing the rolling plate buffer and refine the plate.
             self._sig_buf.append(cool)
-            self._mask_buf.append(green)
             self._maybe_rebuild_plate()
             xy = self.tracker.update(cool, green)
             self.last_target = self._to_frame(xy)

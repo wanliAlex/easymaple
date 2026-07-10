@@ -97,8 +97,67 @@ The earlier "needs a stronger per-frame signal" conclusion was right that the
 luminance signal was exhausted, and wrong that the answer was more pixels: the
 answer was a *different channel* of the pixels we already had.
 
+## 7. Evaluated on 18 clips, the Kalman still lost the *end*
+
+The chromatic Kalman above was validated on two clips. Run over all 18 recordings
+and scored on what actually passes the game — **being locked on the shape at the
+end**, not the average — it kept the finish on only ~12/18 clips (~59% mean
+end-lock @80px). Averages hid it: one clip averaged 80% coverage yet was locked
+for **3%** of its final second. The failure mode was always the same: near the
+finish the shape fades to near the texture while some texture blob is momentarily
+the *stronger* global peak, and a greedy filter cannot tell "the far strong peak
+is the shape, still moving" from "it is a distractor". Every greedy variant we
+tried (ratio snap, reachability gate, established-lock, sustained-velocity coast)
+just moved which clips it guessed wrong on — because the information to decide is
+not in the current frame.
+
+## 8. The real fix: a fixed-lag trajectory smoother
+
+Detection was never the problem (the shape is a ~20-σ, 93–100%-global signal);
+**association** was. So we stopped deciding per frame. The tracker now keeps the
+top-K deviation peaks over a short window and runs a tiny DP for the smoothest
+strong path through them, emitting the position a few frames back — informed by
+that many **future** frames. A one-frame distractor never lies on a smooth path;
+a genuinely moving shape is followed because the path continues to it. It is the
+causal analog of the offline optimal-trajectory search (which reaches ~96%).
+
+| metric (18 clips, end-focused) | chromatic **Kalman** | **fixed-lag smoother** |
+|--------------------------------|----------------------|------------------------|
+| **locked at end** (of 18) | ~12 | **16** |
+| mean end-lock @80px | ~59% | **81%** |
+| mean longest continuous lock | ~3.4 s | 3.0 s |
+| mean coverage @60 / @80 | 77% / 81% | 77% / 82% |
+
+The lesson mirrors §6: the earlier plateau was not a signal limit but an
+*algorithm* limit — there the wrong *channel*, here the wrong *decision horizon*.
+The few-frame output lag (~0.13 s, a few px on the slow shape) is well inside the
+pass tolerance.
+
+## 9. The cursor is the deliverable: score (and smooth) the mouse, not the target
+
+Watching the demos exposed the last gap: the *tracker output* teleports — a
+smoother path-switch or re-acquisition legitimately re-decides history and steps
+the target by up to ~330 px in one frame. No human hand moves like that, and the
+game grades a *cursor*, so both the runtime and the evaluation now drive a
+`CursorPilot`: a PD chase with the target's velocity fed forward, hard-capped at
+45 px/frame speed and 6 px/frame² acceleration, parked at the box centre during
+the countdown (the shape always spawns in the middle). Feed-forward makes
+constant-velocity chase essentially lag-free, so the physical smoothing is free:
+
+| metric (19 clips, scored on what the game sees) | raw target | **piloted cursor** |
+|--------------------------------------------------|-----------|--------------------|
+| locked at end | 17/19 | **17/19** |
+| max step anywhere | ~330 px/frame | **45 px/frame** |
+
+The pilot's inertia even glides through the one-frame end flicker that costs the
+raw target `23-17-58`. The one cursor-only miss (`22-31-07`) is the tracker
+wandering onto a sustained distractor for ~1.5 s just before the finish; the raw
+point snaps back instantly (a lucky "locked"), while any physical cursor pays a
+few frames of catch-up — the remaining failure is the tracker's, not the
+pilot's.
+
 ## Files
 - `../../../src/easymaple/detection/lie_detector_solver.py` — the tracker
-  (`ShapeTracker`) and full solver
+  (`ShapeTracker`, a fixed-lag smoother), the `CursorPilot`, and the full solver
 - `demo_velocity.py` — renders the velocity-vector demo (solver vs truth)
 - `../eval_solver.py` — end-to-end evaluation + demo renderer

@@ -2,24 +2,32 @@
 follow the shape the :class:`LieDetectorSolver` tracks.
 
 This is the thin I/O layer around the (offline-validated) solver: it pulls
-frames from the capture thread, asks the solver for the shape's location, maps
-that from frame coordinates to screen coordinates, and moves the cursor there.
+frames from the capture thread, asks the solver for the shape's location, and
+drives the cursor there through a :class:`CursorPilot` — the human-motion layer
+that turns raw tracker targets into continuous, speed/acceleration-bounded
+mouse movement. The cursor parks at the box centre during the countdown (the
+shape always spawns in the middle), follows the shape to the end, and never
+teleports, whatever the tracker output does.
 
-Mouse control and the capture frame source are injected, so the class is
-importable and unit-testable on any platform. The default mouse mover uses
-``win32api.SetCursorPos`` (imported lazily, Windows-only).
+Mouse control, cursor readback and the capture frame source are injected, so
+the class is importable and unit-testable on any platform. The defaults use
+``win32api`` (imported lazily, Windows-only).
 
-NOTE: the solver/tracker is validated offline against recorded clips (see
-``private_scripts/lie_detector/eval_solver.py`` and the design doc). The live
-control loop here has not been exercised against the running game; treat it as
-the integration entry point to validate in-game, not a verified auto-solver.
+``solve()`` returns a structured outcome the notifier acts on::
+
+    {"outcome": "completed" | "timeout" | "no_box",
+     "reached_track": bool,          # the tracker followed the fading shape
+     "frames_moved": int}            # frames on which the mouse was driven
+
+``completed`` + ``reached_track`` means the game was followed until the
+play-box disappeared — the normal end of a passed game.
 """
 
 import logging
 import time
 
 from src.easymaple.common import config
-from src.easymaple.detection.lie_detector_solver import LieDetectorSolver
+from src.easymaple.detection.lie_detector_solver import CursorPilot, LieDetectorSolver
 
 log = logging.getLogger(__name__)
 
@@ -29,24 +37,37 @@ def _default_move_mouse(screen_xy):
     win32api.SetCursorPos((int(screen_xy[0]), int(screen_xy[1])))
 
 
+def _default_get_cursor():
+    try:
+        import win32api
+        return win32api.GetCursorPos()
+    except Exception:                      # pragma: no cover - Windows-only path
+        return None
+
+
 def _default_get_frame():
     cap = getattr(config, "capture", None)
     return getattr(cap, "frame", None) if cap is not None else None
 
 
 class LieDetectorPlayer:
-    """Drives the solver in a loop, moving the mouse to follow the shape.
+    """Drives the solver in a loop, moving the mouse like a human.
 
     :param move_mouse: callable ``(screen_x, screen_y) -> None``. Defaults to
         ``win32api.SetCursorPos``.
     :param get_frame: callable ``() -> BGR frame`` (the captured game window).
         Defaults to reading ``config.capture.frame``.
+    :param get_cursor: callable ``() -> (x, y) | None``, the cursor's current
+        screen position — where the glide starts. Defaults to
+        ``win32api.GetCursorPos``.
     """
 
-    def __init__(self, move_mouse=None, get_frame=None, fps=30):
+    def __init__(self, move_mouse=None, get_frame=None, get_cursor=None, fps=30):
         self.solver = LieDetectorSolver()
+        self.pilot = None
         self._move = move_mouse or _default_move_mouse
         self._get_frame = get_frame or _default_get_frame
+        self._get_cursor = get_cursor or _default_get_cursor
         self._dt = 1.0 / fps
 
     def _window_origin(self):
@@ -57,30 +78,59 @@ class LieDetectorPlayer:
             return (0, 0)
         return (win.get("left", 0), win.get("top", 0))
 
-    def solve(self, max_seconds=30, lost_grace=1.5):
-        """Run the play loop until the play-box disappears (game over) or
-        ``max_seconds`` elapses. Returns the number of frames the mouse moved.
+    def _start_pilot(self, origin, fallback_xy):
+        """Seed the pilot at the cursor's real position (frame coords) so the
+        approach glide starts from where the hand actually is; fall back to the
+        first target if the position cannot be read."""
+        cur = self._get_cursor()
+        if cur is not None:
+            start = (cur[0] - origin[0], cur[1] - origin[1])
+        else:
+            start = fallback_xy
+        self.pilot = CursorPilot(start)
 
-        Frames where the solver returns no target (box not yet found, or the
-        game has ended) are tolerated up to ``lost_grace`` seconds before the
-        loop exits.
+    def solve(self, max_seconds=45, lost_grace=1.5):
+        """Play until the play-box disappears (game over) or ``max_seconds``
+        elapses; return the outcome dict (see module docstring).
+
+        Each new captured frame advances the solver; the pilot then chases the
+        solver's target — or the box centre while there is no shape yet — and
+        the mouse is set to the pilot's position. When the box vanishes the
+        pilot brakes to rest and, after ``lost_grace`` seconds without any
+        target, the game is considered over.
         """
-        moves = 0
         ox, oy = self._window_origin()
         deadline = time.time() + max_seconds
-        last_target_t = time.time()
-        had_box = False
+        last_seen = time.time()
+        had_box = reached_track = False
+        moved = 0
+        outcome = "timeout"
+        last_frame = None
         while time.time() < deadline:
             frame = self._get_frame()
-            if frame is not None:
+            if frame is not None and frame is not last_frame:
+                last_frame = frame
                 target = self.solver.process(frame)
-                if target is not None:
+                reached_track = reached_track or self.solver.state == "TRACK"
+                # Park at the centre (where the shape spawns) until there is a
+                # shape to follow; box_center goes None once the box is gone.
+                desired = target if target is not None else self.solver.box_center
+                if desired is not None:
                     had_box = True
-                    last_target_t = time.time()
-                    self._move((ox + target[0], oy + target[1]))
-                    moves += 1
-                elif had_box and time.time() - last_target_t > lost_grace:
-                    break          # box gone after the game -> done
+                    last_seen = time.time()
+                    if self.pilot is None:
+                        self._start_pilot((ox, oy), desired)
+                if self.pilot is not None:
+                    x, y = self.pilot.step(desired)
+                    self._move((ox + x, oy + y))
+                    moved += 1
+            if had_box and time.time() - last_seen > lost_grace:
+                outcome = "completed"
+                break
             time.sleep(self._dt)
-        log.info("LieDetectorPlayer: finished, moved mouse on %d frames", moves)
-        return moves
+        if not had_box:
+            outcome = "no_box"
+        log.info("LieDetectorPlayer: %s (moved %d frames, reached_track=%s)",
+                 outcome, moved, reached_track)
+        return {"outcome": outcome, "frames_moved": moved,
+                "reached_track": reached_track}

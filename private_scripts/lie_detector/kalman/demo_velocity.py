@@ -1,8 +1,8 @@
 """Render the tracking demo with velocity vectors drawn for the solver and the
-ground-truth cursor, so the smoothness of the Kalman velocity is visible and
+ground-truth cursor, so the smoothness of the solver's motion is visible and
 directly comparable with the real shape's motion.
 
-  red  dot + arrow = solver estimate + its Kalman velocity
+  red  dot + arrow = solver estimate + its per-frame output step
   green dot + arrow = ground-truth cursor + its (smoothed) velocity
   HUD = solver speed vs GT speed, in px/frame
 

@@ -169,3 +169,155 @@ def test_green_cursor_is_masked_from_tracking():
     cv2.circle(crop, (200, 200), 12, (0, 255, 0), -1)  # add green reticle
     mask = S.green_cursor_mask(crop)
     assert mask[200, 200] > 0                          # green detected -> maskable
+
+
+def _star(cx, cy, r_out, r_in, points=6):
+    """Vertices of a `points`-pointed star (a low-circularity shape)."""
+    pts = []
+    for i in range(2 * points):
+        r = r_out if i % 2 == 0 else r_in
+        a = np.pi * i / points - np.pi / 2
+        pts.append([cx + r * np.cos(a), cy + r * np.sin(a)])
+    return np.array(pts, np.int32)
+
+
+def test_bright_blob_is_shape_agnostic_and_skips_the_countdown_band():
+    """Acquisition must not assume a disc. A bright STAR (circularity ~0.2) in the
+    body of the box is acquired; a bright countdown-digit glyph up in the top band
+    is ignored (the real game hides discs, triangles, stars, pins... behind a
+    matching camouflage, and the digits/START text glow across the top)."""
+    hh, ww = 440, 680
+    gray = np.full((hh, ww), 40, np.float32)           # dark box interior
+    star_c = (330, int(0.55 * hh))                     # in the body
+    cv2.fillPoly(gray, [_star(star_c[0], star_c[1], 52, 24, 6)], 255)
+    area_star = int((gray >= S.ACQUIRE_BRIGHT).sum())
+    # a bright glyph in the top countdown band (must be skipped)
+    cv2.putText(gray, "3", (300, int(0.2 * hh)), cv2.FONT_HERSHEY_SIMPLEX, 4.0, 255, 14)
+
+    circ = 4 * np.pi * area_star / (cv2.arcLength(
+        _star(star_c[0], star_c[1], 52, 24, 6).reshape(-1, 1, 2), True) ** 2 + 1e-6)
+    assert circ < 0.4, f"test star not low-circularity enough ({circ:.2f})"
+
+    blob, area = S._bright_blob(gray)
+    assert blob is not None, "shape-agnostic acquisition missed the star"
+    assert abs(blob[0] - star_c[0]) < 30 and abs(blob[1] - star_c[1]) < 30, \
+        f"acquired {blob}, expected the body star near {star_c} (not the digit)"
+
+
+def test_solver_accepts_bgra_frames_from_the_live_capture():
+    """At runtime ``config.capture.frame`` is the raw 4-channel BGRA mss grab —
+    not the 3-channel BGR the recorded clips are stored in. The solver must
+    accept both (the alpha plane is simply dropped), or the live auto-solver
+    crashes on its very first frame."""
+    frame = make_frame((250, 230), 1.0)
+    bgra = np.dstack([frame, np.full(frame.shape[:2], 255, np.uint8)])
+    solver = S.LieDetectorSolver()
+    target = solver.process(bgra)
+    assert solver.state == "ACQUIRE", "box/shape not found in a BGRA frame"
+    x, y, _, _ = BOX
+    assert target is not None
+    assert abs(target[0] - (x + 250)) < 20 and abs(target[1] - (y + 230)) < 20
+
+
+def _run_pilot(pilot, targets):
+    """Step the pilot over a target sequence; return the array of positions."""
+    return np.array([pilot.step(t) for t in targets])
+
+
+def _steps(path):
+    return np.linalg.norm(np.diff(path, axis=0), axis=1)
+
+
+def test_pilot_never_teleports_and_settles_on_the_target():
+    """The cursor must reach a far target quickly but *continuously* — per-frame
+    steps capped at PILOT_SPEED (a brisk human flick), settling on the target."""
+    pilot = S.CursorPilot((0.0, 0.0))
+    path = _run_pilot(pilot, [(400.0, 300.0)] * 60)
+    assert _steps(path).max() <= S.PILOT_SPEED + 1e-6, "teleport / superhuman step"
+    assert np.linalg.norm(path[-1] - (400, 300)) < 3, f"did not settle: {path[-1]}"
+    # settled means *stays* settled (no limit-cycle wobble)
+    assert _steps(path[-10:]).max() < 1.5, "still oscillating after settling"
+
+
+def test_pilot_accelerates_and_brakes_smoothly():
+    """No instant velocity snaps: per-frame velocity change is capped at
+    PILOT_ACCEL, giving the bell-shaped speed profile of a human correction."""
+    pilot = S.CursorPilot((0.0, 0.0))
+    path = _run_pilot(pilot, [(400.0, 0.0)] * 60)
+    vel = np.diff(path, axis=0)
+    dvel = np.linalg.norm(np.diff(vel, axis=0), axis=1)
+    assert dvel.max() <= S.PILOT_ACCEL + 1e-6, f"accel spike {dvel.max():.1f}"
+
+
+def test_pilot_tracks_a_shape_speed_target_with_small_lag():
+    """Velocity feed-forward: chasing a target moving at the shape's top speed
+    (~20 px/frame) must hold the cursor well inside the game's tolerance."""
+    pilot = S.CursorPilot((100.0, 100.0))
+    tpos = np.array([100.0, 100.0])
+    errs = []
+    for i in range(90):
+        tpos = tpos + (14.0, 14.3)                     # ~20 px/frame diagonal
+        pos = pilot.step(tuple(tpos))
+        if i > 25:                                     # after catch-up transient
+            errs.append(np.hypot(pos[0] - tpos[0], pos[1] - tpos[1]))
+    assert max(errs) < 40, f"lag {max(errs):.0f}px would break the lock"
+
+
+def test_pilot_glides_through_a_target_jump():
+    """A tracker re-acquisition teleports the *target*; the cursor must glide
+    over (bounded steps) and re-settle quickly — like a human's corrective flick."""
+    pilot = S.CursorPilot((0.0, 0.0))
+    targets = [(50.0, 50.0)] * 30 + [(300.0, 50.0)] * 40
+    path = _run_pilot(pilot, targets)
+    assert _steps(path).max() <= S.PILOT_SPEED + 1e-6
+    assert np.linalg.norm(path[-1] - (300, 50)) < 3, "did not re-settle after jump"
+    settle = np.nonzero(np.linalg.norm(path[30:] - (300, 50), axis=1) < 10)[0]
+    assert settle.size and settle[0] <= 30, "took >1s to correct a 250px jump"
+
+
+def test_pilot_glides_to_a_stop_when_target_vanishes():
+    """No target (box lost / game over): the cursor brakes smoothly to rest
+    instead of freezing mid-motion or drifting away."""
+    pilot = S.CursorPilot((0.0, 0.0))
+    _run_pilot(pilot, [(400.0, 300.0)] * 12)           # get it moving fast
+    coast = _run_pilot(pilot, [None] * 40)
+    dvel = np.linalg.norm(np.diff(np.diff(coast, axis=0), axis=0), axis=1)
+    assert dvel.max() <= S.PILOT_ACCEL + 1e-6, "brake was not smooth"
+    assert _steps(coast)[-1] < 0.5, "still moving long after target vanished"
+
+
+def test_smoother_rejects_transient_distractors_and_holds_to_the_end():
+    """End-tracking (the pass criterion): the fixed-lag smoother must keep the
+    lock on the smoothly moving, fading shape through the finish while *transient*
+    bright cool flashes (the real texture's shimmer / momentary distractors) pop
+    up far away. Each flash is the strongest blob for the frame it exists, so a
+    greedy global tracker would snap to it and lose the end; the smooth-path DP
+    drops it because a one-frame spike never lies on a smooth trajectory."""
+    rng = np.random.RandomState(7)
+    solver = S.LieDetectorSolver()
+    x, y, w, h = BOX
+    for _ in range(25):                                 # opaque, stationary
+        solver.process(make_frame((250, 230), 1.0))
+    pos = np.array([250.0, 230.0])
+    vel = np.array([3.0, 1.7])
+    n = 95
+    end_ok = []
+    for i in range(n):
+        pos = pos + vel
+        if not (55 < pos[0] < w - 55):
+            vel[0] *= -1
+        if not (55 < pos[1] < h - 55):
+            vel[1] *= -1
+        alpha = max(0.30, 1.0 - i / 60.0)               # fades but stays detectable
+        frame = make_frame(tuple(pos), alpha)
+        if i > 30 and i % 3 == 0:                       # a one-frame flash, far from the shape
+            fx, fy = rng.randint(x + 45, x + w - 45), rng.randint(y + 45, y + h - 45)
+            if np.hypot(fx - (x + pos[0]), fy - (y + pos[1])) > 160:
+                cv2.circle(frame, (fx, fy), 26, DISC_BGR, -1)
+        t = solver.process(frame)
+        if i >= n - 20 and t is not None and solver.state == "TRACK":
+            truth = (x + pos[0], y + pos[1])
+            end_ok.append(np.hypot(t[0] - truth[0], t[1] - truth[1]) < 90)
+    assert end_ok, "solver never reached TRACK at the end"
+    assert np.mean(end_ok) > 0.6, \
+        f"lost the end to transient distractors ({100*np.mean(end_ok):.0f}% locked)"
