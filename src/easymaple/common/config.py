@@ -52,6 +52,11 @@ gui = None
 # detection thresholds from here. Stays None until GUI initializes it.
 advanced = None
 
+# LieDetectorSettings instance — populated by the GUI on init. The notifier
+# reads the 'auto solve' toggle from here; None (GUI not up yet) is treated as
+# disabled (Discord handover instead of auto-solving).
+lie_detector = None
+
 # Live match scores for the rune templates: (score, timestamp). Updated by the
 # notifier (map score) and bot (buff score) loops; read by the Advanced UI for
 # live preview. Stale (>2s) values display as "—".

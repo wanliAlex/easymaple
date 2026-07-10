@@ -4,6 +4,7 @@ import tkinter as tk
 from src.easymaple.gui.settings.advanced import Advanced
 from src.easymaple.gui.settings.buffs import Buffs
 from src.easymaple.gui.settings.keybindings import KeyBindings
+from src.easymaple.gui.settings.lie_detector import LieDetector
 from src.easymaple.gui.settings.pets import Pets
 from src.easymaple.gui.settings.rune import Rune
 from src.easymaple.gui.interfaces import Tab, Frame
@@ -24,6 +25,9 @@ class Settings(Tab):
 
         self.rune = Rune(column1)
         self.rune.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
+
+        self.lie_detector = LieDetector(column1)
+        self.lie_detector.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
 
         column2 = Frame(self)
         column2.grid(row=0, column=2, sticky=tk.N, padx=10, pady=10)

@@ -15,6 +15,7 @@ import requests
 from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
 from src.easymaple.modules import recorder
+from src.easymaple.modules.lie_detector_player import LieDetectorPlayer
 
 log = logging.getLogger(__name__)
 
@@ -55,8 +56,9 @@ DEATH_TEMPLATE = utils.load_image('assets/death_template.png', cv2.IMREAD_GRAYSC
 
 # The Lie Detector anti-bot mini-game. Two distinct full-screen banners: the
 # "prep" countdown shown ~6s before the test, and the "in progress" banner shown
-# while the test runs. The bot cannot solve it, so detection hands control back
-# to the human via a siren, like the white-room safeguard.
+# while the test runs. Detection hands the game to the auto-solver
+# (LieDetectorPlayer) when it is enabled in Settings; otherwise it notifies
+# Discord (no siren) and pauses the bot for manual takeover.
 LIE_DETECTOR_PREP_TEMPLATE = utils.load_image('assets/lie_detector_prep.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_PROGRESS_TEMPLATE = utils.load_image('assets/lie_detector_in_progress.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_THRESHOLD = 0.9
@@ -67,6 +69,11 @@ DEATH_DETECT_FREQUENCY = 400
 
 # ~0.5s at 0.05s/loop; reliably catches the ~6s prep window.
 LIE_DETECTOR_DETECT_FREQUENCY = 10
+
+# After handling a Lie Detector (solved or handed over), ignore re-detections
+# for this long: the banner lingers past the game, and the auto-solve itself
+# ends well inside this window.
+LIE_DETECTOR_COOLDOWN_S = 90
 
 NOTIFIER_LOOP_SLEEP_S = 0.05
 
@@ -179,18 +186,17 @@ class Notifier:
                         if matches:
                             self._ping("ding", volume=0.75)
 
-                    # Check for the Lie Detector mini-game. The bot can't solve it,
-                    # so notify and siren so the user can take over manually.
+                    # Check for the Lie Detector mini-game: auto-solve if enabled
+                    # in Settings, otherwise Discord-only handover (no siren).
                     if self.lie_detector_counter >= LIE_DETECTOR_DETECT_FREQUENCY or self.lie_detector_counter == 0:
                         self.lie_detector_counter = 1
                         prep_hit = utils.match_score(gray, LIE_DETECTOR_PREP_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
                         prog_hit = utils.match_score(gray, LIE_DETECTOR_PROGRESS_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
                         if prep_hit or prog_hit:
-                            phase = "准备阶段" if prep_hit else "进行中"
-                            recorder.record_clip()
-                            for _ in range(5):
-                                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏 ({phase})！快手动接管")
-                            self._alert('siren')
+                            self._handle_lie_detector("准备阶段" if prep_hit else "进行中")
+                            # Long cooldown so the lingering banner / the same
+                            # test can't re-trigger the handler.
+                            self.lie_detector_counter = -round(LIE_DETECTOR_COOLDOWN_S / NOTIFIER_LOOP_SLEEP_S)
 
                     self.rune_counter += 1
                     self.death_counter += 1
@@ -198,6 +204,43 @@ class Notifier:
             except Exception as e:
                 log.exception("Notifier loop iteration failed; continuing: %s", e)
             time.sleep(NOTIFIER_LOOP_SLEEP_S)
+
+    def _handle_lie_detector(self, phase):
+        """React to a detected Lie Detector mini-game.
+
+        Auto-solve enabled (Settings -> Lie Detector): pause the routine, drive
+        the mouse through the game with :class:`LieDetectorPlayer`, and resume
+        on success. On an unsure/failed outcome the bot stays paused and a
+        single non-blocking ping plays. Disabled: one Discord message and pause
+        for manual takeover — deliberately no siren. A training clip is
+        recorded in every case (it is how the solver's corpus grows).
+        """
+        recorder.record_clip()
+        settings = getattr(config, 'lie_detector', None)
+        if settings is None or not settings.get('auto solve'):
+            config.enabled = False      # don't bot through the test
+            self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏（{phase}）！"
+                                 f"自动求解已关闭，机器人已暂停，请手动接管")
+            return
+
+        self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏（{phase}）！自动求解中…")
+        config.enabled = False          # pause the routine while we drive the mouse
+        try:
+            result = LieDetectorPlayer().solve()
+        except Exception as e:
+            log.exception("Lie Detector auto-solve crashed: %s", e)
+            result = {"outcome": "error", "frames_moved": 0, "reached_track": False}
+
+        if result["outcome"] == "completed" and result["reached_track"]:
+            self._enqueue_notify(f"✅ 测谎仪自动求解完成（跟踪了 {result['frames_moved']} 帧），继续挂机")
+            config.enabled = True
+        elif result["outcome"] == "no_box":
+            self._enqueue_notify("测谎仪：未出现游戏窗口（可能误报），继续挂机")
+            config.enabled = True
+        else:
+            self._enqueue_notify(f"<@{DISCORD_USER_ID}> ⚠️ 测谎仪自动求解结果不确定"
+                                 f"（{result['outcome']}），机器人保持暂停，请手动检查")
+            self._ping('siren', volume=0.75)
 
     def _alert(self, name, volume=0.75):
         """
