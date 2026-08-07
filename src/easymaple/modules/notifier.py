@@ -58,7 +58,7 @@ DEATH_TEMPLATE = utils.load_image('assets/death_template.png', cv2.IMREAD_GRAYSC
 # "prep" countdown shown ~6s before the test, and the "in progress" banner shown
 # while the test runs. Detection hands the game to the auto-solver
 # (LieDetectorPlayer) when it is enabled in Settings; otherwise it notifies
-# Discord (no siren) and pauses the bot for manual takeover.
+# Discord and sirens so the human can take over, like the white-room safeguard.
 LIE_DETECTOR_PREP_TEMPLATE = utils.load_image('assets/lie_detector_prep.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_PROGRESS_TEMPLATE = utils.load_image('assets/lie_detector_in_progress.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_THRESHOLD = 0.9
@@ -187,7 +187,7 @@ class Notifier:
                             self._ping("ding", volume=0.75)
 
                     # Check for the Lie Detector mini-game: auto-solve if enabled
-                    # in Settings, otherwise Discord-only handover (no siren).
+                    # in Settings, otherwise siren + Discord for manual takeover.
                     if self.lie_detector_counter >= LIE_DETECTOR_DETECT_FREQUENCY or self.lie_detector_counter == 0:
                         self.lie_detector_counter = 1
                         prep_hit = utils.match_score(gray, LIE_DETECTOR_PREP_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
@@ -211,16 +211,17 @@ class Notifier:
         Auto-solve enabled (Settings -> Lie Detector): pause the routine, drive
         the mouse through the game with :class:`LieDetectorPlayer`, and resume
         on success. On an unsure/failed outcome the bot stays paused and a
-        single non-blocking ping plays. Disabled: one Discord message and pause
-        for manual takeover — deliberately no siren. A training clip is
+        single non-blocking ping plays. Disabled: five Discord messages and the
+        blocking siren, like the white-room safeguard. A training clip is
         recorded in every case (it is how the solver's corpus grows).
         """
         recorder.record_clip()
         settings = getattr(config, 'lie_detector', None)
         if settings is None or not settings.get('auto solve'):
             config.enabled = False      # don't bot through the test
-            self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏（{phase}）！"
-                                 f"自动求解已关闭，机器人已暂停，请手动接管")
+            for _ in range(5):
+                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏 ({phase})！快手动接管")
+            self._alert('siren')
             return
 
         self._enqueue_notify(f"<@{DISCORD_USER_ID}> 测谎仪小游戏（{phase}）！自动求解中…")

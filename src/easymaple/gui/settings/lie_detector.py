@@ -23,7 +23,7 @@ class LieDetector(LabelFrame):
         check.pack()
         hint = tk.Label(
             row,
-            text='Off: Discord ping only (no siren), bot pauses',
+            text='Off: siren + Discord pings, bot pauses for manual takeover',
             fg='gray'
         )
         hint.pack()

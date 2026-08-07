@@ -263,6 +263,38 @@ third time — first the wrong channel, then the wrong decision horizon, now
 the wrong *feature class*. Hand-crafted statistics exhausted is not the same
 as the data exhausted.
 
+## 12. The handoff loss: the "START" banner is a saturated chromatic distractor
+
+The comparison demo made a start-of-game loss visible on the held-out clip
+(`01-16-11`): at the ACQUIRE→TRACK handoff the target jumped 90–420 px off for
+~1 s and the speed-capped pilot needed until ~11.5 s to swing back.
+Instrumenting the candidate pool found the cause immediately: for ten frames
+**every** smoother candidate sat on the **"START" banner** — it is bright AND
+cool (blue-white), i.e. a *saturated* B−R deviation (measured 154 vs the
+shape's ~20; six capped-reward peaks 115–182 px from the shape), and it is not
+in the plate because it flares only at motion onset. Meanwhile the shape
+itself was invisible to the classical channel: still within ~30 px of its
+spawn, it sat inside the start-spot mask *and* overlapped its own ghost in the
+young plate (self-subtraction). The acquisition stage always had a top-band
+reject for this text; the tracker had none.
+
+Fix: mask the countdown band (top `STARTGLOW_BAND` of the box) from the
+tracker's search for the first `STARTGLOW_FRAMES` (45) TRACK frames, and from
+the handoff re-seed. The glow dies ~15 frames in; the shape spawns mid-box and
+cannot reach the band that early, so the mask is free. With the glow banned,
+the smoother's hold-last behaviour bridges the few frames where the shape has
+no candidates. Corpus gate: verdicts identical on all 22 clips (20/22), the
+handoff loss gone (`01-16-11` coverage@80 83→93 %, longest lock 7.4→8.5 s).
+
+Also tried and **rejected**: warming the shape net during post-onset ACQUIRE
+(plate + frame pushes so it can vote from TRACK frame 1). Isolation runs showed
+it unnecessary — band-only already fixed the start — and its extra RNG draws
+in the reticle plate-fills reshuffled the net's weak-signal end frames,
+flipping this clip's borderline finish (end-lock 53 % → 27 %). Lesson repeated:
+gate every "obviously good" addition on the corpus before keeping it. The
+borderline end itself (53 % on `01-16-11`, 43 % on `00-20-14`) remains the
+known weak-end-signal limitation (the §11 data refresh is the way forward).
+
 ## Files
 - `../../../src/easymaple/detection/lie_detector_solver.py` — the tracker
   (`ShapeTracker`, a fixed-lag smoother with blind-phase coasting), the

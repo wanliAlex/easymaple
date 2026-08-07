@@ -839,3 +839,149 @@ class NIGHT_ROAD_1_LEFT(Command):
     def _calculate_move_time(self, direction: str, distance) -> float:
         base_value = max(distance * 6, 0.03)
         return base_value if direction == "left" else 1.8 * base_value
+
+
+class GW3_MID_STANDSTILL(Command):
+    SELF_POSITION = (0.467, 0.275)
+    NEXT_POSITION_RIGHT = (0.808, 0.280)
+    NEXT_POSITION_LEFT = (0.170, 0.280)
+
+    def __init__(self):
+        super().__init__(locals())
+        self.show_down_time = 0
+        self.death_star_time = 0
+        self.ball_time = 0
+        self.placed = False
+        self.placed_time = 0
+
+    def get_into_portal(self, this_port_position, next_portal_position):
+        for _ in range(100):
+            if utils.distance(this_port_position, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(next_portal_position, config.player_pos) < 0.1:
+                break
+            if utils.distance(this_port_position, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - this_port_position[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def place(self):
+        self.get_into_portal(self.SELF_POSITION, self.NEXT_POSITION_RIGHT)
+        press(Key.DARK_FLARE, 2, 0.01, 0.5)
+        self.get_into_portal(self.NEXT_POSITION_RIGHT, self.NEXT_POSITION_LEFT)
+        press(Key.ERDA_FOUNTAIN, 2, 0.01, 0.5)
+        self.get_into_portal(self.NEXT_POSITION_LEFT, self.SELF_POSITION)
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+    def main(self):
+        for _ in range(500):
+            if config.enabled is False:
+                time.sleep(0.5)
+                break
+
+            # Yield to the rune solver if a rune appeared during this point.
+            # The bot's main loop will solve the rune before stepping to the
+            # next routine point, then resume the routine.
+            if config.bot.rune_active:
+                break
+
+            if self.ball_time == 0 or time.time() - self.ball_time > 117 and time.time() - self.placed_time > 59:
+                self.ball_time = time.time()
+                self.placed = False
+                break
+
+            if time.time() - self.ball_time > 59 and self.placed is False:
+                self.placed = True
+                self.placed_time = time.time()
+                self.place()
+
+            seed = random.uniform(0, 1)
+
+            if seed < 0.1:
+                press(random.choice([Key.SUDDEN_RAID, Key.DEATH_STAR, Key.SHURI])[0], 1, 0.1, 0.01)
+            elif 0.1 <= seed < 0.25:
+                press(Key.SHOW_DOWN, 1, 0.1, .01)
+            elif 0.25 <= seed < 0.75:
+                press(Key.JUMP, 1, 0.05, 0.05)
+                press(random.choice(["left", "right"]), 1, 0.01, 0.01)
+                press(Key.SHOW_DOWN, 1, 0.1, 0.01)
+            else:
+                press(Key.QUAD_STAR, 1, 0.1, 0.01)
+
+            time.sleep(np.random.uniform(1, 1.5))
+            Adjust(self.SELF_POSITION[0], self.SELF_POSITION[1]).main()
+            time.sleep(np.random.uniform(0.5, 0.8))
+
+
+class GW3_MID_MOVE(Command):
+    SELF_POSITION = (0.467, 0.275)
+    NEXT_POSITION = (0.808, 0.280)
+
+    def main(self):
+        press(Key.OMEN, 2, 0.1, 0.3)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+class GW3_RIGHT(Command):
+    SELF_POSITION = (0.808, 0.280)
+    NEXT_POSITION = (0.170, 0.280)
+
+    def main(self):
+        press(Key.BALL, 2, 0.1, 0.3)
+        press(Key.DARK_FLARE, 1, 0.1, 0.5)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value
+
+
+class GW3_LEFT(Command):
+    SELF_POSITION = (0.170, 0.280)
+    NEXT_POSITION = (0.467, 0.276 )
+
+    def main(self):
+        press(Key.ERDA_FOUNTAIN, 2, 0.01, 0.40)
+        press(Key.BALL, 2, 0.1, 0.2)
+        for _ in range(100):
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.03:
+                press("up", 1, 0.05, 0.01)
+            if utils.distance(self.NEXT_POSITION, config.player_pos) < 0.1:
+                break
+            if utils.distance(self.SELF_POSITION, config.player_pos) < 0.002:
+                continue
+            x_distance = config.player_pos[0] - self.SELF_POSITION[0]
+            direction = "right" if x_distance < 0 else "left"
+            press(direction, 1, abs(self._calculate_move_time(direction, x_distance)))
+
+        press(Key.BALL, 2, 0.1, 0.2)
+
+    def _calculate_move_time(self, direction: str, distance) -> float:
+        base_value = max(distance * 6, 0.03)
+        return base_value if direction == "left" else 1.8 * base_value

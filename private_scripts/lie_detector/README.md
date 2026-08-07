@@ -98,11 +98,14 @@ below is on the **piloted cursor** — what the game actually sees.
 4. **Track** with the **fixed-lag trajectory smoother** (see key #2). Masked
    from the search: green pixels, a disc around our own **commanded cursor**
    (the reticle's glow leaks past the green mask at ~5× the texture floor — a
-   tracker must never track itself; learned from the first live failure), and
-   the shape's start-spot (fading plate artifact). Nothing else: border
-   guards and blind-phase coasting were both tried and removed after the clip
-   corpus showed they cost more end-lock than they saved (see
-   `kalman/findings.md` §10).
+   tracker must never track itself; learned from the first live failure), the
+   shape's start-spot (fading plate artifact), and — for the first ~1.5 s of
+   tracking only — the **countdown band**: the "START" banner is bright *and
+   cool*, i.e. a saturated B−R distractor absent from the plate, and it
+   captured every candidate at the handoff on the held-out clip (see
+   `kalman/findings.md` §12). Nothing else: border guards and blind-phase
+   coasting were both tried and removed after the clip corpus showed they
+   cost more end-lock than they saved (see `kalman/findings.md` §10).
 5. **Fuse the shape net** (see key #3): once tracking starts, every frame is
    pushed through the learned detector (cursor erased with the same plate
    fill it was trained on) and its heatmap peaks join the smoother's
@@ -122,7 +125,7 @@ sees), with the shape net fused:
 | corpus | locked at end |
 |--------|---------------|
 | 19 easy clips | **18/19** (classical-only baseline: 17/19; the net rescues `22-31-07`) |
-| 3 hard fade-to-zero clips (human-passed) | **2/3**, incl. the **held-out** `01-16-11` (53% end-lock, 7.4 s longest run — the classical tracker managed 20%/3.9 s there) |
+| 3 hard fade-to-zero clips (human-passed) | **2/3**, incl. the **held-out** `01-16-11` (53% end-lock, 8.5 s longest run — the classical tracker manages 20%/5.1 s there) |
 
 Every cursor step stays inside the 45 px/frame human cap. The two remaining
 misses: `11-07-43` (an easy-corpus endgame with a sustained distractor — the
@@ -140,7 +143,7 @@ data refresh improves). For history: greedy Kalman 12/18 → fixed-lag smoother
   `train_net.py` → re-run the eval gates. Human-passed recordings of any
   *failing* variant are the decisive ingredient (that is exactly how the
   fade-to-zero variant was cracked; see `kalman/findings.md` §11).
-- The sustained end-fade distractor (`22-31-07`). Cleaner per-frame background
+- The sustained end-fade distractor (`11-07-43`). Cleaner per-frame background
   subtraction (the causal plate is noisier than an oracle) would recover most
   of it; faster catch-up would not (it would need visibly non-human speeds).
 - The net costs ~12 ms/frame on the local GPU; on a CPU-only machine it is

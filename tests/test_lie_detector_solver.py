@@ -387,6 +387,47 @@ def test_tracker_follows_extra_candidates_when_classical_channel_is_blind():
         f"tracker ignored extra candidates (median err {np.median(errs):.0f}px)"
 
 
+def _paint_start_glow(frame):
+    """A 'START'-like banner across the top band of the box: bright AND cool
+    (blue-white), softly blurred — the real game's onset text, which is a
+    saturated B-R distractor that is not in the background plate."""
+    x, y, w, h = BOX
+    overlay = frame[y:y + h, x:x + w].copy()
+    cv2.putText(overlay, "START", (int(w * 0.30), 95),
+                cv2.FONT_HERSHEY_TRIPLEX, 2.6, DISC_BGR, 10)
+    overlay = cv2.GaussianBlur(overlay, (0, 0), 3)
+    frame[y:y + h, x:x + w] = np.maximum(frame[y:y + h, x:x + w], overlay)
+
+
+def test_tracker_ignores_the_start_glow_at_handoff():
+    """The 'START' banner flares in the top band right at motion onset and dies
+    a second later. On the held-out clip 2026-07-11_01-16-11 it captured every
+    smoother candidate at the ACQUIRE->TRACK handoff (six saturated peaks,
+    115-182px from the shape) and cost ~1.7s of lock at the start. The tracker
+    must stay on the shape through the glow window."""
+    solver = S.LieDetectorSolver()
+    x, y, w, h = BOX
+    for _ in range(45):                                # stationary, opaque
+        solver.process(make_frame((250, 230), 1.0))
+    pos = np.array([250.0, 230.0])
+    vel = np.array([1.9, 1.1])                         # slow, like the real shape
+    errs = []
+    for i in range(70):
+        pos = pos + vel
+        frame = make_frame(tuple(pos), 0.55)           # faded but trackable
+        if 12 <= i <= 55:                              # banner: onset .. ~1.5s in
+            _paint_start_glow(frame)
+        t = solver.process(frame)
+        if solver.state == "TRACK" and t is not None and len(errs) < 20:
+            errs.append(np.hypot(t[0] - (x + pos[0]), t[1] - (y + pos[1])))
+    assert len(errs) == 20, "did not reach TRACK during the glow window"
+    errs = np.array(errs)
+    assert np.median(errs) < 70, \
+        f"handoff went to the START glow (median err {np.median(errs):.0f}px)"
+    assert np.mean(errs < 90) > 0.7, \
+        f"only {100 * np.mean(errs < 90):.0f}% locked through the glow window"
+
+
 def test_smoother_rejects_transient_distractors_and_holds_to_the_end():
     """End-tracking (the pass criterion): the fixed-lag smoother must keep the
     lock on the smoothly moving, fading shape through the finish while *transient*

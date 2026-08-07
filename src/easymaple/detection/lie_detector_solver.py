@@ -176,6 +176,17 @@ SMOOTH_SCALE = 220.0           # smoothness: per-frame step penalty = dist^2 / t
 SMOOTH_STEP_PEN = 50.0         # extra penalty for a path step above SMOOTH_MAXSTEP
 REWARD_CAP = 8.0               # cap a peak's z reward so a lone strong distractor
                                # cannot outweigh a smooth, decently-strong path
+STARTGLOW_FRAMES = 45          # TRACK frames during which the countdown band is
+                               # masked from the search: the "START" banner flares
+                               # at motion onset — bright AND cool, i.e. saturated
+                               # B-R candidates that are not in the plate (measured
+                               # on 2026-07-11_01-16-11: dev 154 vs the shape's 20,
+                               # every candidate on the banner for 10 frames). It
+                               # dies within ~15 TRACK frames; 45 is margin. The
+                               # shape spawns mid-box and cannot reach the band
+                               # that early, so the mask costs nothing.
+STARTGLOW_BAND = 0.40          # fraction of box height masked (the ACQUIRE reject
+                               # band plus the glow's blur skirt below it)
 NET_REWARD_CAP = 10.0          # the learned detector's peaks may exceed the
                                # classical cap: validated at ~12px on held-out
                                # clips, they must out-vote plate-residual junk
@@ -325,10 +336,12 @@ class ShapeTracker:
     is only the initial output before the buffer fills.
     """
 
-    def __init__(self, plate, seed_xy, startspot=None):
+    def __init__(self, plate, seed_xy, startspot=None, band_frames=0):
         self.plate = plate
         self.h, self.w = plate.shape
         self._startspot = startspot   # disc to mask (fading plate artifact there)
+        self._band_left = int(band_frames)   # frames left of the countdown-band
+                                             # mask (the onset "START" glow)
         self._buf = deque(maxlen=SMOOTH_WINDOW)   # candidate list per buffered frame
         self._out = (float(seed_xy[0]), float(seed_xy[1]))
         self._prev = self._out
@@ -358,6 +371,8 @@ class ShapeTracker:
         if self._startspot is not None:
             cv2.circle(d, (int(self._startspot[0]), int(self._startspot[1])),
                        STARTSPOT_RADIUS, 0.0, -1)
+        if self._band_left > 0:
+            d[:int(STARTGLOW_BAND * self.h), :] = 0.0
         return d
 
     def _candidates(self, d):
@@ -393,6 +408,8 @@ class ShapeTracker:
         the same reward scale, so whichever source carries signal on a given
         frame wins the smooth-path competition."""
         cand = self._candidates(self._dev(box_sig, green, cursor_xy))
+        if self._band_left > 0:
+            self._band_left -= 1
         if extra:
             ex = [(float(x), float(y), min(float(r), NET_REWARD_CAP))
                   for (x, y, r) in extra]
@@ -597,7 +614,8 @@ class LieDetectorSolver:
         # the opaque shape sat). The chromatic signal is strong enough that this
         # global pick is reliable; fall back to the acquisition seed if weak.
         seed = self._locate_in_deviation(cool, plate, green, cursor_xy) or seed_xy
-        self.tracker = ShapeTracker(plate, seed, startspot=self._init_blob)
+        self.tracker = ShapeTracker(plate, seed, startspot=self._init_blob,
+                                    band_frames=STARTGLOW_FRAMES)
         self._plate_n = len(self._sig_buf)
         self._since_rebuild = 0
         self._refresh_net_plate()
@@ -611,6 +629,9 @@ class LieDetectorSolver:
         Returns ``(x, y)`` or None."""
         dev = cv2.GaussianBlur(np.clip(cool - plate, 0, None), (0, 0), DEV_BLUR)
         dev[green > 0] = 0.0
+        # This runs at the ACQUIRE->TRACK handoff, when the onset "START"
+        # banner is at full glow — never seed from the countdown band.
+        dev[:int(STARTGLOW_BAND * dev.shape[0]), :] = 0.0
         if cursor_xy is not None:
             cv2.circle(dev, (int(cursor_xy[0]), int(cursor_xy[1])),
                        CURSOR_MASK_R, 0.0, -1)
