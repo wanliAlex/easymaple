@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 
 import cv2
+import numpy as np
 
 log = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ def _record(duration_s, fps, out_dir, get_frame, first_frame):
         log.info("Recorder: writing %.0fs clip to %s", duration_s, path)
         interval = 1.0 / fps
         end = time.time() + duration_s
+        stamps = []
         while time.time() < end:
             frame = get_frame()
             if frame is not None:
@@ -65,7 +67,15 @@ def _record(duration_s, fps, out_dir, get_frame, first_frame):
                 if frame.shape[:2] != (height, width):
                     frame = cv2.resize(frame, (width, height))
                 writer.write(frame)
+                stamps.append(time.time())
             time.sleep(interval)
+        # The real time of every written frame: the container says `fps`, but
+        # the actual rate is lower (~24.6 fps: the sleep comes on top of the
+        # grab + encode), and the solver's timing is calibrated on real time.
+        try:
+            np.save(path[:-4] + "_t.npy", np.array(stamps, np.float64))
+        except Exception as e:
+            log.warning("Recorder: could not save frame times: %s", e)
         log.info("Recorder: finished clip %s", path)
     except Exception as e:
         log.exception("Recorder: clip failed: %s", e)

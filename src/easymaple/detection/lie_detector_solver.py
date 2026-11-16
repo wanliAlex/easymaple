@@ -128,11 +128,16 @@ SEED_MIN_PEAK = 2.0            # min cool-deviation peak to seed/re-acquire from
 #   track with near-zero lag, so smoothing costs no lock;
 # * the acceleration cap yields the bell-shaped speed profile of a human
 #   correction (no instant direction snaps);
-# * the speed cap (~1350 px/s at 30 fps) keeps even a re-acquisition flick
+# * the speed cap (~1800 px/s at 30 fps) keeps even a re-acquisition flick
 #   inside brisk-but-human motion, arriving in a few frames.
-PILOT_SPEED = 45.0             # px/frame cap (~2x the shape's max speed)
-PILOT_ACCEL = 6.0              # px/frame^2 cap
-PILOT_KP = 0.14                # spring toward the target
+# Tuned on the 46 held-out recordings (motion solver replay, closed loop):
+# vs the earlier 45 / 6 / 0.14 a 350 px trip settles in 0.53 s instead of
+# 0.67 s (500 px: 0.57 vs 0.77 s) with identical lock/coverage. Stiffer
+# springs (kp >= 0.2) start to chase tracker jitter; accel 12 lost one
+# borderline clip in the closed-loop replay.
+PILOT_SPEED = 60.0             # px/frame cap (~3x the shape's max speed)
+PILOT_ACCEL = 9.0              # px/frame^2 cap
+PILOT_KP = 0.18                # spring toward the target
 PILOT_KD = 0.75                # damping on (target velocity - own velocity)
 PILOT_TVEL_EMA = 0.3           # smoothing of the target-velocity estimate
 PILOT_TVEL_CLAMP = 30.0        # px/frame; a target *jump* (re-acquisition) is not
@@ -474,9 +479,11 @@ class CursorPilot:
     whatever space the targets are in (the caller maps to screen pixels).
     """
 
-    def __init__(self, start_xy):
+    def __init__(self, start_xy, speed=PILOT_SPEED, accel=PILOT_ACCEL, kp=PILOT_KP, kd=PILOT_KD,
+                 tvel_ema=PILOT_TVEL_EMA):
         self.pos = np.array(start_xy, np.float64)
         self.vel = np.zeros(2)
+        self.speed, self.accel, self.kp, self.kd, self.tvel_ema = speed, accel, kp, kd, tvel_ema
         self._tprev = None            # last target, for the velocity estimate
         self._tvel = np.zeros(2)      # EMA of the target's per-frame velocity
 
@@ -491,17 +498,17 @@ class CursorPilot:
         if target_xy is None:
             self._tprev = None
             self._tvel[:] = 0.0
-            acc = -PILOT_KD * self.vel                 # brake to rest
+            acc = -self.kd * self.vel                  # brake to rest
         else:
             t = np.asarray(target_xy, np.float64)
             if self._tprev is not None:
                 # A re-acquisition JUMP is not a velocity: clamp the delta so
                 # the feed-forward only ever carries physical shape motion.
                 d = np.clip(t - self._tprev, -PILOT_TVEL_CLAMP, PILOT_TVEL_CLAMP)
-                self._tvel = (1 - PILOT_TVEL_EMA) * self._tvel + PILOT_TVEL_EMA * d
+                self._tvel = (1 - self.tvel_ema) * self._tvel + self.tvel_ema * d
             self._tprev = t
-            acc = PILOT_KP * (t - self.pos) + PILOT_KD * (self._tvel - self.vel)
-        self.vel = self._cap(self.vel + self._cap(acc, PILOT_ACCEL), PILOT_SPEED)
+            acc = self.kp * (t - self.pos) + self.kd * (self._tvel - self.vel)
+        self.vel = self._cap(self.vel + self._cap(acc, self.accel), self.speed)
         self.pos = self.pos + self.vel
         return (float(self.pos[0]), float(self.pos[1]))
 

@@ -53,9 +53,17 @@ gui = None
 advanced = None
 
 # LieDetectorSettings instance — populated by the GUI on init. The notifier
-# reads the 'auto solve' toggle from here; None (GUI not up yet) is treated as
-# disabled (Discord handover instead of auto-solving).
+# reads the 'auto solve' / 'shadow' toggles from here; None (GUI not up yet) is
+# treated as disabled (Discord handover instead of auto-solving).
 lie_detector = None
+
+# True while a Lie Detector is being handled: the capture thread then skips
+# its minimap work and grabs frames ~2x as often (the solver wants frames).
+capture_fast = False
+
+# The LieDetectorSession of the game being played right now (None otherwise).
+# The listener's takeover hotkey signals it; the player polls it.
+lie_detector_session = None
 
 # Live match scores for the rune templates: (score, timestamp). Updated by the
 # notifier (map score) and bot (buff score) loops; read by the Advanced UI for

@@ -14,6 +14,7 @@ class Listener(Configurable):
         'Start/stop': 'f8',
         'Reload routine': 'f6',
         'Record position': 'f7',
+        'Lie Detector takeover': 'f9',
     }
     BLOCK_DELAY = 1         # Delay after blocking restricted button press
 
@@ -53,6 +54,10 @@ class Listener(Configurable):
                     Listener.reload_routine()
                 elif self.restricted_pressed('Record position'):
                     Listener.record_position()
+                elif kb.is_pressed(self.config['Lie Detector takeover']):
+                    if Listener.lie_detector_takeover():
+                        winsound.Beep(988, 150)     # B5: the bot has the mouse
+                    time.sleep(0.3)
             time.sleep(0.01)
 
     def restricted_pressed(self, action):
@@ -68,8 +73,36 @@ class Listener(Configurable):
         return False
 
     @staticmethod
+    def lie_detector_takeover():
+        """Hand a shadowed Lie Detector game to the solver. Returns True if a
+        game in shadow mode was handed over (no-op otherwise)."""
+        session = config.lie_detector_session
+        if session is None:
+            return False
+        taken = session.request_takeover()
+        if taken:
+            print('\n[~] Lie Detector: solver takes over the mouse')
+            Listener._silence()
+        return taken
+
+    @staticmethod
+    def _silence():
+        """Stop the (shadow-mode) siren."""
+        if config.notifier is not None:
+            config.notifier.stop_alerts()
+
+    @staticmethod
     def toggle_enabled():
         """Resumes or pauses the current routine. Plays a sound to notify the user."""
+
+        if not config.enabled and config.lie_detector_session is not None:
+            # Never resume the routine in the middle of a Lie Detector game:
+            # it would press skills while the test is being solved. F8 here
+            # just acknowledges the (shadow-mode) siren, as in manual mode.
+            Listener._silence()
+            print('\n[!] Lie Detector in progress - siren off, routine stays paused')
+            time.sleep(0.6)
+            return
 
         config.bot.rune_active = False
 

@@ -53,6 +53,9 @@ class Capture:
         config.capture = self
 
         self.frame = None
+        # (frame, time.perf_counter() at grab): the Lie Detector solver spaces
+        # its reference frames by capture time, not by when it got to them.
+        self.frame_stamped = None
         self.minimap = {}
         self.minimap_ratio = 1
         self.minimap_sample = None
@@ -154,10 +157,18 @@ class Capture:
                         break
 
                     # Take screenshot
+                    t_shot = time.time()
                     self.frame = self.screenshot()
                     if self.frame is None:
                         continue
+                    self.frame_stamped = (self.frame, time.perf_counter())
                     self._frame_times.append(time.time())
+
+                    if config.capture_fast:
+                        # Lie Detector in progress (bot paused): frames only,
+                        # ~60 Hz, no minimap/player matching.
+                        time.sleep(max(0.0, 1 / 60 - (time.time() - t_shot)))
+                        continue
 
                     # Crop the frame to only show the minimap
                     minimap = self.frame[mm_tl[1]:mm_br[1], mm_tl[0]:mm_br[0]]

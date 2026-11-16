@@ -1,5 +1,15 @@
 # Lie Detector mini-game solver
 
+> **Oct 2026 — superseded by the motion solver.** The runtime now uses
+> `src/easymaple/detection/lie_detector_motion.py` (falls back to the solver
+> described below if torch or its weights are missing). The offline numbers
+> further down are **not valid**: every recording has the human's reticle on
+> the shape, and this solver was following the reticle's glow. Run under live
+> conditions (reticle masked) it locks the end on 0/23 clips. The shape is
+> invisible in any single frame after ~1 s; it is only visible by the way it
+> moves against the panning camouflage. Full write-up, results and the
+> leak-proof evaluation: **`motion/FINDINGS.md`**.
+
 Auto-solver for the Lie Detector anti-bot mini-game: keep the mouse cursor on a
 shape that appears in a camouflage field and fades as it moves. **The game is
 passed by following the shape all the way to the end** — not by a good average —
