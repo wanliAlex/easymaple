@@ -138,9 +138,9 @@ class GUI:
     def start(self):
         """Starts the GUI as well as any scheduled functions."""
 
-        display_thread = threading.Thread(target=self._display_minimap)
-        display_thread.daemon = True
-        display_thread.start()
+        # The display thread calls Tk, which raises if the main loop isn't up
+        # within ~1s, so it must start from inside the main loop
+        self.root.after(0, self._start_display_thread)
 
         layout_thread = threading.Thread(target=self._save_layout)
         layout_thread.daemon = True
@@ -153,6 +153,11 @@ class GUI:
         self.root.after(500, self._refresh_status_bar)
 
         self.root.mainloop()
+
+    def _start_display_thread(self):
+        display_thread = threading.Thread(target=self._display_minimap)
+        display_thread.daemon = True
+        display_thread.start()
 
     def _display_minimap(self):
         delay = 1 / GUI.DISPLAY_FRAME_RATE

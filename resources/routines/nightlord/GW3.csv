@@ -1,0 +1,17 @@
+$, target=move_tolerance, value=0.0300
+
+@, label=mid_stand_still
+*, x=0.467, y=0.276, frequency=1, skip=False, adjust=True
+    GW3_MID_STANDSTILL
+
+@, label=mid_start_to_move
+*, x=0.467, y=0.275, frequency=1, skip=False, adjust=False
+    GW3_MID_MOVE
+
+@, label=right
+*, x=0.808, y=0.280, frequency=1, skip=False, adjust=False
+    GW3_RIGHT
+
+@, label=left
+*, x=0.170, y=0.280, frequency=1, skip=False, adjust=False
+    GW3_LEFT

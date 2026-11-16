@@ -49,6 +49,9 @@ dependencies = [
     "xmltodict==0.14.2",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=9.0.0"]
+
 # Pull torch/torchvision from the CUDA 12.1 PyTorch index when available.
 # Falls back to CPU wheels automatically if the GPU build can't be installed.
 [tool.uv.sources]
