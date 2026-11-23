@@ -69,6 +69,11 @@ class GUI:
         self._fps_label = tk.Label(bar, text='FPS: —', anchor='w')
         self._fps_label.pack(side=tk.LEFT, padx=(6, 6))
 
+        tk.Label(bar, text='|').pack(side=tk.LEFT)
+
+        self._qworld_label = tk.Label(bar, text='Q-World: —', anchor='w', fg='gray')
+        self._qworld_label.pack(side=tk.LEFT, padx=(6, 6))
+
     def _refresh_status_bar(self):
         # Book
         book = getattr(config.bot, 'module_name', None) if config.bot else None
@@ -92,6 +97,12 @@ class GUI:
         # FPS
         fps = getattr(config.capture, 'fps', 0.0) if config.capture else 0.0
         self._fps_label.configure(text=f"FPS: {fps:.1f}" if fps else 'FPS: —')
+
+        # Q-World auto re-entry
+        qworld = config.qworld
+        if qworld is not None:
+            color = 'orange' if qworld.active else ('blue' if qworld.enabled() else 'gray')
+            self._qworld_label.configure(text=qworld.status_text(), fg=color)
 
         self.root.after(500, self._refresh_status_bar)
 

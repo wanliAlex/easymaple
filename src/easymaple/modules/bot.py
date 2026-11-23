@@ -64,6 +64,9 @@ class Bot(Configurable):
         self.rune_consecutive_batch_failures = 0
         self.submodules = []
         self.module_name = None
+        # True while the main loop is idling for a Q-World re-entry, which
+        # may turn config.enabled on to walk into the portal.
+        self.parked = False
         self.buff = components.Buff()
         self.model = None
         self._model_load_thread = None
@@ -109,6 +112,15 @@ class Bot(Configurable):
         last_fed = time.time()
         key_up("left"); key_up("right")
         while True:
+            qworld = config.qworld
+            if qworld is not None and qworld.active:
+                # A Q-World re-entry is driving the character (config.enabled
+                # may be on so its keys get through): keep the routine off.
+                self.parked = True
+                time.sleep(0.01)
+                continue
+            self.parked = False
+
             if config.enabled:
                 solve_rune = config.gui.settings.rune.solve_rune.get()
 

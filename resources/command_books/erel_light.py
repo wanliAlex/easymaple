@@ -14,6 +14,9 @@ class Key:
     ROPE = "s"
 
     ERDA_FOUNTAIN = "c"
+    SPEAR_OF_LIGHT="g"
+
+    IFRAME = "delete"           # invincibility skill (LieDetectorGuard)
 
     SPEAR_OF_LUGH = "1"
     FURY_OF_ROAN = "2"
@@ -41,7 +44,9 @@ class UpJump(Command):
         self.wait = float(wait)
     def main(self):
         key_down(Key.UP)
-        press(Key.JUMP, 2, 0.01, 0.08)
+        press(Key.JUMP, 1, 0.1, 0.1)
+        press(Key.JUMP, 1, 0.1, 0.01)
+        key_up(Key.UP)
         time.sleep(self.wait)
 
 
@@ -193,9 +198,33 @@ class Adjust(Command):
 
 
 class Buff(Command):
-    """Uses each of Kanna's buffs once. Uses 'Haku Reborn' whenever it is available."""
+    """Presses each configured buff key once its cooldown elapses.
 
-    pass
+    BUFFS maps a key (entry from `Key`) to its cooldown in seconds. Each
+    press is followed by `dismiss_buff_active_popup()` so any "buff still
+    active" / "same potion in effect" dialog is cleared before the routine
+    resumes.
+    """
+
+    BUFF_BUFFER = 15
+
+    BUFFS = {
+        "f4": 30 * 60
+    }
+
+    def __init__(self):
+        super().__init__(locals())
+        self.last_pressed = {key: 0.0 for key in self.BUFFS}
+
+    def main(self):
+        now = time.time()
+        for key, cooldown in self.BUFFS.items():
+            last = self.last_pressed.get(key, 0.0)
+            if last == 0.0 or now - last > cooldown + self.BUFF_BUFFER:
+                press(key, 1, 0.1, 2)
+                self.dismiss_buff_active_popup()
+                time.sleep(1)
+                self.last_pressed[key] = now
 
 class Rope(Command):
     def __init__(self, direction=None, wait=0):
@@ -211,6 +240,20 @@ class Rope(Command):
 class ErdaFountain(Command):
     def main(self):
         press(Key.ERDA_FOUNTAIN, 2, 0.1, 0.3)
+
+
+class SpearOfLight(Command):
+    def main(self):
+        press(Key.SPEAR_OF_LIGHT, 2, 0.1, 0.5)
+
+
+class LieDetectorGuard(Command):
+    """Run by the notifier while it solves a Lie Detector (opt-in: Settings ->
+    Lie Detector -> 'Cast i-frame while solving'): the invincibility skill, so
+    monsters can't hit the idle character. Pressed 3x in case one is eaten."""
+
+    def main(self):
+        press(Key.IFRAME, 3, 0.1, 0.5)
 
 
 def ms_sleep(time_ms: int):

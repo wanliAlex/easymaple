@@ -57,9 +57,14 @@ advanced = None
 # treated as disabled (Discord handover instead of auto-solving).
 lie_detector = None
 
-# True while a Lie Detector is being handled: the capture thread then skips
-# its minimap work and grabs frames ~2x as often (the solver wants frames).
+# True while a Lie Detector game window is open (routine paused): the capture
+# thread then skips its minimap/player work and grabs frames ~2x as often (the
+# solver wants frames). Never while the routine runs - it needs player_pos.
 capture_fast = False
+
+# QWorldReentry instance (modules/qworld.py), created by the notifier. Watches
+# for the Q-World timer kick and walks back through the lobby portal.
+qworld = None
 
 # The LieDetectorSession of the game being played right now (None otherwise).
 # The listener's takeover hotkey signals it; the player polls it.
