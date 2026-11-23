@@ -1,10 +1,12 @@
 """A module for simulating low-level keyboard and mouse key presses."""
 
 import ctypes
+import threading
 import time
 import win32con
 import win32api
-from src.easymaple.common import utils
+from contextlib import contextmanager
+from src.easymaple.common import config
 from ctypes import wintypes
 import numpy as np
 from pynput.keyboard import Controller, Key
@@ -262,9 +264,43 @@ user32.SendInput.argtypes = (wintypes.UINT, LPINPUT, ctypes.c_int)
 
 
 #################################
+#          Input gate           #
+#################################
+# key_down / press / click only act while the bot is enabled, so pausing the
+# bot (F8, Lie Detector, ...) stops the routine's input at once. allow_keys()
+# lets the current thread through anyway, for helpers that must press keys
+# while the routine is paused (e.g. the Lie Detector i-frame guard); the
+# routine's own thread stays blocked.
+_override = threading.local()
+
+
+@contextmanager
+def allow_keys():
+    """Let THIS thread send input while config.enabled is False."""
+    _override.depth = getattr(_override, 'depth', 0) + 1
+    try:
+        yield
+    finally:
+        _override.depth -= 1
+
+
+def _input_allowed():
+    return config.enabled or getattr(_override, 'depth', 0) > 0
+
+
+def _if_input_allowed(function):
+    """Like utils.run_if_enabled, but also honours allow_keys()."""
+
+    def helper(*args, **kwargs):
+        if _input_allowed():
+            return function(*args, **kwargs)
+    return helper
+
+
+#################################
 #           Functions           #
 #################################
-@utils.run_if_enabled
+@_if_input_allowed
 def key_down(key):
     """
     Simulates a key-down action. Can be cancelled by Bot.toggle_enabled.
@@ -302,7 +338,7 @@ def key_up(key):
         # user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 
-@utils.run_if_enabled
+@_if_input_allowed
 def press(key, n=1, down_time=0.05, up_time=0.1, random=False):
     """
     Presses KEY N times, holding it for DOWN_TIME seconds, and releasing for UP_TIME seconds.
@@ -325,7 +361,7 @@ def press(key, n=1, down_time=0.05, up_time=0.1, random=False):
             time.sleep(up_time)
 
 
-@utils.run_if_enabled
+@_if_input_allowed
 def click(position, button='left'):
     """
     Simulate a mouse click with BUTTON at POSITION.

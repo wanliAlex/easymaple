@@ -12,6 +12,7 @@ class LieDetector(LabelFrame):
         config.lie_detector = self.settings
         self.auto_solve = tk.BooleanVar(value=self.settings.get('auto solve'))
         self.shadow = tk.BooleanVar(value=self.settings.get('shadow'))
+        self.iframe = tk.BooleanVar(value=self.settings.get('iframe'))
 
         row = Frame(self)
         row.pack(side=tk.TOP, fill='x', expand=True, pady=5, padx=5)
@@ -45,6 +46,21 @@ class LieDetector(LabelFrame):
                  f'press {key} or untick to let it take over',
             fg='gray'
         ).pack()
+
+        # i-frame: the command book's LieDetectorGuard (an invincibility
+        # skill) runs once while the game is being solved.
+        self.iframe_check = tk.Checkbutton(
+            row,
+            variable=self.iframe,
+            text='Cast i-frame while solving',
+            command=self._on_change
+        )
+        self.iframe_check.pack()
+        tk.Label(
+            row,
+            text="Runs the command book's LieDetectorGuard\n(erel_light: Del x3)",
+            fg='gray'
+        ).pack()
         self._sync_state()
 
     @staticmethod
@@ -56,11 +72,14 @@ class LieDetector(LabelFrame):
             return 'f9'
 
     def _sync_state(self):
-        self.shadow_check.config(state=tk.NORMAL if self.auto_solve.get() else tk.DISABLED)
+        state = tk.NORMAL if self.auto_solve.get() else tk.DISABLED
+        self.shadow_check.config(state=state)
+        self.iframe_check.config(state=state)
 
     def _on_change(self):
         self.settings.set('auto solve', self.auto_solve.get())
         self.settings.set('shadow', self.shadow.get())
+        self.settings.set('iframe', self.iframe.get())
         self.settings.save_config()
         self._sync_state()
 
@@ -69,6 +88,7 @@ class LieDetectorSettings(Configurable):
     DEFAULT_CONFIG = {
         'auto solve': True,
         'shadow': False,
+        'iframe': False,        # opt-in: command book's LieDetectorGuard while solving
     }
 
     def get(self, key):

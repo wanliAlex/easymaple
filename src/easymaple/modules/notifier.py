@@ -1,6 +1,7 @@
 """A module for detecting and notifying the user of dangerous in-game events."""
 
 from src.easymaple.common import config, utils
+from src.easymaple.common.vkeys import allow_keys
 import logging
 import queue
 import time
@@ -15,6 +16,7 @@ import requests
 from dotenv import load_dotenv, find_dotenv
 from src.easymaple.routine.components import Point
 from src.easymaple.modules import recorder
+from src.easymaple.modules.qworld import QWorldReentry
 from src.easymaple.modules.lie_detector_player import (
     LieDetectorPlayer, LieDetectorSession, expected_box, motion_solver,
     preload_motion_solver, remember_box, save_trace)
@@ -76,6 +78,14 @@ DEATH_TEMPLATE = utils.load_image('assets/death_template.png', cv2.IMREAD_GRAYSC
 LIE_DETECTOR_PREP_TEMPLATE = utils.load_image('assets/lie_detector_prep.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_PROGRESS_TEMPLATE = utils.load_image('assets/lie_detector_in_progress.png', cv2.IMREAD_GRAYSCALE)
 LIE_DETECTOR_THRESHOLD = 0.9
+# The prep notice (bottom right) shows ~10 s before the game window opens
+# (9.4-10.0 s on 30 live clips) and vanishes the moment it does. With
+# auto-solve on, the bot keeps farming through it: the game is handled when
+# the "in progress" banner appears, or the notice disappears. The latter is
+# the safety net - a popup covering the notice only starts the solver early
+# (it then waits for the game window), it never misses the game. A notice
+# last seen longer ago than this (the bot was stopped meanwhile) is stale.
+LIE_DETECTOR_NOTICE_GONE_S = 2.0
 
 RUNE_DETECT_FREQUENCY = 40
 
@@ -158,8 +168,14 @@ class Notifier:
         self.rune_counter = 0
         self.death_counter = 0
         self.lie_detector_counter = 0
+        self._lie_detector_notice_at = None     # last time the prep notice was seen (deferred)
 
         self._discord_queue = queue.Queue()
+
+        # Q-World auto re-entry (Settings -> Q-World Re-entry). While enabled it
+        # owns black-screen handling: kicked to the lobby, map change, disconnect.
+        self.qworld = QWorldReentry(self)
+        config.qworld = self.qworld
 
     def start(self):
         """Starts this Notifier's thread."""
@@ -176,16 +192,15 @@ class Notifier:
             try:
                 if config.enabled:
                     frame = config.capture.frame
-                    height, width, _ = frame.shape
-                    minimap = config.capture.minimap['minimap']
-
-                    # Check for unexpected black screen
-                    # white room
                     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
-                        for _ in range(5):
-                            self._enqueue_notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
-                        self._alert('siren')
+
+                    # Black screen / map change (white room, or the Q-World kick
+                    # when auto re-entry is on). The frame is stale afterwards.
+                    if self._check_map_change(gray):
+                        time.sleep(NOTIFIER_LOOP_SLEEP_S)
+                        continue
+
+                    minimap = config.capture.minimap['minimap']
 
                     # Check for elite warning
                     #elite_frame = frame[height // 4:3 * height // 4, width // 4:3 * width // 4]
@@ -236,13 +251,15 @@ class Notifier:
                     # Discord for manual takeover.
                     if self.lie_detector_counter >= LIE_DETECTOR_DETECT_FREQUENCY or self.lie_detector_counter == 0:
                         self.lie_detector_counter = 1
-                        prep_hit = utils.match_score(gray, LIE_DETECTOR_PREP_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
-                        prog_hit = utils.match_score(gray, LIE_DETECTOR_PROGRESS_TEMPLATE) >= LIE_DETECTOR_THRESHOLD
-                        if prep_hit or prog_hit:
-                            self._handle_lie_detector("准备阶段" if prep_hit else "进行中")
+                        seen = self._check_lie_detector(gray)
+                        if seen == 'game':
                             # Long cooldown so the lingering banner / the same
                             # test can't re-trigger the handler.
                             self.lie_detector_counter = -round(LIE_DETECTOR_COOLDOWN_S / NOTIFIER_LOOP_SLEEP_S)
+                        elif seen == 'notice':
+                            # Farming through the prep notice: look again on
+                            # the next loop, to catch the game the moment it opens.
+                            self.lie_detector_counter = LIE_DETECTOR_DETECT_FREQUENCY - 1
 
                     self.rune_counter += 1
                     self.death_counter += 1
@@ -251,10 +268,68 @@ class Notifier:
                 log.exception("Notifier loop iteration failed; continuing: %s", e)
             time.sleep(NOTIFIER_LOOP_SLEEP_S)
 
+    def _check_map_change(self, gray):
+        """React to an unexpected black screen. Returns True if it acted.
+
+        Q-World auto re-entry on: it decides (re-enter through the lobby
+        portal, resume, or alarm on a disconnect) and also watches the minimap
+        for a kick without a visible black screen. Off: the original
+        white-room alarm (five Discord pings + the blocking siren).
+        """
+        qworld = getattr(self, 'qworld', None)
+        if qworld is not None and (qworld.active or qworld.enabled()):
+            # (active: a test re-entry from the GUI walking with the bot
+            # briefly enabled - its portal black screen is not a white room)
+            return qworld.poll(gray)
+        height, width = gray.shape[:2]
+        if np.count_nonzero(gray < 15) / height / width > self.room_change_threshold:
+            for _ in range(5):
+                self._enqueue_notify(f"<@{DISCORD_USER_ID}> 白屋了兄弟")
+            self._alert('siren')
+            return True
+        return False
+
+    def _check_lie_detector(self, gray):
+        """One Lie Detector check of the frame GRAY.
+
+        Returns 'game' when the game was handled (the caller then starts the
+        cooldown), 'notice' while the bot farms through the prep notice (the
+        caller looks again on the next loop), else None.
+        """
+        now = time.time()
+        notice_at, self._lie_detector_notice_at = self._lie_detector_notice_at, None
+        if utils.match_score(gray, LIE_DETECTOR_PROGRESS_TEMPLATE) >= LIE_DETECTOR_THRESHOLD:
+            self._handle_lie_detector("进行中")
+            return 'game'
+        if utils.match_score(gray, LIE_DETECTOR_PREP_TEMPLATE) >= LIE_DETECTOR_THRESHOLD:
+            if not self._solver_waits_for_game():
+                # A human has to play (manual / shadow / no solver): alert
+                # now, the ~10 s notice is their head start.
+                self._handle_lie_detector("准备阶段")
+                return 'game'
+            if notice_at is None:
+                _console("测谎仪提示出现：继续挂机，游戏开始时再暂停并自动求解")
+            self._lie_detector_notice_at = now
+            return 'notice'
+        if notice_at is not None and now - notice_at <= LIE_DETECTOR_NOTICE_GONE_S:
+            # The notice just vanished: the game window is opening.
+            self._handle_lie_detector("开始")
+            return 'game'
+        return None
+
+    @staticmethod
+    def _solver_waits_for_game():
+        """Auto-solve (not shadow) with the solver loaded: nobody needs the
+        prep notice, so the bot keeps farming until the game starts."""
+        settings = getattr(config, 'lie_detector', None)
+        return (settings is not None and bool(settings.get('auto solve'))
+                and not settings.get('shadow') and motion_solver(retry=True) is not None)
+
     def _handle_lie_detector(self, phase):
         """React to a detected Lie Detector mini-game.
 
-        Auto-solve enabled (Settings -> Lie Detector): pause the routine, drive
+        Auto-solve enabled (Settings -> Lie Detector): called once the game
+        window opens (see :meth:`_check_lie_detector`); pause the routine, drive
         the mouse through the game with :class:`LieDetectorPlayer`, and resume
         on success. Discord stays quiet unless the game was not passed: the
         detection and a pass (or a false alarm) are only reported on the
@@ -305,6 +380,7 @@ class Notifier:
         session = LieDetectorSession(shadow, settings)
         config.lie_detector_session = session
         config.capture_fast = True      # frames ~2x as often until the game is over
+        self._start_iframe_guard(settings)
         try:
             result = LieDetectorPlayer(shadow=shadow, takeover=session.takeover_requested,
                                        expected_box=expected_box()).solve()
@@ -346,6 +422,38 @@ class Notifier:
             self._ping('siren', volume=0.75)
         # The game log is tens of MB: write it after acting on the outcome.
         _background(_save_trace_quietly, result)
+
+    @staticmethod
+    def _start_iframe_guard(settings):
+        """Opt-in (Settings -> Lie Detector -> i-frame): run the command book's
+        LieDetectorGuard command - an invincibility skill, so monsters can't
+        hit the idle character - in the background while the game is solved.
+
+        The bot is paused (config.enabled is False), which makes vkeys drop
+        every key; vkeys.allow_keys() lets this one thread through while the
+        routine's thread stays blocked. Returns the thread, or None.
+        """
+        if not settings.get('iframe'):
+            return None
+        bot = getattr(config, 'bot', None)
+        book = getattr(bot, 'command_book', None) or {}
+        guard = book.get('liedetectorguard')
+        if guard is None:
+            _console(f"测谎仪无敌：职业脚本 {getattr(bot, 'module_name', None)} "
+                     f"没有 LieDetectorGuard 命令，跳过")
+            return None
+
+        def run():
+            try:
+                with allow_keys():
+                    guard().main()
+            except Exception as e:
+                log.warning("Lie Detector i-frame guard failed: %s", e)
+
+        _console("测谎仪：释放无敌技能（LieDetectorGuard）")
+        thread = threading.Thread(target=run, daemon=True, name='lie-detector-guard')
+        thread.start()
+        return thread
 
     def _alert(self, name, volume=0.75):
         """

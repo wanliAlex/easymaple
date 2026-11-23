@@ -1,0 +1,34 @@
+$, target=move_tolerance, value=0.03
+
+@, label=Ground
+*, x=0.091, y=0.264, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.18
+*, x=0.236, y=0.264, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.18
+*, x=0.382, y=0.264, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.18
+*, x=0.514, y=0.264, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.18
+*, x=0.645, y=0.264, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=right, wait=0.18
+*, x=0.786, y=0.264, frequency=1, skip=False, adjust=False
+    UpJump, wait=1
+
+@, label=UpperLayer
+*, x=0.786, y=0.164, frequency=6, skip=False, adjust=False
+    SpearOfLight
+*, x=0.786, y=0.164, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.18
+*, x=0.645, y=0.164, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.18
+*, x=0.514, y=0.164, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.18
+*, x=0.382, y=0.164, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.18
+*, x=0.236, y=0.164, frequency=1, skip=False, adjust=False
+    JumpAttack, direction=left, wait=0.18
+*, x=0.091, y=0.164, frequency=6, skip=False, adjust=False
+    ErdaFountain
+*, x=0.091, y=0.164, frequency=1, skip=False, adjust=False
+    Wait, duration=0.5
+    DownJump, wait=1

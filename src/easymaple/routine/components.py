@@ -4,11 +4,14 @@ import math
 import time
 import cv2
 from src.easymaple.common import config, settings, utils
-from src.easymaple.common.vkeys import key_down, key_up, press
+from src.easymaple.common.vkeys import click, key_down, key_up, press
+from src.easymaple.detection import buff_sequence
 
 
 # Warning popups MapleStory shows when a buff key is pressed while the
-# corresponding effect is still active. Press Esc to dismiss any of them.
+# corresponding effect is still active. Press Esc to dismiss any of them
+# (tpl 2 is the Buff Sequence dialog's header: that dialog gets 'Use
+# Unapplied Buffs' clicked first, see dismiss_buff_active_popup).
 BUFF_ACTIVE_POPUP_TEMPLATES = [
     utils.load_image('assets/buff_template.png', cv2.IMREAD_GRAYSCALE),
     utils.load_image('assets/buff_template_2.png', cv2.IMREAD_GRAYSCALE),
@@ -71,13 +74,19 @@ class Component:
         """If a 'buff already active' / 'same potion still in effect' warning
         popup is currently on screen, press Esc to dismiss it. Silently no-op
         if no popup matches or the capture frame isn't available yet.
+
+        The Buff Sequence dialog ("The following Buff Sequence buffs are
+        currently not applied ... Please select the buff effect range") is
+        answered with 'Use Unapplied Buffs' instead: Esc there means Cancel,
+        and the missing buffs would stay off. Esc only if clicking fails.
         """
-        frame = config.capture.frame
-        if frame is None:
+        gray = _capture_gray()
+        if gray is None:
             return
-        try:
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if len(frame.shape) == 3 else frame
-        except cv2.error:
+        if _use_unapplied_buffs(gray):
+            return
+        gray = _capture_gray()
+        if gray is None:
             return
         for idx, template in enumerate(BUFF_ACTIVE_POPUP_TEMPLATES):
             try:
@@ -89,6 +98,66 @@ class Component:
                 print(f'[~] Buff-active popup tpl{idx} detected (score={score:.3f}); pressing Esc')
                 press('esc', 1)
                 return
+
+
+def _capture_gray():
+    """The latest captured frame in grayscale, or None."""
+    frame = getattr(config.capture, 'frame', None)
+    if frame is None:
+        return None
+    try:
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if len(frame.shape) == 3 else frame
+    except cv2.error:
+        return None
+
+
+# Clicks on the Buff Sequence dialog before giving up (then Esc = Cancel).
+BUFF_SEQUENCE_CLICKS = 2
+BUFF_SEQUENCE_CLOSE_WAIT_S = 0.6
+
+
+def _use_unapplied_buffs(gray):
+    """Click 'Use Unapplied Buffs' if the Buff Sequence dialog is in GRAY.
+    True once the dialog is gone; False if it isn't there or won't close."""
+    point, info = buff_sequence.find_unapplied_button(gray)
+    if point is None:
+        return False
+    if getattr(config, 'lie_detector_session', None) is not None:
+        # A Lie Detector game started while this buff was being pressed: the
+        # solver owns the mouse, don't fight it for the cursor. Esc closes the
+        # dialog; the next auto-buff retries.
+        print("[~] Buff Sequence dialog during a Lie Detector game; Esc instead of clicking")
+        return False
+    for attempt in range(1, BUFF_SEQUENCE_CLICKS + 1):
+        window = getattr(config.capture, 'window', None) or {}
+        screen = (window.get('left', 0) + point[0], window.get('top', 0) + point[1])
+        top = 'hidden' if info['top'] is None or not info['lined_up'] else f"{info['top']:.2f}"
+        print(f"[~] Buff Sequence dialog (prompt {info['prompt']:.2f}, top {top}); "
+              f"clicking 'Use Unapplied Buffs' (attempt {attempt}/{BUFF_SEQUENCE_CLICKS})")
+        _click_screen(screen)
+        time.sleep(BUFF_SEQUENCE_CLOSE_WAIT_S)
+        gray = _capture_gray()
+        point, info = buff_sequence.find_unapplied_button(gray)
+        if point is None:
+            return True
+    print("[!] Buff Sequence dialog did not close after clicking; falling back to Esc")
+    return False
+
+
+def _click_screen(position):
+    """Hover over POSITION (screen pixels) so the game registers the button,
+    click it, then put the cursor back where it was."""
+    import win32api
+    try:
+        previous = win32api.GetCursorPos()
+    except Exception:
+        previous = None
+    win32api.SetCursorPos((int(position[0]), int(position[1])))
+    time.sleep(0.15)
+    click((int(position[0]), int(position[1])))
+    time.sleep(0.1)
+    if previous is not None:
+        win32api.SetCursorPos(previous)
 
 
 class Point(Component):

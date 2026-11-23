@@ -104,10 +104,23 @@ class Listener(Configurable):
             time.sleep(0.6)
             return
 
+        qworld = getattr(config, 'qworld', None)
+        if qworld is not None and qworld.active:
+            # F8 during a Q-World re-entry: stop it and leave the bot paused
+            # for the human (never start the routine on top of it).
+            qworld.abort()
+            config.enabled = False
+            print('\n[!] Q-World re-entry stopped by F8 - bot stays paused')
+            winsound.Beep(523, 333)     # C5
+            time.sleep(0.6)
+            return
+
         config.bot.rune_active = False
 
         if not config.enabled:
             Listener.recalibrate_minimap()      # Recalibrate only when being enabled.
+            if qworld is not None:
+                qworld.on_bot_enabled()         # remember the farm map's minimap
 
         config.enabled = not config.enabled
         utils.print_state()

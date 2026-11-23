@@ -6,6 +6,7 @@ from src.easymaple.gui.settings.buffs import Buffs
 from src.easymaple.gui.settings.keybindings import KeyBindings
 from src.easymaple.gui.settings.lie_detector import LieDetector
 from src.easymaple.gui.settings.pets import Pets
+from src.easymaple.gui.settings.qworld import QWorld
 from src.easymaple.gui.settings.rune import Rune
 from src.easymaple.gui.interfaces import Tab, Frame
 from src.easymaple.common import config
@@ -28,6 +29,9 @@ class Settings(Tab):
 
         self.lie_detector = LieDetector(column1)
         self.lie_detector.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
+
+        self.qworld = QWorld(column1)
+        self.qworld.pack(side=tk.TOP, fill='x', expand=True, pady=(10, 0))
 
         column2 = Frame(self)
         column2.grid(row=0, column=2, sticky=tk.N, padx=10, pady=10)
